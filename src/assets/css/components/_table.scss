@@ -1,0 +1,32 @@
+/* table */
+
+.untill-base-table {
+    background-color: #fff;
+    border-radius: var(--border-radius-medium);
+    overflow: hidden;
+    font-size: 10pt;
+    line-height: 12pt;
+}
+
+.untill-base-table-title {
+    padding: 10px 20px;
+    border: 2px solid var(--color-brand);
+    margin: 10px 0px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.untill-base-table-header {
+    padding: 10px;
+    line-height: 20px;
+
+    display: flex;
+    flex-direction: row;
+
+    background-color: #fff;
+    border-radius: var(--border-radius-medium) var(--border-radius-medium) 0 0;
+}
+
+.untill-base-table-header-togglers {
+    flex: 1;
+}

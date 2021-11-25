@@ -1,0 +1,1513 @@
+/* ticket field */
+
+.ticket-layout-selector-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.ticket-layout-selector-field-body {
+    border-top: 1px solid var(--color-light-400);
+    padding-top: 20px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.ticket-layout-selector-field-settings {
+    flex: 1;
+}
+
+.ticket-layout-selector-field-preview {
+    width: 320px;
+}
+
+.ticket-area {
+    width: 100%;
+    min-width: 320px;
+    padding: 20px;
+    background: #fff;
+    background-size: 100% auto;
+
+    color: #242424;
+    font-size: 12px;
+    line-height: 1.1;
+
+    word-break: break-all;
+    border: 1px solid #cdcdcd;
+}
+
+.ticket-area * {
+    font-family: "Lucida Console", Monaco, monospace
+}
+
+/**************/
+
+.ticket-area img {
+    filter: grayscale(100%);
+}
+
+.ticket-area u {
+    min-width: 100%;
+    display: block;
+    border-bottom: 1px solid #cdcdcd;
+    text-decoration: none;
+}
+
+.ticket-area i {
+    font-style: italic;
+}
+
+.ticket-area b {
+    font-weight: bold;
+}
+
+.ticket-area t {
+    display: inline-block;
+    width: 50px;
+}
+
+.ticket-area line {
+    width: 100%;
+
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    line-height: 1;
+    height: 10px;
+}
+
+.ticket-area line:after {
+    font-size: 14;
+    content: attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol);
+}
+
+.ticket-area cell {
+    flex: 1;
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ticket-area row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.ticket-area center {
+    text-align: center;
+}
+
+.ticket-area left {
+    text-align: left;
+}
+
+.ticket-area right {
+    text-align: right;
+}
+
+.ticket-area cell[width] {
+    flex: none;
+    width: calc(8px * var(--x));
+}
+
+.ticket-area cell[align='right'] {
+    text-align: right;
+}
+
+.ticket-area cell[align='left'] {
+    text-align: left;
+}
+
+.ticket-area cell[align='center'] {
+    text-align: center;
+}
+
+.ticket-area ds {
+    font-size: 150%;
+}
+
+.ticket-area qs {
+    font-size: 200%;
+}
+
+.ticket-area fs {
+    font-size: 100%;
+}
+
+.ticket-area fs[size='1'] {
+    font-size: 100%;
+}
+
+.ticket-area fs[size='2'] {
+    font-size: 24px;
+}
+
+.ticket-area fs[size='3'] {
+    font-size: 34px;
+}
+
+.ticket-area fs[size='4'] {
+    font-size: 44px
+}
+
+.ticket-area fs[size='5'] {
+    font-size: 54px
+}
+
+.ticket-area fs[size='6'] {
+    font-size: 64px
+}
+
+.ticket-area fs[size='7'] {
+    font-size: 74px
+}
+
+.ticket-area fs[size='8'] {
+    font-size: 84px
+}
+
+.ticket-area fs[size='9'] {
+    font-size: 94px
+}
+
+.ticket-area qr {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+
+    background: url(../../images/ticket/qr_code.jpg) center center no-repeat;
+    background-size: 100% 100%;
+}
+
+.ticket-area qr[size='1'] {
+    width: 30px;
+    height: 30px;
+}
+
+.ticket-area qr[size='2'] {
+    width: 40px;
+    height: 40px;
+}
+
+.ticket-area qr[size='3'] {
+    width: 50px;
+    height: 50px;
+}
+
+.ticket-area qr[size='4'] {
+    width: 60px;
+    height: 60px;
+}
+
+.ticket-area qr[size='5'] {
+    width: 70px;
+    height: 70px;
+}
+
+.ticket-area qr[size='6'] {
+    width: 80px;
+    height: 80px;
+}
+
+.ticket-area qr[size='7'] {
+    width: 90px;
+    height: 90px;
+}
+
+.ticket-area qr[size='8'] {
+    width: 100px;
+    height: 100px;
+}
+
+.ticket-area bar {
+    display: inline-block;
+    background: #fff url(../../images/ticket/bar_ean_13.jpg) center center no-repeat;
+    background-size: 100% 100%;
+}
+
+.ticket-area bar[width='2'] {
+    width: 40%;
+}
+
+.ticket-area bar[width='3'] {
+    width: 60%;
+}
+
+.ticket-area bar[width='4'] {
+    width: 80%;
+}
+
+.ticket-area bar[width='5'] {
+    width: 90%;
+}
+
+.ticket-area bar[width='6'] {
+    width: 100%;
+}
+
+.ticket-area bar[height] {
+    flex: none;
+    height: calc(0.6px * var(--h));
+}
+
+.ticket-area bar[type='1'] {
+    background-image: url(../../images/ticket/bar_upc_a.jpg);
+}
+
+.ticket-area bar[type='2'] {
+    background-image: url(../../images/ticket/bar_upc_e.jpg);
+}
+
+.ticket-area bar[type='3'] {
+    background-image: url(../../images/ticket/bar_ean_13.jpg);
+}
+
+.ticket-area bar[type='4'] {
+    background-image: url(../../images/ticket/bar_ean_8.jpg);
+}
+
+.ticket-area bar[type='5'] {
+    background-image: url(../../images/ticket/bar_code_39.jpg);
+}
+
+.ticket-area bar[type='6'] {
+    background-image: url(../../images/ticket/bar_itf.jpg);
+}
+
+.ticket-area bar[type='7'] {
+    background-image: url(../../images/ticket/bar_nw7.jpg);
+}
+
+.ticket-area bar[type='8'] {
+    background-image: url(../../images/ticket/bar_code_93.jpg);
+}
+
+.ticket-area bar[type='9'] {
+    background-image: url(../../images/ticket/bar_code_128.jpg);
+}
+
+[width='1'] {
+    --x: 1;
+}
+
+[width='2'] {
+    --x: 2;
+}
+
+[width='3'] {
+    --x: 3;
+}
+
+[width='4'] {
+    --x: 4;
+}
+
+[width='5'] {
+    --x: 5;
+}
+
+[width='6'] {
+    --x: 6;
+}
+
+[width='7'] {
+    --x: 7;
+}
+
+[width='8'] {
+    --x: 8;
+}
+
+[width='9'] {
+    --x: 9;
+}
+
+[width='10'] {
+    --x: 10;
+}
+
+[width='11'] {
+    --x: 11;
+}
+
+[width='12'] {
+    --x: 12;
+}
+
+[width='13'] {
+    --x: 13;
+}
+
+[width='14'] {
+    --x: 14;
+}
+
+[width='15'] {
+    --x: 15;
+}
+
+[width='16'] {
+    --x: 16;
+}
+
+[width='17'] {
+    --x: 17;
+}
+
+[width='18'] {
+    --x: 18;
+}
+
+[width='19'] {
+    --x: 19;
+}
+
+[width='20'] {
+    --x: 20;
+}
+
+[width='21'] {
+    --x: 21;
+}
+
+[width='22'] {
+    --x: 22;
+}
+
+[width='23'] {
+    --x: 23;
+}
+
+[width='24'] {
+    --x: 24;
+}
+
+[width='25'] {
+    --x: 25;
+}
+
+[width='26'] {
+    --x: 26;
+}
+
+[width='27'] {
+    --x: 27;
+}
+
+[width='28'] {
+    --x: 28;
+}
+
+[width='29'] {
+    --x: 29;
+}
+
+[width='30'] {
+    --x: 30;
+}
+
+[width='31'] {
+    --x: 31;
+}
+
+[width='32'] {
+    --x: 32;
+}
+
+[width='33'] {
+    --x: 33;
+}
+
+[width='34'] {
+    --x: 34;
+}
+
+[width='35'] {
+    --x: 35;
+}
+
+[width='36'] {
+    --x: 36;
+}
+
+[width='37'] {
+    --x: 37;
+}
+
+[width='38'] {
+    --x: 38;
+}
+
+[width='39'] {
+    --x: 39;
+}
+
+[width='40'] {
+    --x: 40;
+}
+
+[width='41'] {
+    --x: 41;
+}
+
+[width='42'] {
+    --x: 42;
+}
+
+[width='43'] {
+    --x: 43;
+}
+
+[width='44'] {
+    --x: 44;
+}
+
+[width='45'] {
+    --x: 45;
+}
+
+[width='46'] {
+    --x: 46;
+}
+
+[width='47'] {
+    --x: 47;
+}
+
+[width='48'] {
+    --x: 48;
+}
+
+[width='49'] {
+    --x: 49;
+}
+
+[width='50'] {
+    --x: 50;
+}
+
+
+[height='1'] {
+    --h: 1;
+}
+
+[height='2'] {
+    --h: 2;
+}
+
+[height='3'] {
+    --h: 3;
+}
+
+[height='4'] {
+    --h: 4;
+}
+
+[height='5'] {
+    --h: 5;
+}
+
+[height='6'] {
+    --h: 6;
+}
+
+[height='7'] {
+    --h: 7;
+}
+
+[height='8'] {
+    --h: 8;
+}
+
+[height='9'] {
+    --h: 9;
+}
+
+[height='10'] {
+    --h: 10;
+}
+
+[height='11'] {
+    --h: 11;
+}
+
+[height='12'] {
+    --h: 12;
+}
+
+[height='13'] {
+    --h: 13;
+}
+
+[height='14'] {
+    --h: 14;
+}
+
+[height='15'] {
+    --h: 15;
+}
+
+[height='16'] {
+    --h: 16;
+}
+
+[height='17'] {
+    --h: 17;
+}
+
+[height='18'] {
+    --h: 18;
+}
+
+[height='19'] {
+    --h: 19;
+}
+
+[height='20'] {
+    --h: 20;
+}
+
+[height='21'] {
+    --h: 21;
+}
+
+[height='22'] {
+    --h: 22;
+}
+
+[height='23'] {
+    --h: 23;
+}
+
+[height='24'] {
+    --h: 24;
+}
+
+[height='25'] {
+    --h: 25;
+}
+
+[height='26'] {
+    --h: 26;
+}
+
+[height='27'] {
+    --h: 27;
+}
+
+[height='28'] {
+    --h: 28;
+}
+
+[height='29'] {
+    --h: 29;
+}
+
+[height='30'] {
+    --h: 30;
+}
+
+[height='31'] {
+    --h: 31;
+}
+
+[height='32'] {
+    --h: 32;
+}
+
+[height='33'] {
+    --h: 33;
+}
+
+[height='34'] {
+    --h: 34;
+}
+
+[height='35'] {
+    --h: 35;
+}
+
+[height='36'] {
+    --h: 36;
+}
+
+[height='37'] {
+    --h: 37;
+}
+
+[height='38'] {
+    --h: 38;
+}
+
+[height='39'] {
+    --h: 39;
+}
+
+[height='40'] {
+    --h: 40;
+}
+
+[height='41'] {
+    --h: 41;
+}
+
+[height='42'] {
+    --h: 42;
+}
+
+[height='43'] {
+    --h: 43;
+}
+
+[height='44'] {
+    --h: 44;
+}
+
+[height='45'] {
+    --h: 45;
+}
+
+[height='46'] {
+    --h: 46;
+}
+
+[height='47'] {
+    --h: 47;
+}
+
+[height='48'] {
+    --h: 48;
+}
+
+[height='49'] {
+    --h: 49;
+}
+
+[height='50'] {
+    --h: 50;
+}
+
+[height='51'] {
+    --h: 51;
+}
+
+[height='52'] {
+    --h: 52;
+}
+
+[height='53'] {
+    --h: 53;
+}
+
+[height='54'] {
+    --h: 54;
+}
+
+[height='55'] {
+    --h: 55;
+}
+
+[height='56'] {
+    --h: 56;
+}
+
+[height='57'] {
+    --h: 57;
+}
+
+[height='58'] {
+    --h: 58;
+}
+
+[height='59'] {
+    --h: 59;
+}
+
+[height='60'] {
+    --h: 60;
+}
+
+[height='61'] {
+    --h: 61;
+}
+
+[height='62'] {
+    --h: 62;
+}
+
+[height='63'] {
+    --h: 63;
+}
+
+[height='64'] {
+    --h: 64;
+}
+
+[height='65'] {
+    --h: 65;
+}
+
+[height='66'] {
+    --h: 66;
+}
+
+[height='67'] {
+    --h: 67;
+}
+
+[height='68'] {
+    --h: 68;
+}
+
+[height='69'] {
+    --h: 69;
+}
+
+[height='70'] {
+    --h: 70;
+}
+
+[height='71'] {
+    --h: 71;
+}
+
+[height='72'] {
+    --h: 72;
+}
+
+[height='73'] {
+    --h: 73;
+}
+
+[height='74'] {
+    --h: 74;
+}
+
+[height='75'] {
+    --h: 75;
+}
+
+[height='76'] {
+    --h: 76;
+}
+
+[height='77'] {
+    --h: 77;
+}
+
+[height='78'] {
+    --h: 78;
+}
+
+[height='79'] {
+    --h: 79;
+}
+
+[height='80'] {
+    --h: 80;
+}
+
+[height='81'] {
+    --h: 81;
+}
+
+[height='82'] {
+    --h: 82;
+}
+
+[height='83'] {
+    --h: 83;
+}
+
+[height='84'] {
+    --h: 84;
+}
+
+[height='85'] {
+    --h: 85;
+}
+
+[height='86'] {
+    --h: 86;
+}
+
+[height='87'] {
+    --h: 87;
+}
+
+[height='88'] {
+    --h: 88;
+}
+
+[height='89'] {
+    --h: 89;
+}
+
+[height='90'] {
+    --h: 90;
+}
+
+[height='91'] {
+    --h: 91;
+}
+
+[height='92'] {
+    --h: 92;
+}
+
+[height='93'] {
+    --h: 93;
+}
+
+[height='94'] {
+    --h: 94;
+}
+
+[height='95'] {
+    --h: 95;
+}
+
+[height='96'] {
+    --h: 96;
+}
+
+[height='97'] {
+    --h: 97;
+}
+
+[height='98'] {
+    --h: 98;
+}
+
+[height='99'] {
+    --h: 99;
+}
+
+[height='100'] {
+    --h: 100;
+}
+
+[height='101'] {
+    --h: 101;
+}
+
+[height='102'] {
+    --h: 102;
+}
+
+[height='103'] {
+    --h: 103;
+}
+
+[height='104'] {
+    --h: 104;
+}
+
+[height='105'] {
+    --h: 105;
+}
+
+[height='106'] {
+    --h: 106;
+}
+
+[height='107'] {
+    --h: 107;
+}
+
+[height='108'] {
+    --h: 108;
+}
+
+[height='109'] {
+    --h: 109;
+}
+
+[height='110'] {
+    --h: 110;
+}
+
+[height='111'] {
+    --h: 111;
+}
+
+[height='112'] {
+    --h: 112;
+}
+
+[height='113'] {
+    --h: 113;
+}
+
+[height='114'] {
+    --h: 114;
+}
+
+[height='115'] {
+    --h: 115;
+}
+
+[height='116'] {
+    --h: 116;
+}
+
+[height='117'] {
+    --h: 117;
+}
+
+[height='118'] {
+    --h: 118;
+}
+
+[height='119'] {
+    --h: 119;
+}
+
+[height='120'] {
+    --h: 120;
+}
+
+[height='121'] {
+    --h: 121;
+}
+
+[height='122'] {
+    --h: 122;
+}
+
+[height='123'] {
+    --h: 123;
+}
+
+[height='124'] {
+    --h: 124;
+}
+
+[height='125'] {
+    --h: 125;
+}
+
+[height='126'] {
+    --h: 126;
+}
+
+[height='127'] {
+    --h: 127;
+}
+
+[height='128'] {
+    --h: 128;
+}
+
+[height='129'] {
+    --h: 129;
+}
+
+[height='130'] {
+    --h: 130;
+}
+
+[height='131'] {
+    --h: 131;
+}
+
+[height='132'] {
+    --h: 132;
+}
+
+[height='133'] {
+    --h: 133;
+}
+
+[height='134'] {
+    --h: 134;
+}
+
+[height='135'] {
+    --h: 135;
+}
+
+[height='136'] {
+    --h: 136;
+}
+
+[height='137'] {
+    --h: 137;
+}
+
+[height='138'] {
+    --h: 138;
+}
+
+[height='139'] {
+    --h: 139;
+}
+
+[height='140'] {
+    --h: 140;
+}
+
+[height='141'] {
+    --h: 141;
+}
+
+[height='142'] {
+    --h: 142;
+}
+
+[height='143'] {
+    --h: 143;
+}
+
+[height='144'] {
+    --h: 144;
+}
+
+[height='145'] {
+    --h: 145;
+}
+
+[height='146'] {
+    --h: 146;
+}
+
+[height='147'] {
+    --h: 147;
+}
+
+[height='148'] {
+    --h: 148;
+}
+
+[height='149'] {
+    --h: 149;
+}
+
+[height='150'] {
+    --h: 150;
+}
+
+[height='151'] {
+    --h: 151;
+}
+
+[height='152'] {
+    --h: 152;
+}
+
+[height='153'] {
+    --h: 153;
+}
+
+[height='154'] {
+    --h: 154;
+}
+
+[height='155'] {
+    --h: 155;
+}
+
+[height='156'] {
+    --h: 156;
+}
+
+[height='157'] {
+    --h: 157;
+}
+
+[height='158'] {
+    --h: 158;
+}
+
+[height='159'] {
+    --h: 159;
+}
+
+[height='160'] {
+    --h: 160;
+}
+
+[height='161'] {
+    --h: 161;
+}
+
+[height='162'] {
+    --h: 162;
+}
+
+[height='163'] {
+    --h: 163;
+}
+
+[height='164'] {
+    --h: 164;
+}
+
+[height='165'] {
+    --h: 165;
+}
+
+[height='166'] {
+    --h: 166;
+}
+
+[height='167'] {
+    --h: 167;
+}
+
+[height='168'] {
+    --h: 168;
+}
+
+[height='169'] {
+    --h: 169;
+}
+
+[height='170'] {
+    --h: 170;
+}
+
+[height='171'] {
+    --h: 171;
+}
+
+[height='172'] {
+    --h: 172;
+}
+
+[height='173'] {
+    --h: 173;
+}
+
+[height='174'] {
+    --h: 174;
+}
+
+[height='175'] {
+    --h: 175;
+}
+
+[height='176'] {
+    --h: 176;
+}
+
+[height='177'] {
+    --h: 177;
+}
+
+[height='178'] {
+    --h: 178;
+}
+
+[height='179'] {
+    --h: 179;
+}
+
+[height='180'] {
+    --h: 180;
+}
+
+[height='181'] {
+    --h: 181;
+}
+
+[height='182'] {
+    --h: 182;
+}
+
+[height='183'] {
+    --h: 183;
+}
+
+[height='184'] {
+    --h: 184;
+}
+
+[height='185'] {
+    --h: 185;
+}
+
+[height='186'] {
+    --h: 186;
+}
+
+[height='187'] {
+    --h: 187;
+}
+
+[height='188'] {
+    --h: 188;
+}
+
+[height='189'] {
+    --h: 189;
+}
+
+[height='190'] {
+    --h: 190;
+}
+
+[height='191'] {
+    --h: 191;
+}
+
+[height='192'] {
+    --h: 192;
+}
+
+[height='193'] {
+    --h: 193;
+}
+
+[height='194'] {
+    --h: 194;
+}
+
+[height='195'] {
+    --h: 195;
+}
+
+[height='196'] {
+    --h: 196;
+}
+
+[height='197'] {
+    --h: 197;
+}
+
+[height='198'] {
+    --h: 198;
+}
+
+[height='199'] {
+    --h: 199;
+}
+
+[height='200'] {
+    --h: 200;
+}
+
+[height='201'] {
+    --h: 201;
+}
+
+[height='202'] {
+    --h: 202;
+}
+
+[height='203'] {
+    --h: 203;
+}
+
+[height='204'] {
+    --h: 204;
+}
+
+[height='205'] {
+    --h: 205;
+}
+
+[height='206'] {
+    --h: 206;
+}
+
+[height='207'] {
+    --h: 207;
+}
+
+[height='208'] {
+    --h: 208;
+}
+
+[height='209'] {
+    --h: 209;
+}
+
+[height='210'] {
+    --h: 210;
+}
+
+[height='211'] {
+    --h: 211;
+}
+
+[height='212'] {
+    --h: 212;
+}
+
+[height='213'] {
+    --h: 213;
+}
+
+[height='214'] {
+    --h: 214;
+}
+
+[height='215'] {
+    --h: 215;
+}
+
+[height='216'] {
+    --h: 216;
+}
+
+[height='217'] {
+    --h: 217;
+}
+
+[height='218'] {
+    --h: 218;
+}
+
+[height='219'] {
+    --h: 219;
+}
+
+[height='220'] {
+    --h: 220;
+}
+
+[height='221'] {
+    --h: 221;
+}
+
+[height='222'] {
+    --h: 222;
+}
+
+[height='223'] {
+    --h: 223;
+}
+
+[height='224'] {
+    --h: 224;
+}
+
+[height='225'] {
+    --h: 225;
+}
+
+[height='226'] {
+    --h: 226;
+}
+
+[height='227'] {
+    --h: 227;
+}
+
+[height='228'] {
+    --h: 228;
+}
+
+[height='229'] {
+    --h: 229;
+}
+
+[height='230'] {
+    --h: 230;
+}
+
+[height='231'] {
+    --h: 231;
+}
+
+[height='232'] {
+    --h: 232;
+}
+
+[height='233'] {
+    --h: 233;
+}
+
+[height='234'] {
+    --h: 234;
+}
+
+[height='235'] {
+    --h: 235;
+}
+
+[height='236'] {
+    --h: 236;
+}
+
+[height='237'] {
+    --h: 237;
+}
+
+[height='238'] {
+    --h: 238;
+}
+
+[height='239'] {
+    --h: 239;
+}
+
+[height='240'] {
+    --h: 240;
+}
+
+[height='241'] {
+    --h: 241;
+}
+
+[height='242'] {
+    --h: 242;
+}
+
+[height='243'] {
+    --h: 243;
+}
+
+[height='244'] {
+    --h: 244;
+}
+
+[height='245'] {
+    --h: 245;
+}
+
+[height='246'] {
+    --h: 246;
+}
+
+[height='247'] {
+    --h: 247;
+}
+
+[height='248'] {
+    --h: 248;
+}
+
+[height='249'] {
+    --h: 249;
+}
+
+[height='250'] {
+    --h: 250;
+}
+
+[height='251'] {
+    --h: 251;
+}
+
+[height='252'] {
+    --h: 252;
+}
+
+[height='253'] {
+    --h: 253;
+}
+
+[height='254'] {
+    --h: 254;
+}
+
+[height='255'] {
+    --h: 255;
+}

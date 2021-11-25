@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        .page-section-field {
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+
+        .form-row-label {
+            width: 100%;
+            display: block;
+            margin-bottom: 10px;
+            background-color: #ffffff;
+            padding: 5px;
+        }
+
+        .form-row-field {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            background-color: #fff;
+        }
+
+        .form-row-field-tip {
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            vertical-align: middle;
+
+            position: relative;
+        }
+
+        .form-input {
+            flex: 1;
+        }
+
+        .form-input input {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-section-field">
+        <div class="form-row-label">Some field</div>
+        <div class="form-row-field">
+            <span class="form-input error ant-input-affix-wrapper">
+                <input class="ant-input" type="text" maxlength="50" value="">
+                <span class="ant-input-suffix"></span>
+            </span>
+
+            <span class="form-row-field-tip">
+                <i>i</i>
+                <span>Some tip text</span>
+            </span> 
+        </div>
+    </div>
+</body>
+
+</html>

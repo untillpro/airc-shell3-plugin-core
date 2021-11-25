@@ -1,0 +1,22 @@
+/* table */
+body {
+  min-width: 1024px;
+}
+
+/* common */
+
+.grow {
+  flex-grow: 1;
+}
+
+._bs {
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+}
+
+._relative {
+  position: relative;
+}

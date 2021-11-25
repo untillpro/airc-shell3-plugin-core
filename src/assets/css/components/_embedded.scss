@@ -1,0 +1,28 @@
+/* embeded selector field */
+
+.embedded-selector-field input {
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+}
+
+/* embedded field */
+
+.embedded-manager-field {
+    width: 100%;
+    flex: 1;
+    font-size: 10pt;
+}
+
+.embedded-manager-field-header {
+    margin-bottom: 10pt;
+}
+
+.embedded-manager-field-header h2,
+.embedded-manager-field-header h3 {
+    font-size: 14pt;
+    font-weight: 400;
+    margin: 0px;
+    padding: 0px;
+}

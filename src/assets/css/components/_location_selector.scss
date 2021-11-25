@@ -1,0 +1,26 @@
+.location-selector {
+    display: inline-block;
+    margin-left: 0px;
+    margin-top: 10px;
+
+    .select-button {
+        display: inline-block;
+    }
+
+    .current-location {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 90%;
+
+        .v {}
+
+        .c {
+            font-weight: bold;
+        }
+    }
+}
+
+.location-selector-container {
+    padding: 20px 30px;
+}
+

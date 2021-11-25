@@ -1,0 +1,478 @@
+$shadow_1: 0px 0px 5px rgba(0, 0, 0, 0.1);
+$shadow_2: 0px 0px 10px rgba(0, 0, 0, 0.1);
+$resizerColor: #176ddd;
+
+.table-plan-editor {
+    width: 100%;
+    display:block;
+
+    &-nav {
+        padding: 10px 0px;
+
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        align-items: center;
+
+        .header {
+            font-size: 110%;
+            margin-right: 20px;
+        }
+
+        .actions {
+            margin-left: 20px;
+
+            .action {
+                margin-left: 5px;
+            }
+        }
+
+        .size {
+            font-size: 12px;
+            color: #787878;
+        }
+
+        .size-input {
+            height: 30px;
+            width: 80px;
+            text-align: center;
+            margin: 0px 5px;
+        }
+    }
+
+    &-container {
+        background-color: #efefef;
+        min-height: 400px;
+        max-height: 800px;
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        .cc {
+            display: inline-block;
+            position: relative;
+        }
+    }
+}
+
+.table-area-image-selector {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .upload-button {
+        margin-top: 20px;
+    }
+
+    .upload-picture-button {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 10px 20px;
+        color: #fff;
+        background-color: var(--color-button-primary);
+        cursor: pointer;
+        transition: all 0.5s;
+
+        &:hover {
+            background-color: var(--color-brand-400);
+        }
+
+        input {
+            display: none;
+        }
+    }
+}
+
+.table-plan-editor-container {
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
+    height: 500px;
+}
+
+.table-area-list {
+    width: 240px;
+    background-color: #efefef;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    &-container {
+        overflow: hidden;
+        width: 100%;
+        overflow-y: auto;
+    }
+
+    &.__is_hidden {
+        width: 0;
+    }
+
+    &.__is_hidden .add-button {
+        width: 0;
+    }
+
+    &-toggler {
+        position: absolute;
+        left: 100%;
+        padding: 10px;
+        background-color: #fff;
+
+        cursor: pointer;
+    }
+
+    &-header {
+        display: flex;
+        flex-direction: row;
+        padding: 10px 10px;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 10px;
+        background-color: #fff;
+        margin: 0px;
+        box-sizing: border-box;
+
+        .total {
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .toggler label {
+            font-size: 12px;
+        }
+    }
+
+    &-button {
+        padding: 0px 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    &-row {
+        background-color: #fff;
+        margin: 10px 10px 0px;
+
+        display: flex;
+        flex-direction: row;
+
+        align-items:center;
+
+        box-sizing: border-box;
+        padding: 10px 10px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+
+        &:hover {
+            background-color: var(--color-brand-300);
+            cursor: pointer;
+        }
+        //&.is-new {}
+
+        &.is-hidden {
+            opacity: 0.7;
+        }
+
+        &.is-current {
+            background-color: var(--color-brand-300);
+        }
+
+        .form-ico {
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            margin-right: 5px;
+            color: #aeaeae;
+            overflow: hidden;
+
+            text-align: center;
+        }
+
+        .label {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .action {
+            display: inline-block;
+            margin-left: 6px;
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+
+            opacity: 0.5;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+    
+}
+
+.table-area {
+    display: block;
+    flex-direction: column;
+
+    flex: 1;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+    align-items: center;
+
+    background: #aeaeae;
+
+    overflow: hidden;
+    position: relative;
+    
+    &-grid {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    &-plan {
+        background-color: #999;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+
+            position: absolute;
+            left: 0;
+            top: 0;
+
+            z-index: 0;
+        }
+    }
+
+    &-plan-container {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+    }
+
+    &-item {
+        display: flex;
+        flex-direction: column;
+
+        justify-content: center;
+        align-items: center;
+
+        position: relative;
+
+        background-color: #888;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+
+        cursor: move;
+
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+
+        &.rounded {
+            border-radius: 6px;
+        }
+
+        &.circle {
+            border-radius: 1000000px;
+        }
+
+        .info {
+            position: absolute;
+
+            right: 0px;
+            top: -30px;
+
+            line-height: 1;
+
+            font-size: 12px;
+
+            color: $resizerColor;
+        }
+        
+        .table {
+            z-index: 2;
+        }
+
+        .place {
+            position: absolute;
+            z-index: -1;
+
+            background-position: center center;
+            background-size: cover;
+
+            width: 48px;
+            height: 48px;
+
+            margin-top: -24px;
+            margin-left: -24px;
+
+            &.noimg {
+                background-color: #232323;
+            }
+
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        .num {
+            background-color: #fff;
+            min-width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+
+            border-radius: 10px;
+
+            padding: 0px 3px;
+
+            box-shadow: var(--box-shadow-z-3);
+        }
+    }
+}
+
+.resizeable-rect {
+    position: absolute;
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.resizeable-rect.selected {
+    border: 1px solid $resizerColor;
+}
+
+.square {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: white;
+    border: 1px solid $resizerColor;
+    border-radius: 1px;
+}
+
+.resizable-handler {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.resizable-handler.tl,
+.resizable-handler.t,
+.resizable-handler.tr {
+    top: -7px;
+}
+
+.resizable-handler.tl,
+.resizable-handler.l,
+.resizable-handler.bl {
+    left: -7px;
+}
+
+.resizable-handler.bl .resizable-handler.b,
+.resizable-handler.br {
+    bottom: -7px;
+}
+
+.resizable-handler.br,
+.resizable-handler.r,
+.resizable-handler.tr {
+    right: -7px;
+}
+
+.resizable-handler.l,
+.resizable-handler.r {
+    margin-top: -7px;
+}
+
+.resizable-handler.t,
+.resizable-handler.b {
+    margin-left: -7px;
+}
+
+.rotate {
+    position: absolute;
+    cursor: pointer;
+    left: 50%;
+    top: -26px;
+    transform: translateX(-50%);
+}
+
+.rotate i {
+    font-size: 18px;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+
+    color: $resizerColor;
+    font-style: normal;
+    line-height: 1.4;
+}
+
+.t,
+.tl,
+.tr {
+    top: -3px;
+}
+.b,
+.bl,
+.br {
+    bottom: -3px;
+}
+.r,
+.tr,
+.br {
+    right: -3px;
+}
+.tl,
+.l,
+.bl {
+    left: -3px;
+}
+.l,
+.r {
+    top: 50%;
+    margin-top: -3px;
+}
+.t,
+.b {
+    left: 50%;
+    margin-left: -3px;
+}
+
+
+.hide-controlls .resizable-handler,
+.hide-controlls .rotate ,
+.hide-controlls .square {
+    display: none !important;
+}
+
+.hide-controlls .resizeable-rect.selected {
+    border: none !important;
+}

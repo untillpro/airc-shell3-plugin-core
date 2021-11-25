@@ -1,0 +1,121 @@
+{
+    "sections": [
+        {
+            "type": "department",
+            "path": [
+                "data",
+                "First floor"
+            ],
+            "elements": {
+                "1": {
+                    "id": 5000000000001,
+                    "state": 1,
+                    "name": "First floor",
+                    "ml_name": null,
+                    "order": 1,
+                    "width": 1000,
+                    "height": 800,
+                    "image": 15,
+                    "table": [
+                        {
+                            "id": 5000000000101,
+                            "state": 1,
+                            "number": 1,
+                            "form": 1,
+                            "top": 0, 
+                            "left": 0,
+                            "width": 150,
+                            "height": 100,
+                            "view": 1,
+                            "places": 9,
+                            "angle": 0,
+                            "chair": "type_8",
+                            "table": "type_8"
+                        },
+                        {
+                            "id": 5000000000102,
+                            "state": 1,
+                            "number": 2,
+                            "form": 2,
+                            "top": 100, 
+                            "left": 150,
+                            "width": 70,
+                            "height": 70,
+                            "view": 1,
+                            "places": 2,
+                            "angle": 10,
+                            "chair": "type_7",
+                            "table": "type_7"
+                        },
+                        {
+                            "id": 5000000000103,
+                            "state": 1,
+                            "number": 3,
+                            "form": 3,
+                            "top": 300, 
+                            "left": 300,
+                            "width": 80,
+                            "height": 80,
+                            "view": 1,
+                            "places": 8,
+                            "angle": 45,
+                            "chair": "type_3",
+                            "table": "type_3"
+                        }
+                    ]
+                },
+                "3": {
+                    "id": 15000000000001,
+                    "state": 1,
+                    "name": "First floor",
+                    "ml_name": null,
+                    "order": 1,
+                    "width": 1000,
+                    "height": 800,
+                    "image": 16,
+                    "table": [
+                        {
+                            "id": 15000000000101,
+                            "state": 1,
+                            "number": 1,
+                            "form": 1,
+                            "top": 0, 
+                            "left": 0,
+                            "width": 150,
+                            "height": 100,
+                            "view": 1,
+                            "places": 9,
+                            "angle": 0,
+                            "chair": "type_8",
+                            "table": "type_8"
+                        },
+                        {
+                            "id": 15000000000102,
+                            "state": 1,
+                            "number": 2,
+                            "form": 2,
+                            "top": 100, 
+                            "left": 150,
+                            "width": 70,
+                            "height": 70,
+                            "view": 1,
+                            "places": 2,
+                            "angle": 10,
+                            "chair": "type_7",
+                            "table": "type_7"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "path": [
+                "meta"
+            ],
+            "elements": {
+                "total": 1
+            }
+        }
+    ],
+    "status": 200
+}

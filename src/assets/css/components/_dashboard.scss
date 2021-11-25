@@ -1,0 +1,250 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+html,
+body {
+    min-height: 100%;
+    background-color: #efefef;
+}
+
+.dashboard-header {
+    text-align: center;
+    position: relative;
+    padding: 16px 100px;
+    background-color: #fff;
+    margin-bottom: 10px;
+
+    ._location {
+        position: absolute;
+        left: 10px;
+        top: 0px;
+    }
+
+    ._title {
+        font-size: 24px;
+        font-weight: bold;
+
+        padding: 0px 240px;
+    }
+
+    ._actions {
+        position: absolute;
+        right: 10px;
+        top: 0px;
+
+        height: 100%;
+
+        display: flex;
+
+        flex-direction: row;
+
+        align-items: center;
+    }
+}
+
+.dashboards-header-settings {
+    padding: 20px;
+
+    .label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+}
+
+.dashboard-container {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-container .group {
+    display: block;
+    width: 100%;
+}
+
+.dashboard-container .group .droptarget {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.dashboard-container .group .droptarget.highlighted {
+    box-shadow: 0px 0px 5px rgba(46, 9, 255, 0.692);
+}
+
+.chart-header {
+    margin-bottom: 12px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.chart-header ._grow {
+    flex: 1;
+}
+
+.chart-header ._grabber {
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 12px;
+}
+
+.chart-header ._title {
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.chart-header ._more {
+    opacity: 0;
+    transition: opacity 0.2s;
+
+    color: #aeaeae;
+}
+
+.chart-header ._more:hover {
+    color: #000;
+}
+
+.chart:hover .chart-header ._more {
+    opacity: 1;
+}
+
+.chart {
+    display: flex;
+    flex: 1;
+}
+
+.chart .ddcontainer {
+    flex: 1;
+}
+
+.chart .ddcontainersource {
+    height: 100%;
+}
+
+.chart .droptarget {
+    display: block;
+    height: 100%;
+}
+
+.chart-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 6px;
+
+    box-sizing: border-box;
+
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+    margin: 5px;
+
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.total-chart {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+
+    position: relative;
+
+    font-size: 90%;
+    line-height: 1.2;
+}
+
+.total-chart .total-value {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+
+    width: 100%;
+    height: 85%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.total-chart .percent {}
+
+.total-chart .percent.up {
+    color: green;
+}
+
+.total-chart .percent.up:before {
+    content: '▲';
+    margin-right: 5px;
+}
+
+.total-chart .percent.down {
+    color: red;
+}
+
+.total-chart .percent.down:before {
+    content: '▼';
+    margin-right: 5px;
+}
+
+.total-chart .total-previous {
+    color: #989898;
+}
+
+.total-chart .avg-values {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 90%;
+    width: 100%;
+}
+
+.chart-empty {
+    display: flex;
+    flex: 1;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-more {
+    height: 100px;
+    background-color: #aaa;
+    flex: 1;
+    margin: 5px;
+    text-align: center;
+    line-height: 80px;
+    color: rgba(255, 255, 255, 0.5);
+
+    font-size: 70px;
+    font-weight: bold;
+
+    transition: 0.2s color;
+}
+
+.add-more:hover {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 1);
+}
+
+.custom-drag-element {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}

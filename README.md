@@ -1,2 +1,1 @@
-
-# airc-shell3-plugin-core
+# airc-shell-plugin-core
