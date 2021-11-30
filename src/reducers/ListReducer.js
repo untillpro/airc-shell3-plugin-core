@@ -35,35 +35,21 @@ const INITIAL_STATE = {
             desc: false
         }
     ],
-    columnsVisibility: {"ID": false, "id": false, "Id": false}
+    columnsVisibility: { "ID": false, "id": false, "Id": false }
 };
 
 const reducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case LIST_DATA_FETCH_SUCCEEDED: 
+        case LIST_DATA_FETCH_SUCCEEDED:
             let newState = mergeExisting(state, action.payload);
             newState.loading = false;
-
-            if (action.payload.Data && typeof action.payload.Data === "object") {
-                newState.classifiers = _.get(action.payload.Data, "classifiers");
-                newState.total = _.get(action.payload.Data, "meta.total") || 0;
-
-                /*
-                    if (t && t > 0 && pageSize > 0) {
-                        this.total = parseInt(t);
-                        this.pages = Math.ceil(t / pageSize);
-                    } else {
-                        this.pages = 0;
-                    }
-                */
-            }
-
+            
             return newState;
-        case PROCESS_DATA_FETCH_SUCCEEDED: 
+        case PROCESS_DATA_FETCH_SUCCEEDED:
             const { result, data } = action.payload;
 
             if (_.isArray(result) && _.size(result) > 0 && _.isPlainObject(data)) {
-                const resolvedData = [ ...state.resolvedData ];
+                const resolvedData = [...state.resolvedData];
 
                 _.each(result, (d) => {
                     if (d && d.result === "ok" && d.ID && d.ID > 0) {
@@ -75,21 +61,21 @@ const reducer = (state = INITIAL_STATE, action) => {
                     }
                 });
 
-                return { ...state, resolvedData }; 
+                return { ...state, resolvedData };
             }
 
             return state;
 
-        case SET_COLLECTION_LOADING: 
-            return { ...state, loading: !!action.payload};
+        case SET_COLLECTION_LOADING:
+            return { ...state, loading: !!action.payload };
 
-        case SET_LIST_COLUMNS_VISIBILITY: 
+        case SET_LIST_COLUMNS_VISIBILITY:
             return {
                 ...state,
                 columnsVisibility: action.payload
             };
 
-        case FLUSH_LIST_DATA: 
+        case FLUSH_LIST_DATA:
             return {
                 ...state,
                 data: null,
@@ -97,20 +83,20 @@ const reducer = (state = INITIAL_STATE, action) => {
                 classifiers: null,
             };
 
-        case ENTITY_LIST_SET_SHOW_DELETED: 
+        case ENTITY_LIST_SET_SHOW_DELETED:
             return { ...state, showDeleted: action.payload };
 
-        case ENTITY_LIST_SET_PAGE: 
+        case ENTITY_LIST_SET_PAGE:
             return { ...state, page: action.payload };
 
-        case ENTITY_LIST_SET_PAGE_SIZE: 
-            return { ...state, pageSize:action.payload };
+        case ENTITY_LIST_SET_PAGE_SIZE:
+            return { ...state, pageSize: action.payload };
 
-        case ENTITY_LIST_SET_FILTER: 
-            return { ...state, filter: action.payload};
+        case ENTITY_LIST_SET_FILTER:
+            return { ...state, filter: action.payload };
 
-        case ENTITY_LIST_SET_ORDER: 
-            return { ...state, order: action.payload};
+        case ENTITY_LIST_SET_ORDER:
+            return { ...state, order: action.payload };
 
         default: return state;
     }

@@ -18,6 +18,7 @@ import { Button, Toggler, translate as t } from 'airc-shell-core';
 import { HeaderBackButton } from '../common';
 
 import { TYPE_TEXT } from '../../classes/contributions/Types';
+import { STATE_FIELD_NAME } from '../../const/Common';
 
 
 class EMEditFormHeader extends Component {
@@ -164,8 +165,8 @@ class EMEditFormHeader extends Component {
 
         let checked = data ? Boolean(data.state) : false;
 
-        if ('state' in changedData) {
-            checked = changedData ? Boolean(changedData.state) : false;
+        if (STATE_FIELD_NAME in changedData) {
+            checked = changedData ? Boolean(changedData[STATE_FIELD_NAME]) : false;
         }
 
         return (

@@ -23,16 +23,16 @@ class RListTable extends Component {
     }
 
     componentDidMount() {
-        this.buildData();
+        this.buildTableData();
     }
 
     componentDidUpdate(oldProps) {
         if (oldProps.data !== this.props.data) {
-            this.buildData()
+            this.buildTableData();
         }
     }
 
-    buildData() {
+    buildTableData() {
         const { data, contributions, report, reportProps } = this.props;
 
         let reportData = null;

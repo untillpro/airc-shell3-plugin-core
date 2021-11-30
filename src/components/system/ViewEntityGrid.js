@@ -79,7 +79,8 @@ class ViewEntityGrid extends Component {
     }
 
     prepareEntities() {
-        const { view, contributions } = this.props;
+        const { view, context } = this.props;
+        const { contributions } = context;
         const viewPoint = contributions.getPointContributions(TYPE_VIEWS, view);
         const entities = viewPoint.managers;
 
@@ -113,7 +114,7 @@ class ViewEntityGrid extends Component {
     handleKeyPress(event) {
         const { selected } = this.state;
         const { keyCode } = event;
-        
+
         switch (keyCode) {
             case KEY_ESCAPE: this.handleBackClick(); break;
             case KEY_RETURN: this.selectEntity(selected); break;
@@ -143,21 +144,21 @@ class ViewEntityGrid extends Component {
     }
 
     selectEntity(index) {
-        const { locations } = this.props;
+        const { locations, context } = this.props;
         const { entities } = this.state;
 
         if (entities && _.size(entities) > 0 && index >= 0) {
             const e = entities[index];
 
-            if (e && isValidEntity({}, e.code)) {
+            if (e && isValidEntity(context, e.code)) {
                 this.props.sendSelectEntityMessage(e.code, locations);
             }
         }
     }
 
     renderHeader() {
-        const { view, contributions } = this.props;
-
+        const { view, context } = this.props;
+        const { contributions } = context;
         let header = funcOrString(contributions.getPointContributionValue(TYPE_VIEWS, view, C_VIEW_NAME));
 
         return (
@@ -186,7 +187,7 @@ class ViewEntityGrid extends Component {
                 {this.renderHeader()}
 
                 <Breadcrumbs />
-                
+
                 <Grid
                     cols={4}
                     gap={24}
@@ -232,10 +233,10 @@ class ViewEntityGrid extends Component {
 
 const mapStateToProps = (state) => {
     const { locations } = state.locations;
-    const { contributions } = state.context;
+    const context = state.context;
     const { view } = state.plugin;
 
-    return { locations, view, contributions };
+    return { locations, view, context };
 };
 
 export default connect(mapStateToProps, {

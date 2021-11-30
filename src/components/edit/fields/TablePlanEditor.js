@@ -23,6 +23,8 @@ import {
     TableAreaList
 } from '../../common/plan/';
 
+import { STATE_FIELD_NAME } from '../../../const/Common';
+
 import TableAreaImageSelect from '../../common/plan/TableAreaImageSelect_2';
 
 import {
@@ -391,7 +393,7 @@ class TablePlanEditor extends PureComponent {
             if (_.isNil(table.id)) {
                 table = null;
             } else {
-                table.state = table.state !== 1 ? 1 : 0;
+                table[STATE_FIELD_NAME] = table[STATE_FIELD_NAME] !== 1 ? 1 : 0;
             }
 
             newTables[tableIndex] = table;
@@ -563,7 +565,7 @@ class TablePlanEditor extends PureComponent {
 
         return _.map(tables,
             (t, k) => {
-                if (_.isPlainObject(t) && t.state === 1) {
+                if (_.isPlainObject(t) && t[STATE_FIELD_NAME] === 1) {
                     return (
                         <Table
                             {...t}

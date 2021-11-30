@@ -16,6 +16,7 @@ import {
 import { Search } from 'airc-shell-core';
 import { HeaderBackButton, ListTable, LocationSelector, Breadcrumbs } from '../common/';
 import { funcOrString } from '../../classes/helpers';
+import { STATE_FIELD_NAME } from '../../const/Common';
 
 import {
     setColumnsVisibility,
@@ -246,7 +247,7 @@ class EMList extends Component {
         const { locations, entity } = this.props;
         if (!row || !row.original) return;
 
-        const { _entry: e, state } = row.original;
+        const { _entry: e, [STATE_FIELD_NAME]: state } = row.original;
 
         if (!e) {
             throw new Error("no _entry record provided for row ", row)

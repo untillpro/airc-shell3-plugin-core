@@ -10,6 +10,8 @@ import TablePlanCard from './TablePlanCard';
 
 import EmptyImage from '../../../assets/images/empty/no-free-tables.png';
 
+import { STATE_FIELD_NAME } from '../../../const/Common';
+
 class TablePlanGrid extends PureComponent {
     render() {
         const { data, onEdit, onDelete, onReduce, onAdd } = this.props;
@@ -33,7 +35,7 @@ class TablePlanGrid extends PureComponent {
 
         return (
             <div className="table-plan-grid">
-                {_.map(data, (d, index) => <TablePlanCard key={`table_card_${d.id || index}_${d.state}`} data={d} {...ops} />)}
+                {_.map(data, (d, index) => <TablePlanCard key={`table_card_${d.id || index}_${d[STATE_FIELD_NAME]}`} data={d} {...ops} />)}
             </div>
         );
     }

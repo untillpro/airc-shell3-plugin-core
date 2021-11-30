@@ -259,15 +259,6 @@ class ReportDetails extends Component {
 
         if (debug !== true) return null;
 
-        /*
-        console.group('renderDateTimeFilter');
-        console.log('fromDateTime: ', fromDateTime);
-        console.log('toDateTime: ', toDateTime);
-        console.log('workingHoursFrom: ', workingHoursFrom);
-        console.log('workingHoursTo: ', workingHoursTo);
-        console.groupEnd('renderDateTimeFilter');
-        */
-       
         return <div className="page-section-content debug-section">
             From date: {fromDateTime} <br />
             To date: {toDateTime} <br />

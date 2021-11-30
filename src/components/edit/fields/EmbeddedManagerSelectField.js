@@ -11,11 +11,13 @@ import {
     processEntityData
 } from '../../../classes/helpers';
 
+import { STATE_FIELD_NAME } from '../../../const/Common';
+
 class EmbeddedManagerSelectField extends EmbeddedManagerField {
     initData() {
         this.setState({headerActions: this.prepareHeaderActions()});
         
-        this.fetchListData().then((data) => this.setState({ ...this.buildData(data) }));
+        this.fetchListData().then((data) => this.setState({ ...this.buildManagerData(data) }));
     }
 
     handleRowDoubleClick(e ,row) {
@@ -39,7 +41,7 @@ class EmbeddedManagerSelectField extends EmbeddedManagerField {
 
         if (index >= 0 && data[index]) {
             const newData = { ...data };
-            newData[index].state = 0;
+            newData[index][STATE_FIELD_NAME] = 0;
             this.setState({ data: newData });
         }
     }
@@ -59,7 +61,7 @@ class EmbeddedManagerSelectField extends EmbeddedManagerField {
 
         if (newData && _.size(newData) > 0) {
             const entries = locations.map((wsid) => {
-                return { id, wsid };
+                return id;
             });
 
             processEntityData(context, entity, newData, entries)
@@ -68,7 +70,7 @@ class EmbeddedManagerSelectField extends EmbeddedManagerField {
                 })
                 .then((data) => {
                     this.setState({
-                        data: this.buildData(data),
+                        data: this.buildManagerData(data),
                         edit: false,
                         copy: false,
                         entityData: null
@@ -110,7 +112,7 @@ class EmbeddedManagerSelectField extends EmbeddedManagerField {
 
         this.startLoading();
 
-        return getCollection(context, { resource: entity, wsid: locations, props: {}}, true)
+        return getCollection(context, { scheme: entity, wsid: locations[0], props: {}}, true)
             .then(({ resolvedData }) => {
                 this.stopLoading();
 

@@ -9,11 +9,11 @@ import i18next from 'i18next';
 import lc from 'langcode-info';
 
 import {
+    getObject,
     getCollection,
     processEntityData,
-    getFilterByString,
-    checkEntries,
-    buildRequestEntires,
+    getEntityFilters,
+    getEntityRequiredClassifiers,
     checkForEmbededTypes,
     prepareCopyData,
     prepareReportFilter,
@@ -27,8 +27,6 @@ import {
     TYPE_COLLECTION,
     TYPE_REPORTS,
     TYPE_CHARTS,
-    C_COLLECTION_REQUIRED_FIELDS,
-    C_COLLECTION_REQUIRED_CLASSIFIERS,
     C_COLLECTION_ENTITY,
     C_REPORT_EVENT_TYPE,
     C_REPORT_REQUIRED_CLASSIFIERS,
@@ -77,12 +75,11 @@ function* _fetchListData(action) {
     const manual = !!contributions.getPointContributionValue(TYPE_LIST, entity, 'manual');
 
     let doProps = {
-        required_fields: contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_REQUIRED_FIELDS),
-        required_classifiers: contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_REQUIRED_CLASSIFIERS),
-        filter_by: getFilterByString(context, entity),
+        elements: getEntityFilters(context, entity),
+        filters: getEntityFilters(context, entity),
     };
 
-    let resource = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
+    let scheme = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
 
     if (manual) {
         doProps = {
@@ -100,15 +97,17 @@ function* _fetchListData(action) {
         yield put({ type: SET_COLLECTION_LOADING, payload: true });
 
         const ops = {
-            resource,
-            wsid: locations,
+            scheme,
+            wsid: locations[0],
             props: doProps
         };
 
         const data = yield call(getCollection, context, ops);
 
-        yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: { ...data, ...action.payload.props } });
+        yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: data });
     } catch (e) {
+        console.error(e);
+
         yield put({ type: SET_COLLECTION_LOADING, payload: false });
         yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
     }
@@ -135,15 +134,15 @@ function* _processData(action) {
     }
 }
 
+//TODO: Change 
 function* _fetchEntityData(action) {
-    const { resource, entries, isCopy } = action.payload;
+    const { entity, id, wsid, isCopy } = action.payload;
     const context = yield select(Selectors.context);
-    const locations = yield select(Selectors.locations);
-    const { contributions } = context;
 
-    const verifiedEntries = checkEntries(entries);
-    let isNew = !(verifiedEntries && verifiedEntries.length > 0);
-    let data, classifiers;
+    //const verifiedEntries = checkEntries(entries);
+    let isNew = !id;
+    let data = [];
+    let classifiers = {};
 
     if (isNew) {
         yield put({ type: ENTITY_DATA_FETCH_SUCCEEDED, payload: { result: null, isNew, isCopy: false } });
@@ -151,28 +150,23 @@ function* _fetchEntityData(action) {
         try {
             yield put({ type: SET_ENTITY_LOADING, payload: true });
 
-            let wsid = locations[0];
-            let requestEntries = buildRequestEntires(verifiedEntries);
-            let required_classifiers = contributions.getPointContributionValues(TYPE_COLLECTION, resource, C_COLLECTION_REQUIRED_CLASSIFIERS);
-
-            const doProps = {
-                entries: requestEntries,
-                required_classifiers,
-                show_deleted: true
-            };
-
-            const result = yield call(getCollection, context, { resource, wsid, props: doProps }, true);
+            const result = yield call(getObject, context, { scheme: entity, wsid, id, props: {} }, true);
 
             Logger.log(result, 'SAGA.fetchEntityData() fetched data:', "rootSaga.fetchEntityData");
 
-            const { Data, resolvedData } = result;
+            const { resolvedData } = result;
 
-            if (resolvedData && resolvedData.length > 0) {
-                classifiers = Data ? Data['classifiers'] : {};
-                data = checkForEmbededTypes(context, resource, resolvedData[0]);
-            } else {
-                classifiers = null;
-                data = [];
+            if (_.isPlainObject(resolvedData)) {
+                data = checkForEmbededTypes(context, entity, resolvedData);
+            }
+
+            let required_classifiers = getEntityRequiredClassifiers(context, entity);
+
+            if (_.size(required_classifiers) > 0) {
+                for (let c of required_classifiers) {
+                    let cData = yield call(getCollection, context, { scheme: c, wsid, props: {} }, true);
+                    classifiers[c] = cData?.resolvedData || null;
+                }
             }
 
             if (isCopy) {
@@ -259,7 +253,7 @@ function* _fetchDashboard() {
     const to = yield select(Selectors.dashboardToValue);
 
     let doProps = {
-        type: [ 'pbill', 'orders'],
+        type: ['pbill', 'orders'],
         from: from,
         to: to,
         show: true,
@@ -295,8 +289,8 @@ function* _setPluginLanguage(action) {
                     type: SET_PLUGIN_LANGUAGE,
                     payload: langCode
                 });
-                yield put({ 
-                    type: SEND_LANGUAGE_CHANGED_MESSAGE, 
+                yield put({
+                    type: SEND_LANGUAGE_CHANGED_MESSAGE,
                     payload: langCode
                 });
             } else {

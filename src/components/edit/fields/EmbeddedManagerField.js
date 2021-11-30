@@ -9,7 +9,7 @@ import EMEditForm from '../EMEditForm';
 import { Modal, translate as t } from 'airc-shell-core';
 
 import { reduce } from '../../../classes/helpers';
-
+import { STATE_FIELD_NAME } from '../../../const/Common';
 import { ListTable } from '../../common';
 import isEqual from 'react-fast-compare'
 //import log from '../../../classes/Log';
@@ -73,7 +73,7 @@ class EmbeddedManagerField extends PureComponent {
             !isEqual(value, oldProps.value) ||
             !isEqual(this.state.showDeleted, oldState.showDeleted)
         ) {
-            this.setState({ ...this.buildData(value) });
+            this.setState({ ...this.buildManagerData(value) });
         }
     }
 
@@ -84,13 +84,13 @@ class EmbeddedManagerField extends PureComponent {
         const rowActions = this.prepareRowActions();
 
         this.setState({
-            ...this.buildData(value),
+            ...this.buildManagerData(value),
             headerActions,
             rowActions
         });
     }
 
-    buildData(sourceData) {
+    buildManagerData(sourceData) {
         const { showDeleted } = this.state;
         const res = [];
 
@@ -179,9 +179,9 @@ class EmbeddedManagerField extends PureComponent {
             const flatRow = data[index];
 
             if (flatRow && _.isObject(flatRow)) {
-                this.onEditFormProceed(index, { state: flatRow.state === 0 ? 1 : 0 });
+                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow.state === 0 ? 1 : 0 });
             } else {
-                this.onEditFormProceed(index, { state: 0 });
+                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: 0 });
             }
 
             this.setState({ selectedRows: [] });
@@ -237,13 +237,13 @@ class EmbeddedManagerField extends PureComponent {
     }
 
     async handleValueSave(entity, data, entry, rowIndex) {
-        const { data: Data } = this.state;
+        const { data: innerData } = this.state;
 
 
         let res = [];
 
         res[rowIndex] = { 
-            id: Data[rowIndex] ? Data[rowIndex].id : null, 
+            id: innerData[rowIndex] ? innerData[rowIndex].id : null, 
             ...data 
         };
         

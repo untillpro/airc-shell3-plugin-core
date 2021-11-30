@@ -9,7 +9,6 @@ import { Button, translate as t } from 'airc-shell-core';
 import EmbeddedManagerField from './EmbeddedManagerField';
 
 import {
-    buildData,
     getEntityFields
 } from '../../../classes/helpers';
 
@@ -83,15 +82,15 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
     }
 
     async fetchDependencyData() {
-        const { field, entity, locations } = this.props;
+        const { field, entity } = this.props;
         const { accessor, depended_entity } = field;
 
         if (!depended_entity || typeof depended_entity !== "string") {
             throw new Error(`"${entity}" declaration error: you should specify "depended_entity" prop in "${accessor}" field declaration.`);
         }
 
-        return this.fetchData(depended_entity).then((Data) => {
-            return buildData(Data, locations);
+        return this.fetchData(depended_entity).then(({ resolvedData }) => {
+            return resolvedData;
         });
     }
 
@@ -116,7 +115,7 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
             throw new Error(`EmbeddedManagerPredefinedField.fetchData() exception: location not specified or wrong given`);
         }
 
-        return api.collection(url.resource, [loc]);
+        return api.collection(url.resource, loc);
     }
 
 
@@ -125,7 +124,7 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
         const listData = this.getData();
 
         const rowData = listData[index];
-        
+
         const newState = {
             edit: false,
             copy: false,

@@ -3,31 +3,39 @@
  */
 
 import _ from 'lodash';
-import blacklist from 'blacklist';
-import { Logger } from 'airc-shell-core';
-
+//import blacklist from 'blacklist';
+//import { Logger } from 'airc-shell-core';
+import pretifyData from '../ResponseDataPretifier';
 import ForeignKeys from '../../const/ForeignKeys';
 import EmbeddeTypes from '../../const/EmbeddeTypes';
 
 import { reduce } from './';
 
 import {
+    SYS_ID_PROP,
+    STATE_FIELD_NAME
+} from '../../const/Common';
+
+import {
+    TYPE_ENTITIES,
     TYPE_FORMS,
     TYPE_SECTIONS,
     TYPE_COLLECTION,
-    C_COLLECTION_FILTER_BY,
-    C_COLLECTION_ENTITY
+    C_COLLECTION_ELEMENTS,
+    C_COLLECTION_FILTERS,
+    C_COLLECTION_ENTITY,
+    C_COLLECTION_REQUIRED_CLASSIFIERS
 } from '../contributions/Types';
 
 import {
-    generateId,
+    generateTempId,
     bufferToLangMap
 } from './';
 
 
 export const checkResponse = (response) => {
     if (_.isPlainObject(response)) {
-        const { status, errorDescription, error} = response;
+        const { status, errorDescription, error } = response;
 
         if (status && status !== 200) {
             throw new Error(errorDescription || error);
@@ -40,13 +48,16 @@ export const checkResponse = (response) => {
 }
 
 export const isValidEntity = (context, entity) => {
-    // TODO: implement more complex checks here
+    const { contributions } = context;
 
-    if (!entity || !_.isString(entity) || entity === "") {
-        return false;
+    if (!contributions) return false;
+
+    const point = contributions.getPoint(TYPE_ENTITIES, entity)
+    if (point != null) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 export const isEmbeddedType = (type) => {
@@ -55,61 +66,95 @@ export const isEmbeddedType = (type) => {
     return false;
 };
 
-export const getCollection = async (context, ops, applyMl = true) => {
-    const { resource, wsid, props } = ops;
+export const getObject = async (context, ops) => {
+    const { scheme, wsid, id, props } = ops;
     const { api } = context;
 
-    const result = {};
+    if (scheme && api) {
+        let properties = props;
 
-    if (resource && api) {
-        let wsids = _.isArray(wsid) ? wsid : [wsid];
+        properties.elements = getEntityColletionElements(context, scheme);
 
-        return api.collection(resource, wsids, blacklist(props, "wsid"))
+        return api.object(wsid, id)
+            .catch((e) => {
+                throw new Error(e);
+            });
+    } else {
+        throw new Error(`getObject() method error: 'api' or 'scheme' not specified!`);
+    }
+}
+
+export const getCollection = async (context, ops, applyMl = true) => {
+    const { scheme, wsid, props } = ops;
+    const { api } = context;
+
+    if (scheme && api) {
+        let location = _.isArray(wsid) ? wsid[0] : wsid;
+        let elements = getEntityColletionElements(context, scheme);
+        let properties = props;
+
+        properties.elements = elements;
+
+        return api.collection(scheme, location, properties)
             .then((Data) => {
-                if (Data) {
-                    result.Data = Data;
-                    result.data = applyClassifiers(Data, resource);
+                if (!_.isPlainObject(Data)) return { resolvedData: [] };
 
+                const { result } = Data;
 
-                    if (result.data) {
-                        if (applyMl) {
-                            applyML(context, result.data, resource);
-                        }
-                        
-                        result.resolvedData = resolveData(result.data);
-                    }
-                }
+                console.log("api.collection result: ", result);
+                console.log("api.collection result JSON: ", JSON.stringify(result));
+                console.log("elements: ", elements);
 
-                return result;
+                let data = pretifyData(elements, result);
+
+                console.log("pretified data: ", data);
+
+                // if (applyMl) {
+                //     data = applyML(context, data, scheme);
+                // }
+
+                data = enrichWithEntries(data, location);
+
+                return {
+                    resolvedData: data,
+                };
             })
             .catch((e) => {
                 throw new Error(e);
             });
     } else {
-        throw new Error(`${resource} error: 'api' not specified!`);
+        throw new Error(`${scheme} error: 'api' not specified!`);
     }
 };
 
-export const buildData = (Data, locations) => {
-    const { data } = Data;
-    const resultData = [];
+export const getEntityColletionElements = (context, entity) => {
+    const { contributions } = context;
 
-    if (!locations || locations.length <= 0) return [];
+    if (!contributions) return null;
 
-    const wsid = locations[0];
+    return contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_ELEMENTS);
+};
 
-    if (!_.isNumber(wsid)) return [];
-    if (!data || _.size(data) <= 0) return [];
+// export const buildData = (Data, locations) => {
+//     const { data } = Data;
+//     const resultData = [];
 
-    _.each(data, (value) => {
-        //TODO make state check optional in field decloration
-        if (value[wsid] && value[wsid].state === 1) {
-            resultData.push(value[wsid]);
-        }
-    });
+//     if (!locations || locations.length <= 0) return [];
 
-    return resultData;
-}
+//     const wsid = locations[0];
+
+//     if (!_.isNumber(wsid)) return [];
+//     if (!data || _.size(data) <= 0) return [];
+
+//     _.each(data, (value) => {
+//         //TODO make state check optional in field decloration
+//         if (value[wsid] && value[wsid][STATE_FIELD_NAME] === 1) {
+//             resultData.push(value[wsid]);
+//         }
+//     });
+
+//     return resultData;
+// }
 
 export const getEntityEmbeddedTypes = (entity, contributions) => {
     const sectionsContributon = contributions.getPointContributions(TYPE_FORMS, entity);
@@ -231,59 +276,66 @@ export const applyML = (context, data, Entity) => {
     }
 };
 
-export const resolveData = (data) => {
-    let resultData = [];
+export const enrichWithEntries = (data, wsid) => {
+    if (data && _.size(data) > 0) {
+        _.forEach(data, (item) => {
+            if (_.isNumber(item[SYS_ID_PROP])) {
+                item["_entry"] = { id: item[SYS_ID_PROP], wsid };
+            }
+        });
+    }
 
-    _.each(data, (o) => {
-        _.forEach(o, (row, loc) => {
-            row.location = loc;
-            row._entry = {
-                id: Number(row.id),
-                wsid: Number(loc)
-            };
-        }); 
-        
-        const arr = Object.values(o);
-        const item = { ...arr[0] };
+    return data;
+}
 
-        if (arr.length > 1) {
-            item.childs = arr;
-        }
+// export const resolveData = (data) => {
+//     let resultData = [];
 
-        resultData.push(item);
-    });
+//     _.each(data, (o) => {
+//         _.forEach(o, (row, loc) => {
+//             row.location = loc;
+//             row._entry = {
+//                 id: Number(row.id),
+//                 wsid: Number(loc)
+//             };
+//         });
 
-    return resultData;
-};
+//         const arr = Object.values(o);
+//         const item = { ...arr[0] };
 
-export const getFilterByString = (context, entity) => {
+//         if (arr.length > 1) {
+//             item.childs = arr;
+//         }
+
+//         resultData.push(item);
+//     });
+
+//     return resultData;
+// };
+
+export const getEntityFilters = (context, entity) => {
     const { contributions } = context;
 
     if (!contributions) return null;
 
-    let filter = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_FILTER_BY);
+    return contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_FILTERS) || null;
+};
 
-    if (filter) {
-        if (_.isString(filter)) {
-            try {
-                if (JSON.parse(filter)) {
-                    return filter;
-                }
-            } catch (e) {
-                Logger.error(e.toString(), `Wrong filter string specified for ${entity} entity`, "EntityHelpers.getFilterByString()");
-            }
-        } else if (_.isPlainObject(filter)) {
-            return JSON.stringify(filter);
-        }
-    }
+export const getEntityRequiredClassifiers = (context, entity) => {
+    const { contributions } = context;
 
-    return null;
+    if (!contributions) return null;
+
+    return contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_REQUIRED_CLASSIFIERS);
 };
 
 // DATA PROCESSING
 
-
 export const processEntityData = async (context, entity, data, entries) => {
+    console.log("entity: ", entity);
+    console.log("data: ", data);
+    console.log("entries: ", entries);
+
     if (!data || typeof data !== 'object') {
         throw new Error('Wrong data specified to .', data);
     }
@@ -310,9 +362,9 @@ export const processEntityData = async (context, entity, data, entries) => {
 export const proccessEntry = async (context, entityId, type, wsid, data) => {
     const { api, contributions } = context;
 
-    const id = entityId || -(generateId());
+    const id = entityId || generateTempId();
 
-    let operations = getOperation(data, id, type, 0, '', 0, '', context);
+    let operations = getOperation(context, data, id, type, null);
 
     operations.reverse();
 
@@ -325,7 +377,7 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
             if (data[eType]) {
                 let d = data[eType];
                 let eId = d && d.id ? parseInt(d.id) : null;
-                let ops = getOperation(d, eId, eType, id, type, id, type, context);
+                let ops = getOperation(context, d, eId, eType, id);
 
                 if (ops && ops.length > 0) {
                     operations = [...operations, ...ops];
@@ -334,11 +386,7 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
         });
     }
 
-    const timestamp = (new Date()).valueOf();
-
-    const offset = 0; // TODO - ask Maxim about that offset
-
-    return api.conf(operations, [wsid], timestamp, offset).then((Data) => {
+    return api.conf(operations, wsid).then((Data) => {
         return {
             ...Data,
             ID: entityId,
@@ -347,15 +395,16 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
     });
 }
 
-export const getOperation = (data, entityId, entity, parentId, parentType, docId, docType, context) => {
+export const getOperation = (context, data, entityId, entity, parentId) => {
     const { contributions } = context;
     let resultData = {};
     let operations = [];
 
-    const id = entityId || -(generateId());
+    const isNew = !entityId || entityId < 65536;
+    const id = entityId || generateTempId();
     let type = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
 
-    if ("state" in data) resultData.state = Number(data.state) || 0;
+    if (STATE_FIELD_NAME in data) resultData[STATE_FIELD_NAME] = Number(data[STATE_FIELD_NAME]) || 0;
 
     const fields = getEntityFields(type, contributions, true);
 
@@ -369,7 +418,7 @@ export const getOperation = (data, entityId, entity, parentId, parentType, docId
                 _.each(data[accessor], (d) => {
                     if (!d) return;
 
-                    const ops = getOperation(d, d.id, fentity, id, type, !docId ? id : docId, !docType ? type : docType, context);
+                    const ops = getOperation(context, d, d.id, fentity, id);
 
                     if (ops && ops.length > 0) {
                         operations = [...operations, ...ops];
@@ -392,47 +441,55 @@ export const getOperation = (data, entityId, entity, parentId, parentType, docId
     }
 
     if (_.size(resultData) > 0) {
-        if (parentType && parentId) {
-            resultData[`id_${parentType}`] = parentId;
-        }
+        // if (parentType && parentId) {
+        //     resultData[`id_${parentType}`] = parentId;
+        // }
 
         operations.push({
-            ID: id,
-            Type: type,
-            ParentID: parentId,
-            ParentType: parentType,
-            DocID: docId,
-            DocType: docType,
-            Data: resultData
+            _create: isNew,
+            _id: id,
+            _scheme: type,
+            _parent_id: parentId,
+            _data: resultData
         });
     }
 
     return operations;
 }
 
-export const checkEntries = (entries) => {
-    const resultEntries = [];
+// export const checkEntries = (entries) => {
+//     const resultEntries = [];
 
-    if (!entries || entries.length <= 0) return false;
+//     if (!entries || entries.length <= 0) return false;
 
-    for (let i = 0; i < entries.length; i++) {
-        if (!entries[i]) continue;
+//     for (let i = 0; i < entries.length; i++) {
+//         if (!entries[i]) continue;
 
-        const { id, wsid } = entries[i];
+//         const { id, wsid } = entries[i];
 
-        if ((id > 0 && wsid > 0)) {
-            resultEntries.push({ id, wsid });
-        }
-    }
+//         if ((id > 0 && wsid > 0)) {
+//             resultEntries.push({ id, wsid });
+//         }
+//     }
 
-    return resultEntries;
-}
+//     return resultEntries;
+// }
 
-export const checkEntry = (entry) => {
-    const { id, wsid } = entry;
+// export const checkEntry = (entry) => {
+//     const { id, wsid } = entry;
 
-    return (id > 0 && wsid > 0)
-}
+//     return (id > 0 && wsid > 0)
+// }
+
+// export const buildRequestEntires = (entries) => {
+//     const resultEntries = [];
+
+//     for (let i = 0; i < entries.length; i++) {
+//         resultEntries.push({ ID: entries[i].id, WSID: entries[i].wsid });
+//     }
+
+//     return resultEntries;
+// }
 
 export const prepareCopyData = (data) => {
     if (data && _.isPlainObject(data)) {
@@ -449,6 +506,7 @@ export const prepareCopyData = (data) => {
     return {};
 }
 
+// used for restaurant_computers like entites
 export const checkForEmbededTypes = (context, entity, data) => {
     const { contributions } = context;
 
@@ -461,23 +519,13 @@ export const checkForEmbededTypes = (context, entity, data) => {
 
     if (embedded_types && embedded_types.length > 0) {
         _.each(embedded_types, (type) => {
-            if (Data[type] && Data[type] instanceof Object && Data[type].length > 0) {
+            if (_.isArray(Data[type]) && Data[type].length > 0) {
                 Data[type] = Data[type][0];
             }
         });
     }
 
     return Data;
-}
-
-export const buildRequestEntires = (entries) => {
-    const resultEntries = [];
-
-    for (let i = 0; i < entries.length; i++) {
-        resultEntries.push({ ID: entries[i].id, WSID: entries[i].wsid });
-    }
-
-    return resultEntries;
 }
 
 //*************/
@@ -548,7 +596,7 @@ const keyToEntity = (key) => {
     if (!_.isString(key)) return null;
 
     if (key.indexOf("id_") === 0) {
-        return key.slice(3); 
+        return key.slice(3);
     }
 
     return key;

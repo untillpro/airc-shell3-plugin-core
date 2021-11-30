@@ -9,6 +9,8 @@ import cn from 'classnames';
 import { translate as t, Icon, IconButton, NoImage, getBlobPath } from 'airc-shell-core';
 import * as Icons from 'airc-shell-core/const/Icons';
 
+import { STATE_FIELD_NAME } from '../../../const/Common';
+
 class TablePlanCard extends PureComponent {
     constructor(props) {
         super(props);
@@ -49,7 +51,8 @@ class TablePlanCard extends PureComponent {
 
     handleToggleAction() {
         const { onDelete, onReduce } = this.props;
-        const { _entry, state } = this.props?.data;
+        const { _entry, [STATE_FIELD_NAME]: state } = this.props.data;
+
 
         if (!_.isPlainObject(_entry)) {
             throw new Error('TablePlanCard data wrong "_entry" specified: ', _entry);
@@ -71,7 +74,7 @@ class TablePlanCard extends PureComponent {
     }
 
     renderInfo() {
-        const { name, state } = this.props.data;
+        const { name, [STATE_FIELD_NAME]: state } = this.props.data;
         const tablesCount = this._tablesCount();
 
         return (
@@ -143,7 +146,7 @@ class TablePlanCard extends PureComponent {
             console.error('No data was passed to TablePlanCard component')
         }
 
-        const { state } = this.props.data;
+        const { [STATE_FIELD_NAME]: state } = this.props.data;
 
         return (
             <div className={cn("table-plan-card", { "not-active": state !== 1 })}>

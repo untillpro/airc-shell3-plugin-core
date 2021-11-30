@@ -124,7 +124,7 @@ class RenderEntityStep extends StateMachineStep {
         if (!entity) this.error('Entity are not specified.', entity);
         if (!_.isPlainObject(data)) this.error('Wrong item data specified; plain object expected.', data);
 
-        entries = checkEntries(entries);
+        //entries = checkEntries(entries);
 
         if (entries.length === 0) return;
 

@@ -10,6 +10,8 @@ import { Icon, translate as t } from 'airc-shell-core';
 import * as Icons from 'airc-shell-core/const/Icons';
 import cn from 'classnames';
 
+import { STATE_FIELD_NAME } from '../../../const/Common';
+
 class TableAreaListRow extends PureComponent {
     constructor(props) {
         super(props);
@@ -112,7 +114,8 @@ class TableAreaListRow extends PureComponent {
     }
 
     render() {
-        const { id, state, current } = this.props;
+        const { id, current } = this.props;
+        const state = this.props[STATE_FIELD_NAME];
 
         let isNew = !(_.isNumber(id) && id > 0);
         let isHidden = state !== 1;

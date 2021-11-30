@@ -57,7 +57,7 @@ class ErrorBoundary extends Component {
 
     componentDidCatch(error, info) {
         const { api } = this.props;
-        
+
         this.setError(error, info);
 
         this.props.sendCancelMessage();
@@ -74,7 +74,7 @@ class ErrorBoundary extends Component {
             <Message
                 header={"Air Shell Exception"}
                 footer={
-                    <Button  onClick={this.dropError} > Ok </Button>
+                    <Button onClick={this.dropError} > Ok </Button>
                 }
 
                 footerAlign="right"
@@ -91,7 +91,7 @@ class ErrorBoundary extends Component {
 
         if (hasError) {
             return this.renderError();
-        } 
+        }
 
         return this.props.children;
     }
@@ -101,7 +101,7 @@ class ErrorBoundary extends Component {
 const mapStateToProps = (state) => {
     const { api } = state.context;
     const { step } = state.plugin;
-    
+
     return { step, api };
 };
 

@@ -11,8 +11,10 @@ import {
     ICON_EDIT,
     ICON_UNIFY,
     ICON_DUPLICATE,
-    ICON_DEACTIVATE
+    ICON_DEACTIVATE,
 } from '../../../const/Icons';
+
+import { STATE_FIELD_NAME } from '../../../const/Common';
 
 class ListTableRowAction extends PureComponent {
     handleAction(event) {
@@ -29,8 +31,8 @@ class ListTableRowAction extends PureComponent {
     }
 
     getIcon() {
-        const { type, data  } = this.props;
-        const { state } = data.original;
+        const { type, data } = this.props;
+        const { [STATE_FIELD_NAME]: state } = data.original;
 
         switch (type) {
             case 'edit': return ICON_EDIT;
@@ -49,7 +51,7 @@ class ListTableRowAction extends PureComponent {
 
     getTitle() {
         const { type, data } = this.props;
-        const { state } = data.original;
+        const { [STATE_FIELD_NAME]: state } = data.original;
 
         switch (type) {
             case 'edit': return 'Edit';

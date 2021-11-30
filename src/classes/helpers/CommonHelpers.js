@@ -47,7 +47,8 @@ export const checkColumnDeclaration = (declaration) => {
     return true;
 }
 
-export const generateId = makeGenerator();
+export const generateId = makeIncrementGenerator(1);
+export const generateTempId = makeLoopGenerator(65536, 1);
 
 export const reduce = (data, func1 = null, func2 = null) => {
     let accum = null;
@@ -203,11 +204,23 @@ export const formatNumber = (amount, decimalCount = 2, decimal = ".", thousands 
 }
 
 
-function makeGenerator() {
-    var currentCount = 1;
+export function makeIncrementGenerator(startFrom = 1) {
+    var currentCount = startFrom || 0;
 
     return function () {
         return currentCount++;
+    };
+}
+
+export function makeLoopGenerator(maxValue, startFrom = 1) {
+    var currentCount = startFrom || 0;
+
+    return function () {
+        if (currentCount >= maxValue) {
+            currentCount = startFrom;
+        } 
+        
+        return currentCount++;;
     };
 }
 

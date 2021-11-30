@@ -5,6 +5,8 @@ import _ from 'lodash';
 import * as Messages from '../classes/messages';
 import * as Types from '../actions/Types';
 
+import { STATE_FIELD_NAME } from '../const/Common';
+
 const INITIAL_STATE = {
     message: new Messages.MessageInit(),
     isGlobal: false,
@@ -68,13 +70,13 @@ const reducer = (state = INITIAL_STATE, action) => {
 
         case Types.SEND_NEED_REMOVE_ITEM_MESSAGE:
             if (_.isArray(action.payload)) {
-                message = new Messages.MessageProcessItemData({ entries: action.payload, data: {state: 0}});
+                message = new Messages.MessageProcessItemData({ entries: action.payload, data: {[STATE_FIELD_NAME]: 0}});
             }
             break;
 
         case Types.SEND_NEED_REDUCE_ITEM_MESSAGE:
             if (_.isArray(action.payload)) {
-                message = new Messages.MessageProcessItemData({ entries: action.payload, data: {state: 1}});
+                message = new Messages.MessageProcessItemData({ entries: action.payload, data: {[STATE_FIELD_NAME]: 1}});
             }
             break;
 

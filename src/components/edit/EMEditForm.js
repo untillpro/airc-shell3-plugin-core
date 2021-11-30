@@ -37,6 +37,8 @@ import {
     C_FORMS_DEFAULT
 } from '../../classes/contributions/Types';
 
+import { STATE_FIELD_NAME } from '../../const/Common';
+
 import {
     sendNeedEditFormMessage,
     sendNeedCopyFormMessage,
@@ -163,7 +165,7 @@ class EMEditForm extends Component {
 
     setDefaultValues(sections) {
         const { contributions, entity, data } = this.props;
-        let changedData = { state: 1 };
+        let changedData = { [STATE_FIELD_NAME]: 1 };
 
         const defaultValues = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_DEFAULT);
 
@@ -441,7 +443,7 @@ class EMEditForm extends Component {
         this.setState({
             changedData: {
                 ...changedData,
-                state: s,
+                [STATE_FIELD_NAME]: s,
             }
         });
     }
@@ -614,7 +616,7 @@ EMEditForm.propTypes = {
     onCancel: PropTypes.func,
     onValidate: PropTypes.func,
 
-    data: PropTypes.array,
+    data: PropTypes.object,
     classifiers: PropTypes.object,
 
     loading: PropTypes.bool,

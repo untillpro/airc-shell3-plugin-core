@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import { Select } from 'airc-shell-core';
 
 import {
-    buildData,
     funcOrString
 } from '../../../classes/helpers';
 
@@ -94,12 +93,12 @@ class SelectField extends Component {
             throw new Error(`Please select location for data fetch.`);
         }
 
-        api.collection(resource, _.slice(locations, 0, 1))
-            .then((Data) => {
+        api.collection(resource, locations[0])
+            .then(({ resolvedData }) => {
                 this.setState({
                     fetched: true,
                     loading: false,
-                    data: buildData(Data, locations)
+                    data: resolvedData
                 })
             });
 

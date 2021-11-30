@@ -19,11 +19,11 @@ import {
     C_COLLECTION_ENTITY,
 } from '../contributions/Types';
 
-import { 
+import {
     FLUSH_ENTITY_DATA,
 } from '../../actions/Types';
 
-import { 
+import {
     SAGA_FETCH_ENTITY_DATA,
     SAGA_PROCESS_ENTITY_DATA,
 } from '../../sagas/Types';
@@ -160,18 +160,20 @@ class EntityEditStep extends StateMachineStep {
 
     fetchData(context) {
         const { contributions } = context;
-        let resource = contributions.getPointContributionValue(TYPE_COLLECTION, this.entity, C_COLLECTION_ENTITY) || this.entity;
+        let entity = contributions.getPointContributionValue(TYPE_COLLECTION, this.entity, C_COLLECTION_ENTITY) || this.entity;
 
         return {
             action: {
                 type: SAGA_FETCH_ENTITY_DATA,
                 payload: {
-                    resource,
+                    entity,
                     isCopy: this.copy,
-                    entries: this.entries
+                    id: _.size(this.entries) > 0 ? this.entries[0].id : null,
+                    wsid: this.locations[0]
                 }
             }
         };
+
     }
 
     breadcrumb(context) {
@@ -214,4 +216,4 @@ class EntityEditStep extends StateMachineStep {
 
 }
 
-export default EntityEditStep; 
+export default EntityEditStep;
