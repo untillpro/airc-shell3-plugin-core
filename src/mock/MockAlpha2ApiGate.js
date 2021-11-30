@@ -185,11 +185,11 @@ class MockAlpha2ApiGate {
             'args': {
                 'schema': scheme
             },
-            'elements': elements ?? null,
-            'filters': filters ?? null,
-            'orderBy': orderBy ?? null,
-            'startFrom': start_from ?? null,
-            'count': count ?? null,
+            'elements': elements || null,
+            'filters': filters || null,
+            'orderBy': orderBy || null,
+            'startFrom': start_from || null,
+            'count': count || null,
             //'orderBy': ['']
         }
 
