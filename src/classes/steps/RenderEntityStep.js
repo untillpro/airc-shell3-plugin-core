@@ -25,7 +25,6 @@ import {
 } from '../contributions/Types';
 
 import {
-    checkEntries,
     isValidLocations,
     isValidEntity,
 } from '../helpers';
