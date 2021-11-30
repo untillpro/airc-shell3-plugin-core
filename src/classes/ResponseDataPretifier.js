@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-present unTill Pro, Ltd.
+ */
+
 const _ = require('lodash');
 
 function pretifyData(fields, responseData) {
