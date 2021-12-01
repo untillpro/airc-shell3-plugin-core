@@ -117,7 +117,13 @@ class MockAlpha2ApiGate {
             throw new Error('Wrong "operations" prop: expected an array of objects, received' + operations);
         }
 
-        return this.do("airs-bp", location, 'c.sys.CUD', params, "post");
+        const response = await this.do("airs-bp", location, 'c.sys.CUD', params, "post");
+
+        if (response.isError()) {
+            throw new Error(response.getErrorMessage());
+        }
+
+        return response;
     }
 
     //
@@ -154,7 +160,7 @@ class MockAlpha2ApiGate {
 
             //console.log('+++ resultData', result);
 
-            return { resolvedData: result };
+            return result;
         }).catch((e) => {
             console.error(e);
             throw e;

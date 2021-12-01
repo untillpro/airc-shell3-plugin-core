@@ -322,6 +322,10 @@ export const valueFromClassifierField = (value, accessor, defaultValue) => {
     return resultValue;
 }
 
+export const getPaymentKind = (kind) => {
+    return t(PAYMENT_KIND[kind], "payment_kind");
+}
+
 export const getPaymentKindsOptions = () => {
     const options = {};
 

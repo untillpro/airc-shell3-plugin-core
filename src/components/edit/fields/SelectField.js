@@ -118,7 +118,9 @@ class SelectField extends Component {
                 val = _.get(composedData, val);
             }
 
-            onChange({[accessor]: val});
+            let changedData = { [accessor]: val };
+
+            onChange(changedData);
         }
     }
 
@@ -169,11 +171,11 @@ class SelectField extends Component {
         let group = null;
         let groupOptions = [];
         let count = 0;
-        
+
         _.forEach(options, (value, text) => {
             const opt_val = value_accessor ? _.get(value, value_accessor) : value;
             const opt_text = String(text_accessor ? _.get(value, text_accessor) : text);
-            
+
             if (text && String(text).indexOf("---") === 0) {
                 if (group !== null) {
                     result.push(<OptGroup key={group} label={group}>{groupOptions}</OptGroup>)

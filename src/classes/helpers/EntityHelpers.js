@@ -3,11 +3,11 @@
  */
 
 import _ from 'lodash';
-//import blacklist from 'blacklist';
 //import { Logger } from 'airc-shell-core';
 import pretifyData from '../ResponseDataPretifier';
 import ForeignKeys from '../../const/ForeignKeys';
 import EmbeddeTypes from '../../const/EmbeddeTypes';
+import blacklist from 'blacklist';
 
 import { reduce } from './';
 
@@ -76,6 +76,13 @@ export const getObject = async (context, ops) => {
         properties.elements = getEntityColletionElements(context, scheme);
 
         return api.object(wsid, id)
+            .then((result) => {
+                const classifiers = result?.xrefs ?? {};
+                const data = blacklist(result, ["xrefs"]);
+                const resolvedData = applyClassifiers({ data, classifiers }, scheme)
+
+                return { resolvedData };
+            })
             .catch((e) => {
                 throw new Error(e);
             });
@@ -101,13 +108,7 @@ export const getCollection = async (context, ops, applyMl = true) => {
 
                 const { result } = Data;
 
-                // console.log("api.collection result: ", result);
-                // console.log("api.collection result JSON: ", JSON.stringify(result));
-                // console.log("elements: ", elements);
-
                 let data = pretifyData(elements, result);
-
-                // console.log("pretified data: ", data);
 
                 // if (applyMl) {
                 //     data = applyML(context, data, scheme);
@@ -134,27 +135,6 @@ export const getEntityColletionElements = (context, entity) => {
 
     return contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_ELEMENTS);
 };
-
-// export const buildData = (Data, locations) => {
-//     const { data } = Data;
-//     const resultData = [];
-
-//     if (!locations || locations.length <= 0) return [];
-
-//     const wsid = locations[0];
-
-//     if (!_.isNumber(wsid)) return [];
-//     if (!data || _.size(data) <= 0) return [];
-
-//     _.each(data, (value) => {
-//         //TODO make state check optional in field decloration
-//         if (value[wsid] && value[wsid][STATE_FIELD_NAME] === 1) {
-//             resultData.push(value[wsid]);
-//         }
-//     });
-
-//     return resultData;
-// }
 
 export const getEntityEmbeddedTypes = (entity, contributions) => {
     const sectionsContributon = contributions.getPointContributions(TYPE_FORMS, entity);
@@ -211,22 +191,13 @@ export const applyClassifiers = (Data, Entity) => {
         classifiers && _.size(classifiers) > 0 &&
         data && _.size(data) > 0
     ) {
-        _.forEach(data, (variants, code) => {
-            _.forEach(variants, (item, wsid) => {
-                if (!classifiers[wsid]) return;
-
-                const res = processClassifier(item, classifiers[wsid], entity, wsid, 0, null);
-
-                if (!result[code]) result[code] = {};
-                result[code][wsid] = res;
-            });
-        });
+        return processClassifier(data, classifiers, entity, 0, null);
     }
 
     return result;
 }
 
-export const processClassifier = (item, classifiers = {}, entity, wsid, maxLevel = 3, level = 0) => {
+export const processClassifier = (item, classifiers = {}, entity, maxLevel = 3, level = 0) => {
     if (!item) return {};
 
     if (!classifiers || _.size(classifiers) === 0) return item;
@@ -234,9 +205,9 @@ export const processClassifier = (item, classifiers = {}, entity, wsid, maxLevel
 
     _.forEach(item, (value, key) => {
         if (_.isArray(value)) {
-            _.each(value, (val, i) => item[key][i] = processClassifier(val, classifiers, key, wsid, maxLevel, level + 1));
+            _.each(value, (val, i) => item[key][i] = processClassifier(val, classifiers, key, maxLevel, level + 1));
         } else if (_.isObject(value)) {
-            processClassifier(value, classifiers, key, wsid, maxLevel, level + 1)
+            processClassifier(value, classifiers, key, maxLevel, level + 1)
         } else {
             if (ForeignKeys[entity] && ForeignKeys[entity][key]) {
                 let foreignEntity = ForeignKeys[entity][key];
@@ -244,7 +215,7 @@ export const processClassifier = (item, classifiers = {}, entity, wsid, maxLevel
                 if (_.isNumber(value) && classifiers[foreignEntity] && classifiers[foreignEntity][value]) {
                     item[key] = { ...classifiers[foreignEntity][value] };
 
-                    processClassifier(item[key], classifiers, foreignEntity, wsid, maxLevel, level + 1);
+                    processClassifier(item[key], classifiers, foreignEntity, maxLevel, level + 1);
                 } else if (_.isPlainObject(value)) {
                     item[key] = { ...value };
                 } else {
@@ -254,10 +225,10 @@ export const processClassifier = (item, classifiers = {}, entity, wsid, maxLevel
         }
     });
 
-    if (item.id && !item._entry) {
-        item._wsid = wsid;
-        item._entry = { id: item.id, wsid };
-    }
+    // if (item.id && !item._entry) {
+    //     item._wsid = wsid;
+    //     item._entry = { id: item.id, wsid };
+    // }
 
     return item;
 }
@@ -287,31 +258,6 @@ export const enrichWithEntries = (data, wsid) => {
 
     return data;
 }
-
-// export const resolveData = (data) => {
-//     let resultData = [];
-
-//     _.each(data, (o) => {
-//         _.forEach(o, (row, loc) => {
-//             row.location = loc;
-//             row._entry = {
-//                 id: Number(row.id),
-//                 wsid: Number(loc)
-//             };
-//         });
-
-//         const arr = Object.values(o);
-//         const item = { ...arr[0] };
-
-//         if (arr.length > 1) {
-//             item.childs = arr;
-//         }
-
-//         resultData.push(item);
-//     });
-
-//     return resultData;
-// };
 
 export const getEntityFilters = (context, entity) => {
     const { contributions } = context;
@@ -361,7 +307,7 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
 
     const id = entityId || generateTempId();
 
-    let operations = getOperation(context, data, id, type, null);
+    let operations = getOperation(context, data, id, type, null, null);
 
     operations.reverse();
 
@@ -374,7 +320,7 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
             if (data[eType]) {
                 let d = data[eType];
                 let eId = d && d.id ? parseInt(d.id) : null;
-                let ops = getOperation(context, d, eId, eType, id);
+                let ops = getOperation(context, d, eId, eType, id, type);
 
                 if (ops && ops.length > 0) {
                     operations = [...operations, ...ops];
@@ -392,7 +338,7 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
     });
 }
 
-export const getOperation = (context, data, entityId, entity, parentId) => {
+export const getOperation = (context, data, entityId, entity, parentId, parentType) => {
     const { contributions } = context;
     let resultData = {};
     let operations = [];
@@ -415,7 +361,7 @@ export const getOperation = (context, data, entityId, entity, parentId) => {
                 _.each(data[accessor], (d) => {
                     if (!d) return;
 
-                    const ops = getOperation(context, d, d.id, fentity, id);
+                    const ops = getOperation(context, d, d.id, fentity, id, entity);
 
                     if (ops && ops.length > 0) {
                         operations = [...operations, ...ops];
@@ -438,9 +384,14 @@ export const getOperation = (context, data, entityId, entity, parentId) => {
     }
 
     if (_.size(resultData) > 0) {
-        // if (parentType && parentId) {
-        //     resultData[`id_${parentType}`] = parentId;
-        // }
+        if (parentType && parentId) {
+            let foreignKey = getParentForeignKey(entity, parentType)
+
+            if (foreignKey) {
+                resultData[foreignKey] = parentId;
+            }
+
+        }
 
         operations.push({
             _create: isNew,
@@ -454,46 +405,23 @@ export const getOperation = (context, data, entityId, entity, parentId) => {
     return operations;
 }
 
-// export const checkEntries = (entries) => {
-//     const resultEntries = [];
+export const getParentForeignKey = (entity, parentEntity) => {
+    let res = null;
 
-//     if (!entries || entries.length <= 0) return false;
+    if (ForeignKeys[entity]) {
+        const fk = ForeignKeys[entity];
+        res = _.findKey(fk, (k) => k === parentEntity);
+    }
 
-//     for (let i = 0; i < entries.length; i++) {
-//         if (!entries[i]) continue;
-
-//         const { id, wsid } = entries[i];
-
-//         if ((id > 0 && wsid > 0)) {
-//             resultEntries.push({ id, wsid });
-//         }
-//     }
-
-//     return resultEntries;
-// }
-
-// export const checkEntry = (entry) => {
-//     const { id, wsid } = entry;
-
-//     return (id > 0 && wsid > 0)
-// }
-
-// export const buildRequestEntires = (entries) => {
-//     const resultEntries = [];
-
-//     for (let i = 0; i < entries.length; i++) {
-//         resultEntries.push({ ID: entries[i].id, WSID: entries[i].wsid });
-//     }
-
-//     return resultEntries;
-// }
+    return res;
+}
 
 export const prepareCopyData = (data) => {
     if (data && _.isPlainObject(data)) {
         return reduce(
             data,
             (r, v, k) => {
-                if (k === "id") return;
+                if (k === SYS_ID_PROP) return;
                 else r[k] = v;
             },
             (v, k) => typeof v === 'object' && String(k).indexOf('id_') !== 0
