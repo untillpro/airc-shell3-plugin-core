@@ -101,13 +101,13 @@ export const getCollection = async (context, ops, applyMl = true) => {
 
                 const { result } = Data;
 
-                console.log("api.collection result: ", result);
-                console.log("api.collection result JSON: ", JSON.stringify(result));
-                console.log("elements: ", elements);
+                // console.log("api.collection result: ", result);
+                // console.log("api.collection result JSON: ", JSON.stringify(result));
+                // console.log("elements: ", elements);
 
                 let data = pretifyData(elements, result);
 
-                console.log("pretified data: ", data);
+                // console.log("pretified data: ", data);
 
                 // if (applyMl) {
                 //     data = applyML(context, data, scheme);
@@ -318,7 +318,7 @@ export const getEntityFilters = (context, entity) => {
 
     if (!contributions) return null;
 
-    return contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_FILTERS) || null;
+    return contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_FILTERS) || null;
 };
 
 export const getEntityRequiredClassifiers = (context, entity) => {
@@ -332,9 +332,6 @@ export const getEntityRequiredClassifiers = (context, entity) => {
 // DATA PROCESSING
 
 export const processEntityData = async (context, entity, data, entries) => {
-    console.log("entity: ", entity);
-    console.log("data: ", data);
-    console.log("entries: ", entries);
 
     if (!data || typeof data !== 'object') {
         throw new Error('Wrong data specified to .', data);

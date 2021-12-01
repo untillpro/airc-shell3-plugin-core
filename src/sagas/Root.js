@@ -17,7 +17,8 @@ import {
     checkForEmbededTypes,
     prepareCopyData,
     prepareReportFilter,
-    prepareReportData
+    prepareReportData,
+    getEntityColletionElements
 } from '../classes/helpers';
 
 import * as Selectors from '../selectors';
@@ -75,7 +76,7 @@ function* _fetchListData(action) {
     const manual = !!contributions.getPointContributionValue(TYPE_LIST, entity, 'manual');
 
     let doProps = {
-        elements: getEntityFilters(context, entity),
+        elements: getEntityColletionElements(context, entity),
         filters: getEntityFilters(context, entity),
     };
 
