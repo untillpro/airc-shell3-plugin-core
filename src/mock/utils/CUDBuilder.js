@@ -26,6 +26,7 @@ class CUDBuilder {
             fields["sys.ParentID"] = null;
         } else {
             fields["sys.ParentID"] = _parent_id;
+            fields["sys.Container"] = _scheme;
         }
 
         if (_.isNil(_scheme) || !_.isString(_scheme)) {

@@ -96,16 +96,10 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
 
     async fetchData(entity) {
         const { context, locations } = this.props;
-        const { api, contributions } = context;
+        const { api } = context;
 
         let loc = null;
         if (!entity) return {};
-
-        const url = contributions.getPointContributionValue('url', entity, 'getUrl')
-
-        if (!url || !url.queue || !url.resource) {
-            throw new Error(`EmbeddedManagerPredefinedField.fetchData() exception: "getUrl" param for "${entity}" entity not specified or wrong given`);
-        }
 
         if (locations) {
             loc = _.isArray(locations) ? locations[0] : parseInt(locations);
@@ -115,7 +109,7 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
             throw new Error(`EmbeddedManagerPredefinedField.fetchData() exception: location not specified or wrong given`);
         }
 
-        return api.collection(url.resource, loc);
+        return api.collection(entity, loc);
     }
 
 
