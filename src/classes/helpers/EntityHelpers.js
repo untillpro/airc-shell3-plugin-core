@@ -278,6 +278,7 @@ export const getEntityRequiredClassifiers = (context, entity) => {
 // DATA PROCESSING
 
 export const processEntityData = async (context, entity, data, entries) => {
+    console.log("processEntityData: ", data);
 
     if (!data || typeof data !== 'object') {
         throw new Error('Wrong data specified to .', data);
@@ -319,7 +320,7 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
         _.each(embeddedTypes, (eType) => {
             if (data[eType]) {
                 let d = data[eType];
-                let eId = d && d.id ? parseInt(d.id) : null;
+                let eId = d && d[SYS_ID_PROP] ? parseInt(d[SYS_ID_PROP]) : null;
                 let ops = getOperation(context, d, eId, eType, id, type);
 
                 if (ops && ops.length > 0) {
@@ -361,7 +362,7 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
                 _.each(data[accessor], (d) => {
                     if (!d) return;
 
-                    const ops = getOperation(context, d, d.id, fentity, id, entity);
+                    const ops = getOperation(context, d, d[SYS_ID_PROP], fentity, id, entity);
 
                     if (ops && ops.length > 0) {
                         operations = [...operations, ...ops];
@@ -384,13 +385,12 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
     }
 
     if (_.size(resultData) > 0) {
-        if (parentType && parentId) {
+        if (isNew && parentType && parentId) {
             let foreignKey = getParentForeignKey(entity, parentType)
 
             if (foreignKey) {
                 resultData[foreignKey] = parentId;
             }
-
         }
 
         operations.push({

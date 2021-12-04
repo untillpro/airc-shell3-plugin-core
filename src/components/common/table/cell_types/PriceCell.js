@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2020-present unTill Pro, Ltd.
  */
-
+import _ from 'lodash';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import EditableCell from './EditableCell';
@@ -13,6 +13,8 @@ class PriceCell extends PureComponent {
         super(props);
 
         this.format = this.format.bind(this);
+        this.prepare = this.prepare.bind(this);
+        this.init = this.init.bind(this);
     }
 
     value(value) {
@@ -24,6 +26,27 @@ class PriceCell extends PureComponent {
         return formatPriceValue(value, currency || defaultCurrency)
     }
 
+    prepare(value) {
+        const { rate } = this.props;
+
+        if (_.isNumber(rate) && rate > 0) {
+            return value * rate | 0;
+        }
+
+        return value;
+    }
+
+    init(value) {
+        const { rate } = this.props;
+        let val = value;
+
+        if (_.isNumber(rate) && rate > 0) {
+            val = value / rate;
+        }
+
+        return val;
+    }
+
     render() {
         const { value } = this.props;
 
@@ -32,11 +55,12 @@ class PriceCell extends PureComponent {
         }
 
         return (
-            <EditableCell 
-                {...this.props} 
-                formatter={this.format} 
-                preparearer={this.value}
-                type="number" 
+            <EditableCell
+                {...this.props}
+                formatter={this.format}
+                preparearer={this.prepare}
+                initier={this.init}
+                type="number"
             />
         );
     }
@@ -44,7 +68,7 @@ class PriceCell extends PureComponent {
 
 PriceCell.propTypes = {
     value: PropTypes.number,
-    currency: PropTypes.object, 
+    currency: PropTypes.object,
     defaultCurrency: PropTypes.object
 };
 

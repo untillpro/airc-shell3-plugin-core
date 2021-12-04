@@ -12,9 +12,14 @@ import { ResponseBuilder, CUDBuilder, ResponseErrorBuilder } from './utils';
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjI1NTM2LCJEZXZpY2VJRCI6MSwiZXhwIjoxNTc3NTE5MDQzfQ.dXnbwFUtjcue8_LXNpir3lltj0qoDUarbZ1BDkj5Zno';
 const uploadFileAction = "https://badrequest.ru/tests/uploader/write.php";
 
+const FUNC_COLLECTION_NAME = 'q.air.collection';
+const FUNC_CDOC_NAME = 'q.air.cdoc';
+const FUNC_CUD_NAME = 'c.sys.CUD';
+const FUNC_STATE_NAME = 'c.air.state';
+
 class MockAlpha2ApiGate {
     constructor(callback) {
-        this.name = "MockAlphaApiGate";
+        this.name = "MockAlpha2ApiGate";
         this.host = 'https://alpha.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
@@ -117,7 +122,7 @@ class MockAlpha2ApiGate {
             throw new Error('Wrong "operations" prop: expected an array of objects, received' + operations);
         }
 
-        const response = await this.do("airs-bp", location, 'c.sys.CUD', params, "post");
+        const response = await this.do("airs-bp", location, FUNC_CUD_NAME, params, "post");
 
         if (response.isError()) {
             throw new Error(response.getErrorMessage());
@@ -139,7 +144,7 @@ class MockAlpha2ApiGate {
             ]
         };
 
-        return this.do("airs-bp", wsid, 'q.untill.cdoc', params, "post").then((response) => {
+        return this.do("airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
             //console.log('+++ api.object result', response);
 
             if (response.isError()) {
@@ -199,7 +204,7 @@ class MockAlpha2ApiGate {
             //'orderBy': ['']
         }
 
-        return this.do("airs-bp", location, 'q.sys.collection', params, "post").then((response) => {
+        return this.do("airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
             //console.log('+++ api.collection result', response);
 
             if (response.isError()) {

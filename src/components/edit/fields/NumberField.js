@@ -9,10 +9,14 @@ import { NumberInput } from 'airc-shell-core';
 class NumberField extends Component {
     handleChange(value = null) {
         const { onChange, field } = this.props;
-        const { accessor } = field;
+        let { accessor, rate } = field;
+
+        rate = (rate && typeof rate === 'number' && rate > 0) ? rate : 1;
 
         if (onChange && typeof onChange === 'function' ) {
-            onChange({[accessor]: value});
+            let val = value * rate;
+
+            onChange({[accessor]: val});
         }
     }
 
@@ -40,19 +44,26 @@ class NumberField extends Component {
             if (step && step > 0) props.step = step;
             if (parser && typeof parser === 'function') props.parser = parser;
             if (formatter && typeof formatter === 'function') props.formatter = formatter;
+           
+            
         }
 
         return props;
     }
 
     getValue() {
-        const { value } = this.props;
+        const { value, field } = this.props;
+        let { rate } = field;
+
+        rate = (rate && typeof rate === 'number' && rate > 0) ? rate : 1;
 
         let val = Number(value);
 
         if (isNaN(val)) {
             val = 0;
         }
+        
+        val = val / rate;
 
         return val;
     }

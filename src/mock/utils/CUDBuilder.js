@@ -22,11 +22,15 @@ class CUDBuilder {
 
         if (!_.isNil(_parent_id) && (!_.isNumber(_parent_id) || _parent_id < 1)) {
             throw new Error('wrong operation param "_parent_id": positive integer expected or null');
-        } else if (_.isNil(_parent_id)) {
-            fields["sys.ParentID"] = null;
-        } else {
-            fields["sys.ParentID"] = _parent_id;
-            fields["sys.Container"] = _scheme;
+        }
+
+        if (_create) {
+            if (_.isNil(_parent_id)) {
+                fields["sys.ParentID"] = null;
+            } else {
+                fields["sys.ParentID"] = _parent_id;
+                fields["sys.Container"] = _scheme;
+            }
         }
 
         if (_.isNil(_scheme) || !_.isString(_scheme)) {

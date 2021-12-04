@@ -75,6 +75,7 @@ function* _fetchListData(action) {
     const { page, pageSize, showDeleted } = list;
     const manual = !!contributions.getPointContributionValue(TYPE_LIST, entity, 'manual');
 
+    let classifiers = {};
     let doProps = {
         elements: getEntityColletionElements(context, entity),
         filters: getEntityFilters(context, entity),
@@ -96,16 +97,26 @@ function* _fetchListData(action) {
 
     try {
         yield put({ type: SET_COLLECTION_LOADING, payload: true });
+        let wsid = locations[0];
 
         const ops = {
             scheme,
-            wsid: locations[0],
+            wsid,
             props: doProps
         };
 
         const data = yield call(getCollection, context, ops);
 
-        yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: data });
+        let required_classifiers = getEntityRequiredClassifiers(context, entity);
+
+        if (_.size(required_classifiers) > 0) {
+            for (let c of required_classifiers) {
+                let cData = yield call(getCollection, context, { scheme: c, wsid, props: {} }, true);
+                classifiers[c] = cData?.resolvedData || null;
+            }
+        }
+
+        yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: { ...data, classifiers } });
     } catch (e) {
         console.error(e);
 

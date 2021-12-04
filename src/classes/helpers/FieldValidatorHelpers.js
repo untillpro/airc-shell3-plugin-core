@@ -11,7 +11,7 @@ class FieldValidator {
 
         if (!field) return false;
 
-        const { accessor, min, max, maxLength, minLength, regexp, required, type } = field
+        const { accessor, min, max, maxLength, minLength, regexp, required, type, rate } = field
 
         let path = accessor;
 
@@ -33,8 +33,8 @@ class FieldValidator {
             if (!_.isNil(value)) {
                 if (type === 'number') this.validateNumber(value, errors);
                 if (type === 'email') this.validateEmail(value, errors);
-                if (!isNaN(Number(min))) this.validateMinValue(value, min, errors);
-                if (!isNaN(Number(max))) this.validateMaxValue(value, max, errors);
+                if (!isNaN(Number(min))) this.validateMinValue(value, min, rate, errors);
+                if (!isNaN(Number(max))) this.validateMaxValue(value, max, rate, errors);
                 if (_.isNumber(minLength)) this.validateMinLengthValue(minLength, value, errors);
                 if (_.isNumber(maxLength)) this.validateMaxLengthValue(maxLength, value, errors);
                 if (regexp) this.validateRegexp(value, regexp, errors);
@@ -44,9 +44,13 @@ class FieldValidator {
         return errors;
     }
 
-    validateMinValue(value, min, errors) {
-        const minVal = Number(min);
+    validateMinValue(value, min, rate = 1, errors) {
+        let minVal = Number(min);
         const curVal = Number(value);
+
+        if (rate > 0) {
+            minVal = minVal * rate;
+        }
 
         if (!_.isNumber(curVal)) {
             errors.push(t("Enter valid number", "errors"));
@@ -55,9 +59,13 @@ class FieldValidator {
         }
     }
 
-    validateMaxValue(value, max, errors) {
-        const maxVal = Number(max);
+    validateMaxValue(value, max, rate = 1, errors) {
+        let maxVal = Number(max);
         const curVal = Number(value);
+
+        if (rate > 0) {
+            maxVal = maxVal * rate;
+        }
 
         if (!_.isNumber(curVal)) {
             errors.push(t("Enter valid number", "errors"));

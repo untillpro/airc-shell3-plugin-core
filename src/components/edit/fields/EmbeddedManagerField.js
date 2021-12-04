@@ -9,7 +9,7 @@ import EMEditForm from '../EMEditForm';
 import { Modal, translate as t } from 'airc-shell-core';
 
 import { reduce } from '../../../classes/helpers';
-import { STATE_FIELD_NAME } from '../../../const/Common';
+import { STATE_FIELD_NAME, SYS_ID_PROP } from '../../../const/Common';
 import { ListTable } from '../../common';
 import isEqual from 'react-fast-compare'
 //import log from '../../../classes/Log';
@@ -148,7 +148,7 @@ class EmbeddedManagerField extends PureComponent {
                 const d = reduce(
                     entityData,
                     (r, v, k) => {
-                        if (k === "id") return;
+                        if (k === SYS_ID_PROP) return;
                         else r[k] = v;
                     },
                     (v, k) => typeof v === 'object' && String(k).indexOf('id_') !== 0
@@ -243,7 +243,7 @@ class EmbeddedManagerField extends PureComponent {
         let res = [];
 
         res[rowIndex] = { 
-            id: innerData[rowIndex] ? innerData[rowIndex].id : null, 
+            [SYS_ID_PROP]: innerData[rowIndex] ? innerData[rowIndex][SYS_ID_PROP] : null, 
             ...data 
         };
         
@@ -390,7 +390,7 @@ class EmbeddedManagerField extends PureComponent {
 
         if (newData && _.size(newData) > 0) {
             if (!_.isNil(i) && i >= 0) {
-                resultData[i] = { id: value[i].id, ...newData };
+                resultData[i] = { [SYS_ID_PROP]: value[i][SYS_ID_PROP], ...newData };
             } else {
                 resultData[dataLength] = { ...newData };
             }
@@ -417,7 +417,7 @@ class EmbeddedManagerField extends PureComponent {
     }
 
     renderEditModal() {
-        const { locations } = this.props;
+        const { locations, classifiers } = this.props;
         const { edit, copy, entityData, current } = this.state;
 
         if (edit) {
@@ -431,6 +431,7 @@ class EmbeddedManagerField extends PureComponent {
                     size="medium"
                 >
                     <EMEditForm
+                        classifiers={classifiers}
                         entity={this.entity}
                         isCopy={copy}
                         isNew={isNew}

@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { withStackEvents } from 'stack-events';
 import { Input } from 'airc-shell-core';
 
+import { SYS_ID_PROP } from '../../../../const/Common';
 import { KEY_RETURN, KEY_ESCAPE } from 'keycode-js';
 // как форматировать?
 
@@ -34,20 +35,39 @@ class EditableCell extends PureComponent {
     }
 
     componentDidMount() {
+        const { value } = this.props;
+        let _value = this.initValue(value);
+
         this.setState({
-            value: this.props.value,
-            initValue: this.props.value
+            value: _value,
+            initValue: _value
         });
     }
 
     componentDidUpdate(oldProps, oldState) {
         if (this.props.value !== oldProps.value) {
-            this.setState({ value: this.props.value, initValue: this.props.value })
+            let _value = this.initValue(this.props.value);
+
+            this.setState({
+                value: _value,
+                initValue: _value
+            })
+
         }
 
         if (oldState.edit !== this.state.edit && this.state.edit === true) {
             this.ref.focus();
         }
+    }
+
+    initValue(value) {
+        const { initier } = this.props;
+
+        if (_.isFunction(initier)) {
+            return initier(value);
+        }
+
+        return value;
     }
 
     handleKeyDown(event) {
@@ -117,12 +137,14 @@ class EditableCell extends PureComponent {
                 const v = _.isFunction(preparearer) ? preparearer(val) : val;
 
                 if (!_.isNil(index) && index >= 0) {
-                    _.set(data, [entity, index, "id"], id);
+                    _.set(data, [entity, index, SYS_ID_PROP], id);
                     _.set(data, [entity, index, prop], v);
                 } else {
                     data[prop] = v;
-                    data["id"] = id;
+                    data[SYS_ID_PROP] = id;
                 }
+
+                console.log("on save data: ", data);
 
                 onSave(cell, data)
                     .then(() => {
@@ -211,7 +233,10 @@ EditableCell.protoTypes = {
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
     onSave: PropTypes.func.isRequired,
     onError: PropTypes.func,
-    editable: PropTypes.bool
+    editable: PropTypes.bool,
+    formatter: PropTypes.func,
+    preparearer: PropTypes.func,
+
 };
 
 export default withStackEvents(EditableCell);

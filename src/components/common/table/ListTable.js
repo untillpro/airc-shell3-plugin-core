@@ -34,12 +34,16 @@ import {
 } from '../../../classes/helpers';
 
 import {
+    SYS_ID_PROP
+} from '../../../const/Common';
+
+import {
     filterString,
     filterGroup,
     renderTotalCell,
 } from './helpers';
 
-const DefaultVisibleColumns = { "ID": false, "id": false, "Id": false };
+const DefaultVisibleColumns = { [SYS_ID_PROP]: false, "id": false, "Id": false };
 
 class ListTable extends PureComponent {
     constructor(props) {
@@ -135,12 +139,24 @@ class ListTable extends PureComponent {
 
     getCellRenderer(d, opts, isDynamic) {
         const { defaultCurrency } = this.props;
-        const { type, value_accessor, currency_accessor, editable, entity } = opts;
-        const props = { cell: d, entity, editable, prop: value_accessor, dynamic: isDynamic, defaultCurrency };
+        const { type, value_accessor, currency_accessor, editable, entity, rate, prefix, postfix } = opts;
+
+        const props = {
+            cell: d,
+            entity,
+            editable,
+            prop: value_accessor,
+            dynamic:
+                isDynamic,
+            defaultCurrency,
+            rate,
+            prefix,
+            postfix
+        };
 
         if (isDynamic === true) {
             props.value = _.get(d.value, [value_accessor]);
-            props.id = _.get(d.value, ["id"]);
+            props.id = _.get(d.value, [SYS_ID_PROP]);
             props.index = _.get(d.value, ["_index"]);
 
             if (type === "price" && _.isString(currency_accessor)) {
@@ -148,7 +164,7 @@ class ListTable extends PureComponent {
             }
         } else {
             props.value = d.value;
-            props.id = _.get(d.original, ["id"]);
+            props.id = _.get(d.original, [SYS_ID_PROP]);
             props.index = null;
 
             if (type === "price" && _.isString(currency_accessor)) {
@@ -438,6 +454,8 @@ class ListTable extends PureComponent {
             return [];
         }
 
+        console.log("prepareDynamicColumns classifiers: ", classifiers);
+
         const {
             classificator,
             text_accessor,
@@ -473,26 +491,22 @@ class ListTable extends PureComponent {
         const columns = {};
         const props = { accessor, value_accessor, classifier_link, defaultValue };
 
-        _.forEach(classifiers, (lc) => { // lc - location classifier
-            if (lc && lc[classificator]) {
-                _.forEach(lc[classificator], (c) => {
-                    const key = c[text_accessor];
+        _.forEach(classifiers[classificator], (c) => {
+            const key = c[text_accessor];
 
-                    if (!columns[key]) {
-                        columns[key] = {
-                            "id": key,
-                            "Header": key,
-                            "accessor": (d, isExport) => getDynamicValue(d, key, props, isExport),
-                            "type": type || null,
-                            "linked": [],
-                            "width": width,
-                            "Cell": (d) => this.getCellRenderer(d, columnProps, true)
-                        };
-                    }
-
-                    columns[key]["linked"].push(c.id);
-                });
+            if (!columns[key]) {
+                columns[key] = {
+                    "id": key,
+                    "Header": key,
+                    "accessor": (d, isExport) => getDynamicValue(d, key, props, isExport),
+                    "type": type || null,
+                    "linked": [],
+                    "width": width,
+                    "Cell": (d) => this.getCellRenderer(d, columnProps, true)
+                };
             }
+
+            columns[key]["linked"].push(c.id);
         });
 
         return _.map(columns, (o) => o);
