@@ -15,7 +15,6 @@ const uploadFileAction = "https://badrequest.ru/tests/uploader/write.php";
 const FUNC_COLLECTION_NAME = 'q.air.collection';
 const FUNC_CDOC_NAME = 'q.air.cdoc';
 const FUNC_CUD_NAME = 'c.sys.CUD';
-const FUNC_STATE_NAME = 'c.air.state';
 
 class MockAlpha2ApiGate {
     constructor(callback) {
