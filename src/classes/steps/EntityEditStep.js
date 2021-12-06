@@ -14,9 +14,7 @@ import {
 } from '../helpers';
 
 import {
-    TYPE_COLLECTION,
     TYPE_TEXT,
-    C_COLLECTION_ENTITY,
 } from '../contributions/Types';
 
 import {
@@ -159,14 +157,11 @@ class EntityEditStep extends StateMachineStep {
     }
 
     fetchData(context) {
-        const { contributions } = context;
-        let entity = contributions.getPointContributionValue(TYPE_COLLECTION, this.entity, C_COLLECTION_ENTITY) || this.entity;
-
         return {
             action: {
                 type: SAGA_FETCH_ENTITY_DATA,
                 payload: {
-                    entity,
+                    entity: this.entity,
                     isCopy: this.copy,
                     id: _.size(this.entries) > 0 ? this.entries[0].id : null,
                     wsid: this.locations[0]

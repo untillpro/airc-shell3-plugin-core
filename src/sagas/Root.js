@@ -3,7 +3,7 @@
  */
 
 import _ from 'lodash';
-import { call, put, takeLatest, select } from 'redux-saga/effects'
+import { call, put, all, takeLatest, select } from 'redux-saga/effects'
 import { Logger } from 'airc-shell-core';
 import i18next from 'i18next';
 import lc from 'langcode-info';
@@ -75,7 +75,6 @@ function* _fetchListData(action) {
     const { page, pageSize, showDeleted } = list;
     const manual = !!contributions.getPointContributionValue(TYPE_LIST, entity, 'manual');
 
-    let classifiers = {};
     let doProps = {
         elements: getEntityColletionElements(context, entity),
         filters: getEntityFilters(context, entity),
@@ -105,18 +104,29 @@ function* _fetchListData(action) {
             props: doProps
         };
 
-        const data = yield call(getCollection, context, ops);
+        let tasks = [];
+        let tasksPath = [['resolvedData']];
+
+
+        tasks.push(call(getCollection, context, ops));
 
         let required_classifiers = getEntityRequiredClassifiers(context, entity);
 
         if (_.size(required_classifiers) > 0) {
             for (let c of required_classifiers) {
-                let cData = yield call(getCollection, context, { scheme: c, wsid, props: {} }, true);
-                classifiers[c] = cData?.resolvedData || null;
+                tasks.push(call(getCollection, context, { scheme: c, wsid, props: {} }, true))
+                tasksPath.push(['classifiers', c]);
             }
         }
 
-        yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: { ...data, classifiers } });
+        const result = {};
+        const data = yield all(tasks);
+
+        for (let i = 0; i < tasksPath.length; i++) {
+            _.set(result, tasksPath[i], data[i]['resolvedData']);
+        }
+
+        yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: result });
     } catch (e) {
         console.error(e);
 
@@ -150,6 +160,7 @@ function* _processData(action) {
 function* _fetchEntityData(action) {
     const { entity, id, wsid, isCopy } = action.payload;
     const context = yield select(Selectors.context);
+    const { contributions } = context;
 
     //const verifiedEntries = checkEntries(entries);
     let isNew = !id;
@@ -162,7 +173,9 @@ function* _fetchEntityData(action) {
         try {
             yield put({ type: SET_ENTITY_LOADING, payload: true });
 
-            const result = yield call(getObject, context, { scheme: entity, wsid, id, props: {} }, true);
+            let scheme = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
+
+            const result = yield call(getObject, context, { scheme, wsid, id, props: {} }, true);
 
             Logger.log(result, 'SAGA.fetchEntityData() fetched data:', "rootSaga.fetchEntityData");
 
