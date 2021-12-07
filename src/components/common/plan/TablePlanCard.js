@@ -9,7 +9,7 @@ import cn from 'classnames';
 import { translate as t, Icon, IconButton, NoImage, getBlobPath } from 'airc-shell-core';
 import * as Icons from 'airc-shell-core/const/Icons';
 
-import { STATE_FIELD_NAME } from '../../../const/Common';
+import { STATE_FIELD_NAME, TABLE_PLAN_ITEMS_FIELD_NAME } from '../../../const/';
 
 class TablePlanCard extends PureComponent {
     constructor(props) {
@@ -22,7 +22,7 @@ class TablePlanCard extends PureComponent {
 
     _tablesCount() {
         const { data } = this.props;
-        const tables = data["air_table_plan_item"];
+        const tables = data[TABLE_PLAN_ITEMS_FIELD_NAME];
 
         return tables ? _.size(tables) : 0;
     }

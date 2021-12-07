@@ -4,13 +4,12 @@
 
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { translate as t, Empty } from 'airc-shell-core';
+import { translate as t } from 'airc-shell-core';
 import { connect } from 'react-redux';
 import { withStackEvents } from 'stack-events';
 import { Search } from 'airc-shell-core';
 import { HeaderBackButton, TablePlan, LoadingOverlay, LocationSelector, Breadcrumbs } from '../common/';
 import { funcOrString } from '../../classes/helpers';
-import isEqual from 'react-fast-compare';
 
 import {
     sendCancelMessage,
@@ -21,13 +20,8 @@ import {
 } from '../../actions/';
 
 class EntityTablePlan extends Component {
-    constructor(props) {
+    constructor() {
         super();
-
-        this.state = {
-            data: null,
-            props: {}
-        };
 
         this.handleAddAction = this.handleAddAction.bind(this);
         this.handleEditAction = this.handleEditAction.bind(this);
@@ -35,44 +29,6 @@ class EntityTablePlan extends Component {
         this.handleReduceAction = this.handleReduceAction.bind(this);
         this.handleBackClick = this.handleBackClick.bind(this);
         this.handleShowDeletedChanged = this.handleShowDeletedChanged.bind(this);
-    }
-
-    componentDidMount() {
-        const { data } = this.props;
-
-        this.setState({ data: this._buildData(data) });
-
-    }
-
-    componentDidUpdate(oldProps) {
-        const { data } = this.props;
-
-        if (!isEqual(oldProps.data, data)) {
-            this.setState({
-                data: this._buildData(data)
-            });
-        }
-    }
-
-    _prepareProps() {
-        //TODO
-        return {};
-    }
-
-    _buildData(data) {
-        const res = {};
-
-        if (_.isPlainObject(data) && !_.isEmpty(data)) {
-            _.forEach(data, (locations, name) => {
-                if (!_.isEmpty(locations)) {
-                    _.forEach(locations, (item, locId) => {
-                        _.set(res, [locId, name], item);
-                    });
-                }
-            });
-        }
-
-        return res;
     }
 
     handleBackClick() {
@@ -87,7 +43,7 @@ class EntityTablePlan extends Component {
 
     handleEditAction(entry) {
         const { locations, entity } = this.props;
-        
+
         if (_.isPlainObject(entry)) {
             this.props.sendNeedEditFormMessage([entry], locations, entity);
         }
@@ -120,33 +76,30 @@ class EntityTablePlan extends Component {
     }
 
     renderPlans() {
-        const { locations, locationsOptions, showDeleted } = this.props;
-        const { data } = this.state;
+        const { locations, locationsOptions, showDeleted, data } = this.props;
 
-        if (_.isEmpty(locations)) {
-            return <Empty description={t("No locations selected", "tableplan")} />;
-        }
+        console.log("EntityTablePlan data: ", data);
 
-        return _.map(locations, (locId) => {
-            return  <TablePlan
-                        key={`table_plan_${locId}`}
-                        location={locId}
-                        name={locationsOptions[locId]}
-                        data={data ? data[locId] : null}
-                        showDeleted={showDeleted}
-                        onAdd={this.handleAddAction}
-                        onEdit={this.handleEditAction}
-                        onDelete={this.handleDeleteAction}
-                        onReduce={this.handleReduceAction}
-                        onShowDeletedChanged={this.handleShowDeletedChanged}
-                    />;
-        });
+        let locId = locations[0];
+
+        return <TablePlan
+            key={`table_plan_${locId}`}
+            location={locId}
+            name={locationsOptions[locId]}
+            data={data || []}
+            showDeleted={showDeleted}
+            onAdd={this.handleAddAction}
+            onEdit={this.handleEditAction}
+            onDelete={this.handleDeleteAction}
+            onReduce={this.handleReduceAction}
+            onShowDeletedChanged={this.handleShowDeletedChanged}
+        />;
     }
 
     renderLoading() {
         const { loading } = this.props;
-        
-        return <LoadingOverlay show={loading} text="Loading..."/>;
+
+        return <LoadingOverlay show={loading} text="Loading..." />;
     }
 
     render() {
@@ -187,14 +140,14 @@ class EntityTablePlan extends Component {
 const mapStateToProps = (state) => {
     const { contributions, api } = state.context;
     const { locations, locationsOptions } = state.locations;
-    const { data, loading, showDeleted } = state.list;
+    const { resolvedData, loading, showDeleted } = state.list;
 
     return {
         api,
         showDeleted,
         loading,
         contributions,
-        data: data,
+        data: resolvedData,
         locations,
         locationsOptions
     };
