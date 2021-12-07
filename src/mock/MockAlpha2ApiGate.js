@@ -5,6 +5,8 @@
 import _ from 'lodash';
 import axios from 'axios';
 import qs from 'qs';
+
+import { Logger } from 'airc-shell-core';
 import { message } from 'antd';
 import { ResponseBuilder, CUDBuilder, ResponseErrorBuilder } from './utils';
 //import TablePlanData from './data/table_plan.json';
@@ -145,7 +147,7 @@ class MockAlpha2ApiGate {
         };
 
         return this.do("airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
-            //console.log('+++ api.object result', response);
+            Logger.log(response, '+++ api.object result');
 
             if (response.isError()) {
                 throw new Error(response.getErrorMessage());
@@ -155,19 +157,20 @@ class MockAlpha2ApiGate {
 
             try {
                 let jsonData = response.getData().result[0][0][0][0];
-                //console.log("jsonData", jsonData);
+                Logger.log(jsonData, "jsonData");
                 result = JSON.parse(jsonData);
-                //console.log("result: ", result);
+
+                Logger.log(result, "result: ");
             } catch (e) {
-                //console.log(e);
+                Logger.error(e);
                 result = {};
             }
 
-            //console.log('+++ resultData', result);
+            Logger.log(result, '+++ resultData');
 
             return result;
         }).catch((e) => {
-            console.error(e);
+            Logger.error(e);
             throw e;
         });
     }
@@ -176,21 +179,10 @@ class MockAlpha2ApiGate {
     //Mock api call for /collection/ function
     async collection(scheme, wsid, props = {}) {
         const { elements, filters, orderBy, start_from, count } = props;
-        //const { entries, page, page_size, show_deleted, required_fields, required_classifiers, filter_by } = props;
 
         this.print("Api.Collection func call: ", scheme, wsid, props);
 
         let location = this._checkWSID(wsid);
-
-        /*
-        if (type === 'table_plan') {
-            console.log('TablePlanData:', TablePlanData['sections']);
-            let mockData = builder.build(TablePlanData['sections']);
-
-            console.log('mockData: ', mockData);
-            return mockData
-        }
-        */
 
         let params = {
             'args': {
@@ -205,13 +197,13 @@ class MockAlpha2ApiGate {
         }
 
         return this.do("airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
-            //console.log('+++ api.collection result', response);
+            Logger.log(response, '+++ api.collection result');
 
             if (response.isError()) {
                 throw new Error(response.getErrorMessage());
             }
 
-            //console.log('+++ resultData', response.getData());
+            Logger.log(response.getData(), '+++ resultData');
 
             return response.getData();
         }).catch((e) => {
@@ -221,14 +213,14 @@ class MockAlpha2ApiGate {
     }
 
     async sync(entries) {
-        //todo
-        console.log('sync method call:', token, entries);
+        Logger.log({ token, entries }, 'sync method call:',);
 
         return {};
     }
 
     async log(wsids, props) {
-        console.log('log call with props: ', wsids, props);
+        Logger.log({ wsids, props }, 'log call with props: ');
+
         const { from, to, type, from_offset, to_offset, show, filterBy, required_classifiers } = props;
 
         const params = {};
@@ -284,13 +276,13 @@ class MockAlpha2ApiGate {
         const path = `${location}/log`;
 
         return this.do(`airs-bp`, path, params, 'post').then((response) => {
-            //console.log('+++ api.log result', response);
+            Logger.log(response, '+++ api.log result');
 
             if (response.isError()) {
                 throw new Error(response.getErrorMessage());
             }
 
-            //console.log('+++ resultData', response.getData());
+            Logger.log(response.getData(), '+++ resultData');
 
             return response.getData();
         });
@@ -299,6 +291,7 @@ class MockAlpha2ApiGate {
     async blob(option) {
         const method = 'post';
         const options = { ...option, method, action: uploadFileAction };
+        
         /*
         if (option.onProgress && xhr.upload) {
             xhr.upload.onprogress = function progress(e) {
@@ -413,17 +406,7 @@ class MockAlpha2ApiGate {
     }
 
     print(label, ...args) {
-        if (args.length > 0) {
-            let l = label.toString();
-            console.group(l);
-
-            for (let i = 0; i < args.length; i++) {
-
-                console.log(i, ": ", args[i]);
-            }
-
-            console.groupEnd(l);
-        }
+        Logger.log(label, args);
     }
 }
 

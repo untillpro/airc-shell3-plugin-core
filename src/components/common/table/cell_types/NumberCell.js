@@ -17,10 +17,6 @@ class NumberCell extends PureComponent {
         this.init = this.init.bind(this);
     }
 
-    componentDidMount() {
-        console.log('numberCell: ', this.props);
-    }
-
     format(value) {
         const { type } = this.props;
 

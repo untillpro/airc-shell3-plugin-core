@@ -6,6 +6,7 @@ const maxTail = 1000;
 
 var actionsStore = []
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default store => next => action => {
     if (action.logger && action.logger.print === true) {
         console.group("actionLogger:");

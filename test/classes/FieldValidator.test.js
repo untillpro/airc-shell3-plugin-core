@@ -2,6 +2,7 @@
  * Copyright (c) 2020-present unTill Pro, Ltd.
  */
 import i18next from 'i18next';
+import { Logger } from 'airc-shell-core';
 import { makeValidator } from '../../src/classes/helpers';
 
 const CURRENT_VALUE_NOT_NUMBER_ERROR = 'Enter valid number';
@@ -56,7 +57,7 @@ test("i18next initialization", async () => {
         }
     }, (err, t) => {
         if (err) {
-            console.log(err);
+            Logger.error(err, "Validation error");
             throw new Error(err);
         }
     });

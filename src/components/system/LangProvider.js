@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import lc from 'langcode-info';
 import moment from 'moment';
 import i18next from 'i18next';
+import { Logger } from 'airc-shell-core';
 
 import { 
     initContextLang, 
@@ -90,7 +91,7 @@ class LangProvider extends PureComponent {
 
                     this.setState({ init: true });
                 } else {
-                    console.log(err);
+                    Logger.error(err);
                     throw new Error(err);
                 }
             });

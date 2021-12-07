@@ -144,8 +144,6 @@ class EditableCell extends PureComponent {
                     data[SYS_ID_PROP] = id;
                 }
 
-                console.log("on save data: ", data);
-
                 onSave(cell, data)
                     .then(() => {
                         this.cancel({ initValue: val, value: val, loading: false })

@@ -16,7 +16,7 @@ class FieldValidator {
         let path = accessor;
 
         if (embedded_type) {
-            path = `${embedded_type}.${path}`;
+            path = [embedded_type, path];
         }
 
         if (path) {

@@ -11,7 +11,7 @@ export const simpleMutateCheck = (data, oldData, field, embedded_type) => {
     let path = accessor || null ;
 
     if (embedded_type) {
-        path = `${embedded_type}.${path}`;
+        path = [embedded_type, path];
     }
 
     const v1 = _.get(data, path);

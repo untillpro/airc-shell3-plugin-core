@@ -130,9 +130,6 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
         const { field } = this.props;
         const { entity, depended_entity } = field;
 
-        console.log("data: ", data);
-        console.log("dep_data: ", dep_data);
-
         if (!data || data.length <= 0) return dep_data;
 
         let fk = getParentForeignKey(entity, depended_entity);

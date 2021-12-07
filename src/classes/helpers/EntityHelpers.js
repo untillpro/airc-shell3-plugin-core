@@ -3,7 +3,7 @@
  */
 
 import _ from 'lodash';
-//import { Logger } from 'airc-shell-core';
+import { Logger } from 'airc-shell-core';
 import pretifyData from '../ResponseDataPretifier';
 import ForeignKeys from '../../const/ForeignKeys';
 import EmbeddeTypes from '../../const/EmbeddeTypes';
@@ -24,7 +24,8 @@ import {
     C_COLLECTION_ELEMENTS,
     C_COLLECTION_FILTERS,
     C_COLLECTION_ENTITY,
-    C_COLLECTION_REQUIRED_CLASSIFIERS
+    C_COLLECTION_REQUIRED_CLASSIFIERS,
+    C_FORMS_EMBEDDED_TYPE
 } from '../contributions/Types';
 
 import {
@@ -139,8 +140,8 @@ export const getEntityColletionElements = (context, entity) => {
 export const getEntityEmbeddedTypes = (entity, contributions) => {
     const sectionsContributon = contributions.getPointContributions(TYPE_FORMS, entity);
 
-    if (sectionsContributon && sectionsContributon["embeddedTypes"]) {
-        return sectionsContributon["embeddedTypes"];
+    if (sectionsContributon && sectionsContributon[C_FORMS_EMBEDDED_TYPE]) {
+        return sectionsContributon[C_FORMS_EMBEDDED_TYPE];
     }
 
     return null;
@@ -278,7 +279,7 @@ export const getEntityRequiredClassifiers = (context, entity) => {
 // DATA PROCESSING
 
 export const processEntityData = async (context, entity, data, entries) => {
-    console.log("processEntityData: ", data);
+    Logger.log("processEntityData: ", data);
 
     if (!data || typeof data !== 'object') {
         throw new Error('Wrong data specified to .', data);
@@ -314,10 +315,10 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
 
     // embeded types
 
-    const embeddedTypes = getEntityEmbeddedTypes(type, contributions);
+    const embedded_types = getEntityEmbeddedTypes(type, contributions);
 
-    if (embeddedTypes && embeddedTypes.length > 0) {
-        _.each(embeddedTypes, (eType) => {
+    if (embedded_types && embedded_types.length > 0) {
+        _.each(embedded_types, (eType) => {
             if (data[eType]) {
                 let d = data[eType];
                 let eId = d && d[SYS_ID_PROP] ? parseInt(d[SYS_ID_PROP]) : null;
@@ -440,7 +441,7 @@ export const checkForEmbededTypes = (context, entity, data) => {
     const Data = { ...data };
 
     const pointContributions = contributions.getPointContributions(TYPE_FORMS, entity);
-    const embedded_types = pointContributions ? pointContributions.embeddedTypes : null;
+    const embedded_types = pointContributions ? pointContributions[C_FORMS_EMBEDDED_TYPE] : null;
 
     if (embedded_types && embedded_types.length > 0) {
         _.each(embedded_types, (type) => {

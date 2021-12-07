@@ -454,8 +454,6 @@ class ListTable extends PureComponent {
             return [];
         }
 
-        console.log("prepareDynamicColumns classifiers: ", classifiers);
-
         const {
             classificator,
             text_accessor,

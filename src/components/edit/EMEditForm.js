@@ -34,10 +34,12 @@ import {
 
 import {
     TYPE_FORMS,
-    C_FORMS_DEFAULT
+    C_FORMS_DEFAULT,
+    C_FORMS_EMBEDDED_TYPE,
+    C_FORMS_SECTIONS
 } from '../../classes/contributions/Types';
 
-import { STATE_FIELD_NAME } from '../../const/Common';
+import { STATE_FIELD_NAME, SYS_ID_PROP } from '../../const/Common';
 
 import {
     sendNeedEditFormMessage,
@@ -45,7 +47,7 @@ import {
     sendError
 } from '../../actions/';
 
-import { LoadingOverlay, Breadcrumbs }  from '../common/';
+import { LoadingOverlay, Breadcrumbs } from '../common/';
 
 import log from '../../classes/Log';
 
@@ -318,14 +320,14 @@ class EMEditForm extends Component {
         if (data) {
             const cc = contributions.getPointContributions("forms", entity);
 
-            if (cc) {
-                if (cc.embeddedTypes && cc.embeddedTypes.length > 0) {
-                    _.each(cc.embeddedTypes, (eType) => {
-                        if (data[eType] && data[eType] instanceof Object && resultData[eType]) {
-                            resultData[eType].id = data[eType].id;
-                        }
-                    });
-                }
+            const embedded_types = _.get(cc, [C_FORMS_EMBEDDED_TYPE]);
+
+            if (embedded_types && embedded_types.length > 0) {
+                _.each(embedded_types, (eType) => {
+                    if (_.isPlainObject(data[eType]) && resultData[eType]) {
+                        resultData[eType][SYS_ID_PROP] = data[eType][SYS_ID_PROP];
+                    }
+                });
             }
         }
 
@@ -394,10 +396,10 @@ class EMEditForm extends Component {
         let sections = [];
 
         if (contributions && entity) {
-            const entityContribution = contributions.getPointContributions('forms', entity);
+            const point = contributions.getPointContributions('forms', entity);
 
-            if (entityContribution && entityContribution.sections) {
-                _.each(entityContribution.sections, (sectionName) => {
+            if (point && point[C_FORMS_SECTIONS]) {
+                _.each(point[C_FORMS_SECTIONS], (sectionName) => {
                     const conts = contributions.getPointContributions('sections', sectionName);
 
                     if (conts) {
@@ -407,8 +409,8 @@ class EMEditForm extends Component {
                 });
             }
 
-            if (entityContribution && entityContribution.embeddedTypes && entityContribution.embeddedTypes.length > 0) {
-                _.each(entityContribution.embeddedTypes, (eType) => {
+            if (point && point[C_FORMS_EMBEDDED_TYPE] && point[C_FORMS_EMBEDDED_TYPE].length > 0) {
+                _.each(point[C_FORMS_EMBEDDED_TYPE], (eType) => {
                     const sects = this.getSections(eType, true);
 
                     if (sects && sects.length > 0) {
@@ -595,7 +597,7 @@ class EMEditForm extends Component {
                     />
                 ) : null}
 
-                {showBreadcrumbs === true ? (<Breadcrumbs />): null} 
+                {showBreadcrumbs === true ? (<Breadcrumbs />) : null}
 
                 <div className='paper nopad'>
                     {this.buildForm()}

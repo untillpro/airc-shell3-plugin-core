@@ -125,10 +125,6 @@ class DashboardHeader extends PureComponent {
         this.props.setDashboardSettings(payload);
     }
 
-    onFinishFailed = (data) => {
-        console.log("onFinishFailed data: ", data.values);
-    }
-
     getVisibleCharts() {
         const { charts, visibility } = this.props;
         const result = [];
@@ -191,7 +187,6 @@ class DashboardHeader extends PureComponent {
                                 {...formItemLayout}
                                 ref={this.formRef}
                                 onFinish={this.onFinish}
-                                onFinishFailed={this.onFinishFailed}
                                 initialValues={{
                                     "period": [from, to],
                                     "auto_refresh": autoRefresh,

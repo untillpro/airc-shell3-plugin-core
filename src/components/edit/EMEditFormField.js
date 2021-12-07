@@ -95,7 +95,7 @@ class EMEditFormField extends Component {
 
         if (data && path && typeof path === 'string') {
             if (embedded_type) {
-                path = `${embedded_type}.${path}`;
+                path = [embedded_type, path];
             }
 
             val =  _.get(data, path);

@@ -390,8 +390,6 @@ export const getDynamicValue = (cell, key, props, isExport) => {
     let val = null;
     const { accessor, classifier_link, value_accessor, /*, defaultValue */ } = props;
 
-    // TODO: ПОменять названия переменных. Сейчас как-то топорно. Заполнить README
-
     if (cell[accessor]) {
         _.forEach(cell[accessor], (row, index) => {
             if (_.get(row, classifier_link) === key) {
