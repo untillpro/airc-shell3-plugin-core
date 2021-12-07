@@ -21,8 +21,8 @@ const FUNC_CUD_NAME = 'c.sys.CUD';
 class MockAlpha2ApiGate {
     constructor(callback) {
         this.name = "MockAlpha2ApiGate";
-        //this.host = 'https://alpha.dev.untill.ru/api';
-        this.host = 'https://rc.dev.untill.ru/api';
+        this.host = 'https://alpha.dev.untill.ru/api';
+        //this.host = 'https://rc.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
             callback();
