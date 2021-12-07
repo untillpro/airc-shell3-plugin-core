@@ -68,14 +68,14 @@
                 "Return to editing": "Return to editing"
             },
             "Edit image": "Edit image",
-            "Select image": "Select image",
             "Select an image": "Select an image",
             "Image max size exceeded. Available max image size {{size}}": "Image max size exceeded. Available max image size {{size}}",
             "Delete image?": "Delete image?",
             "Are you sure delete image?": "Are you sure delete image?",
             "Upload image file:": "Upload image file:",
             "Width (px):": "Width (px):",
-            "Height (px):": "Height (px):"
+            "Height (px):": "Height (px):",
+            "{{count}} tables": "{{count}} tables"
         },
         "payment_kind": {
             "cash": "Cash",

@@ -58,7 +58,8 @@
             "Are you sure delete image?": "Are you sure delete image?",
             "Upload image file:": "Upload image file:",
             "Width (px):": "Width (px):",
-            "Height (px):": "Height (px):"
+            "Height (px):": "Height (px):",
+            "{{count}} tables": "{{count}} tables"
         },
         "payment_kind": {
             "cash": "Contant",

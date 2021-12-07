@@ -75,7 +75,8 @@
             "Are you sure delete image?": "Вы уверены, что хотите удалить изображение?",
             "Upload image file:": "Изображение:",
             "Width (px):": "Ширина (px):",
-            "Height (px):": "Высота (px):"
+            "Height (px):": "Высота (px):",
+            "{{count}} tables": "{{count}} столов"
         },
         "payment_kind": {
             "cash": "Cash",
