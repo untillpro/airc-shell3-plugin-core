@@ -6,9 +6,8 @@ import _ from 'lodash';
 import axios from 'axios';
 import qs from 'qs';
 
-import { Logger } from 'airc-shell-core';
 import { message } from 'antd';
-import { ResponseBuilder, CUDBuilder, ResponseErrorBuilder } from './utils';
+import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder } from 'airc-shell-core';
 //import TablePlanData from './data/table_plan.json';
 
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjI1NTM2LCJEZXZpY2VJRCI6MSwiZXhwIjoxNTc3NTE5MDQzfQ.dXnbwFUtjcue8_LXNpir3lltj0qoDUarbZ1BDkj5Zno';
@@ -21,7 +20,7 @@ const FUNC_CUD_NAME = 'c.sys.CUD';
 class MockAlpha2ApiGate {
     constructor(callback) {
         this.name = "MockAlpha2ApiGate";
-        this.host = 'https://alpha.dev.untill.ru/api';
+        this.host = 'https://alpha2.dev.untill.ru/api';
         //this.host = 'https://rc.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
