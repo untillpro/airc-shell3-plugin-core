@@ -37,12 +37,10 @@ class EMEditFormFieldsGroup extends Component {
 
     componentDidMount() {
         const {
-            fields,
             group,
             contributions,
         } = this.props;
 
-       
 
         const header = contributions.getPointContributionValue(TYPE_FORMSGROUPS, group, C_FORMSGROUPS_NAME);
         const isTabs = contributions.getPointContributionValue(TYPE_FORMSGROUPS, group, C_FORMSGROUPS_TABS);
