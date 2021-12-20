@@ -7,32 +7,30 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Stubble from 'stubble4js';
-import { translate as t } from 'airc-shell-core';
+import { translate as t, Button } from 'airc-shell-core';
 import DefaultHelpers from '../classes/DefaultHelpers';
 
 import {
     sendError
 } from '../../../actions/MessagesActions';
-
-import data from '../../../mock/data/TicketMockData';
-
 class TicketLayoutPreview extends Component {
     constructor() {
         super();
 
         this.state = {
-            conten: null
+            conten: null,
+            needRebuild: false
         };
 
         this.rendered = null;
         this.stubble = new Stubble();
+
+        this.build = this.build.bind(this);
     }
 
     componentDidMount() {
         let Helpers = {};
-        const { helpers, settings, template } = this.props;
-
-
+        const { helpers, template } = this.props;
 
         if (!template || typeof template !== 'string') {
             this.sendError(t("Layout's template not specified or wrong given", "errors"));
@@ -54,8 +52,9 @@ class TicketLayoutPreview extends Component {
             });
         }
 
-        if (template)
-            this.build(settings);
+        if (template) {
+            this.build();
+        }
     }
 
     componentDidUpdate(oldProps) {
@@ -63,14 +62,17 @@ class TicketLayoutPreview extends Component {
 
         if (template !== oldProps.template) {
             this.initTemplate(template);
-            this.build(settings);
+            this.build();
         } else if (settings !== oldProps.settings) {
-            this.build(settings);
+            this.setState({ needRebuild: true});
+            //this.build();
         }
     }
 
     initTemplate(template) {
-        const tpl = this.perfect(template);
+        let tpl = this.perfect(template);
+        tpl = this.translate(tpl);
+
         this.rendered = this.stubble.compile(tpl);
     }
 
@@ -88,14 +90,20 @@ class TicketLayoutPreview extends Component {
         return str;
     }
 
-    build(settings) {
+    translate(tpl) {
+        return tpl.replace(/\$\$(.*?)\$\$/gm, (a1, a2) => t(a2, "ticket"));
+    }
+
+    build() {
+        const { data, settings } = this.props;
         let result = '';
 
         try {
-            result = this.rendered({ data, settings });
+            result = this.rendered({ ...data, settings });
 
             this.setState({
-                content: result
+                content: result,
+                needRebuild: false
             });
         } catch (e) {
             console.error(e);
@@ -103,12 +111,26 @@ class TicketLayoutPreview extends Component {
         }
     }
 
+    renderNeedRebuildOverlay() {
+        const { needRebuild } = this.state;
+
+        if (!needRebuild) return null;
+
+        return <div className="need-rebuild-overlay">
+            <Button onClick={this.build} type="primary" > {t("Refresh preview", "form")} </Button>
+        </div>;
+    }
+
     render() {
         const { content } = this.state;
         if (!content) return null;
 
         return (
-            <div className="ticket-area" dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="ticket-area">
+                <div className="layout-prreview" dangerouslySetInnerHTML={{ __html: content }} />
+
+                {this.renderNeedRebuildOverlay()}
+            </div>
         );
     }
 }

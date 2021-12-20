@@ -77,9 +77,6 @@ class EntityTablePlan extends Component {
 
     renderPlans() {
         const { locations, locationsOptions, showDeleted, data } = this.props;
-
-        console.log("EntityTablePlan data: ", data);
-
         let locId = locations[0];
 
         return <TablePlan

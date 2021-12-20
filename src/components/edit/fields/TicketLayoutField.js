@@ -15,15 +15,16 @@ import {
     sendError
 } from '../../../actions/';
 
-import { 
+import {
     funcOrString
 } from "../../../classes/helpers";
 
-import { 
+import {
     TYPE_LAYOUTS,
     TYPE_HELPERS,
     C_LAYOUTS_NAME,
-    C_LAYOUTS_TEMPLATE
+    C_LAYOUTS_TEMPLATE,
+    C_LAYOUTS_TEMPLATE_DATA
 } from "../../../classes/contributions/Types";
 
 import buffer from 'buffer';
@@ -46,14 +47,15 @@ class TicketLayoutField extends Component {
             layoutSettings: [],
             layoutTemplate: [],
             layoutHelpers: [],
-            layoutDictionary: {}
+            layoutDictionary: {},
+            layoutData: {},
         };
 
         this.onDataChanged = this.onDataChanged.bind(this);
     }
 
     componentDidMount() {
-        const { prefix  } = this.props; 
+        const { prefix } = this.props;
 
         if (prefix && typeof prefix === 'string') {
             this.prefix = prefix;
@@ -81,6 +83,7 @@ class TicketLayoutField extends Component {
         let layoutSettings = null;
         let layoutHelpers = null;
         let layoutDictionary = null;
+        let layoutData = {};
         let changedData = null;
         let templateChanged = false;
 
@@ -103,10 +106,10 @@ class TicketLayoutField extends Component {
 
         if (value) {
             const buffer = new Buffer(value, 'base64');
-            
+
             if (this.checkBlobPrefix(buffer)) {
-                const data  = this.parseBlobData(buffer);
-            
+                const data = this.parseBlobData(buffer);
+
                 if (data.settings && typeof data.settings === 'object') {
                     changedData = data.settings;
                 }
@@ -135,6 +138,7 @@ class TicketLayoutField extends Component {
             if (selectedLayout) {
                 layoutHelpers = this.getHelpers(selectedLayout);
                 layoutSettings = this.getSettings(selectedLayout);
+                layoutData = this.getData(selectedLayout);
             }
 
             this.setState({
@@ -145,6 +149,7 @@ class TicketLayoutField extends Component {
                 layoutSettings,
                 layoutHelpers,
                 layoutDictionary,
+                layoutData,
                 templateChanged
             });
         }
@@ -196,7 +201,7 @@ class TicketLayoutField extends Component {
     }
 
     handleChange() {
-        const { changedData, layoutTemplate, selectedLayout, layoutDictionary } = this.state;
+        const { changedData, layoutTemplate, selectedLayout } = this.state;
         const { onChange, field } = this.props;
         const { accessor } = field;
 
@@ -204,15 +209,13 @@ class TicketLayoutField extends Component {
             const result = {
                 settings: changedData,
                 template: layoutTemplate,
-                code: selectedLayout,
-                dictionary: layoutDictionary
+                code: selectedLayout
             };
 
             const value = 'airc' + JSON.stringify(result);
-
             const buffer = new Buffer(value);
 
-            onChange({[accessor]: buffer.toString('base64')});
+            onChange({ [accessor]: buffer.toString('base64') });
         }
     }
 
@@ -231,8 +234,8 @@ class TicketLayoutField extends Component {
 
         let settings = [];
 
-        const LAYOUT = contributions.getPointContributions(TYPE_LAYOUTS, code);
-        settings = LAYOUT.settings || [];
+        const layoutPoint = contributions.getPointContributions(TYPE_LAYOUTS, code);
+        settings = layoutPoint.settings || [];
 
         return settings;
     }
@@ -242,11 +245,11 @@ class TicketLayoutField extends Component {
         const { contributions } = context;
 
         const helpers = {};
- 
-        const HELPERS = contributions.getPointContributions(TYPE_HELPERS, code);
 
-        if (_.size(HELPERS) > 0) {
-            _.each(HELPERS, (helper, name) => helpers[name] = helper);
+        const helpersPoint = contributions.getPointContributions(TYPE_HELPERS, code);
+
+        if (_.size(helpersPoint) > 0) {
+            _.each(helpersPoint, (helper, name) => helpers[name] = helper);
         }
 
         return helpers;
@@ -266,6 +269,13 @@ class TicketLayoutField extends Component {
         return values;
     }
 
+    getData(code) {
+        const { context } = this.props;
+        const { contributions } = context;
+
+        return contributions.getPointContributionValue(TYPE_LAYOUTS, code, C_LAYOUTS_TEMPLATE_DATA) || {};
+    }
+
     selectLayout(code) {
         const { layouts } = this.state;
 
@@ -274,10 +284,11 @@ class TicketLayoutField extends Component {
         if (!code) return;
 
         if (!layouts[code]) this.props.sendError(t("Selected layout not presented in available ticket layouts", "errors"));
-        
+
         const template = this.getTemplate(code);
         const settings = this.getSettings(code);
         const helpers = this.getHelpers(code);
+        const data = this.getData(code);
 
         if (settings && settings.length > 0) {
             defaultValues = this.getDefaultValues(settings)
@@ -291,6 +302,7 @@ class TicketLayoutField extends Component {
                 layoutTemplate: template,
                 layoutSettings: settings,
                 layoutHelpers: helpers,
+                layoutData: data,
                 changedData: defaultValues
             });
         }
@@ -309,7 +321,7 @@ class TicketLayoutField extends Component {
                 templateChanged: false
             });
         }
-    }   
+    }
 
     renderChangedMessage() {
         const { templateChanged } = this.state;
@@ -328,12 +340,12 @@ class TicketLayoutField extends Component {
     }
 
     renderLayoutDetails() {
-        const { 
-            layoutSettings, 
-            layoutTemplate, 
-            layoutHelpers,  
-            //layoutDictionary, 
-            selectedLayout, 
+        const {
+            layoutSettings,
+            layoutTemplate,
+            layoutHelpers,
+            layoutData,
+            selectedLayout,
             changedData } = this.state;
 
         if (!selectedLayout)
@@ -353,9 +365,7 @@ class TicketLayoutField extends Component {
                         <EMEditFormFieldsBuilder
                             fields={layoutSettings}
                             opened={true}
-
                             onDataChanged={this.onDataChanged}
-
                             data={changedData}
                             changedData={changedData}
                         />
@@ -370,12 +380,13 @@ class TicketLayoutField extends Component {
                         />
                         
                         */}
-                        
+
 
                         <TicketLayoutPreview
                             template={layoutTemplate}
                             settings={{ ...changedData }}
                             helpers={layoutHelpers}
+                            data={layoutData}
                         />
                     </div>
                 </div>
@@ -386,7 +397,7 @@ class TicketLayoutField extends Component {
     render() {
         const { error, layouts, selectedLayout } = this.state;
         const { disabled, loading } = this.props;
-        
+
         if (error) {
             return (
                 <Message type='error'>
@@ -396,7 +407,7 @@ class TicketLayoutField extends Component {
         }
 
         if (layouts.length <= 0) return null;
-
+        
         return (
             <div className="ticket-layout-selector-field" >
                 <Select

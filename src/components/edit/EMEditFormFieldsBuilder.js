@@ -16,10 +16,6 @@ class EMEditFormFieldsBuilder extends Component {
         };
     }
 
-    componentDidMount() {
-        this.initGroups();
-    }
-
     initGroups() {
         const { fields } = this.props;
 
@@ -43,7 +39,9 @@ class EMEditFormFieldsBuilder extends Component {
             }
         });
 
-        this.setState({ groups: fieldGroups });
+        //this.setState({ groups: fieldGroups });
+
+        return fieldGroups;
     }
 
     shouldComponentUpdate(nextProps) {
@@ -54,7 +52,7 @@ class EMEditFormFieldsBuilder extends Component {
 
     // TODO use of context
     buildFieldsGroups() {
-        if (!this.state.groups) return null;
+        let groups = this.initGroups();
         
         const { 
             formContext,
@@ -71,7 +69,7 @@ class EMEditFormFieldsBuilder extends Component {
 
         let counter = 0;
 
-        return _.map(this.state.groups, (fields, group) => {
+        return _.map(groups, (fields, group) => {
             return <EMEditFormFieldsGroup 
                 formContext={formContext}
                 index={counter++}
@@ -109,9 +107,6 @@ class EMEditFormFieldsBuilder extends Component {
 
     render() {
         const { hasErrors, opened } = this.props;
-        const { groups } = this.state;
-
-        if (!groups) return null;
 
         return (
             <div 

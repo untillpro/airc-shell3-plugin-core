@@ -35,10 +35,30 @@
 
     word-break: break-all;
     border: 1px solid #cdcdcd;
+
+    position: relative;
 }
 
 .ticket-area * {
     font-family: "Lucida Console", Monaco, monospace
+}
+
+.ticket-area .need-rebuild-overlay {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    left: 0;
+    top: 0;
+
+    background-color: rgba(255, 255, 255, 0.5);
+
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 /**************/
@@ -49,7 +69,7 @@
 
 .ticket-area u {
     min-width: 100%;
-    display: block;
+    display: inline-block;
     border-bottom: 1px solid #cdcdcd;
     text-decoration: none;
 }
@@ -64,7 +84,7 @@
 
 .ticket-area t {
     display: inline-block;
-    width: 50px;
+    width: 30px;
 }
 
 .ticket-area line {
@@ -83,10 +103,49 @@
     content: attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol)attr(symbol);
 }
 
+.ticket-area line[type="single"]:after  {
+    font-size: 14;
+    content: '────────────────────────────────────────────────────────────────────────';
+}
+
+.ticket-area line[type="double"]:after  {
+    font-size: 14;
+    content: '════════════════════════════════════════════════════════════════════════';
+}
+
+.ticket-area label {
+    display: block;
+    text-align: left;
+}
+
+.ticket-area label[align="left"] {
+    text-align: left;
+}
+
+.ticket-area label[align="center"] {
+    text-align: center;
+}
+
+.ticket-area label[align="right"] {
+    text-align: right;
+}
+
+.ticket-area inv {
+    display: contents;
+}
+
+.ticket-area inv * {
+    
+    background-color: #000;
+    color: #fff;
+}
+
 .ticket-area cell {
     flex: 1;
     display: block;
     width: 100%;
+    box-sizing: border-box;
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -110,6 +169,23 @@
     text-align: right;
 }
 
+.ticket-area inv center {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.ticket-area inv left {
+    display: block;
+    width: fit-content;
+}
+
+.ticket-area inv right {
+    display: block;
+    width: fit-content;
+    margin: 0 0 0 auto;
+}
+
 .ticket-area cell[width] {
     flex: none;
     width: calc(8px * var(--x));
@@ -127,16 +203,25 @@
     text-align: center;
 }
 
-.ticket-area ds {
-    font-size: 150%;
-}
-
-.ticket-area qs {
-    font-size: 200%;
-}
-
-.ticket-area fs {
+.ticket-area s {
+    display: contents;
     font-size: 100%;
+}
+
+.ticket-area sh {
+    display: contents;
+    transform: scale(1, 2);
+    line-height: 2;
+}
+
+.ticket-area w {
+    display: contents;
+    transform: scale(2, 1);
+}
+
+.ticket-area wh {
+    display: contents;
+    font-size: 200%;
 }
 
 .ticket-area fs[size='1'] {
@@ -291,6 +376,93 @@
     background-image: url(../../images/ticket/bar_code_128.jpg);
 }
 
+
+
+/* ------- padding left -------- */
+cell[pleft='1'] {
+    padding-left: calc(8px * 1);
+}
+
+cell[pleft='2'] {
+    padding-left: calc(8px * 2);
+}
+
+cell[pleft='3'] {
+    padding-left: calc(8px * 3);
+}
+
+cell[pleft='4'] {
+    padding-left: calc(8px * 4);
+}
+
+cell[pleft='5'] {
+    padding-left: calc(8px * 5);
+}
+
+cell[pleft='6'] {
+    padding-left: calc(8px * 6);
+}
+
+cell[pleft='7'] {
+    padding-left: calc(8px * 7);
+}
+
+cell[pleft='8'] {
+    padding-left: calc(8px * 8);
+}
+
+cell[pleft='9'] {
+    padding-left: calc(8px * 9);
+}
+
+cell[pleft='10'] {
+    padding-left: calc(8px * 10);
+}
+
+/* ------- padding right -------- */
+
+cell[pright='1'] {
+    padding-right: 8px;
+}
+
+cell[pright='2'] {
+    padding-right: 16px;
+}
+
+cell[pright='3'] {
+    padding-right: 24px;
+}
+
+cell[pright='4'] {
+    padding-right: 32px;
+}
+
+cell[pright='5'] {
+    padding-right: 40px;
+}
+
+cell[pright='6'] {
+    padding-right: 48px;
+}
+
+cell[pright='7'] {
+    padding-right: 56px;
+}
+
+cell[pright='8'] {
+    padding-right: 64px;
+}
+
+cell[pright='9'] {
+    padding-right: 72px;
+}
+
+cell[pright='10'] {
+    padding-right: 80px;
+}
+
+/* ------- width -------- */
+
 [width='1'] {
     --x: 1;
 }
@@ -391,106 +563,212 @@
     --x: 25;
 }
 
-[width='26'] {
+/*------ w ---------*/
+
+w [width='1'] {
+    --x: 2;
+}
+
+w [width='2'] {
+    --x: 4;
+}
+
+w [width='3'] {
+    --x: 6;
+}
+
+w [width='4'] {
+    --x: 8;
+}
+
+w [width='5'] {
+    --x: 10;
+}
+
+w [width='6'] {
+    --x: 12;
+}
+
+w [width='7'] {
+    --x: 14;
+}
+
+w [width='8'] {
+    --x: 16;
+}
+
+w [width='9'] {
+    --x: 18;
+}
+
+w [width='10'] {
+    --x: 20;
+}
+
+w [width='11'] {
+    --x: 22;
+}
+
+w [width='12'] {
+    --x: 24;
+}
+
+w [width='13'] {
     --x: 26;
 }
 
-[width='27'] {
-    --x: 27;
-}
-
-[width='28'] {
+w [width='14'] {
     --x: 28;
 }
 
-[width='29'] {
-    --x: 29;
-}
-
-[width='30'] {
+w [width='15'] {
     --x: 30;
 }
 
-[width='31'] {
-    --x: 31;
-}
-
-[width='32'] {
+w [width='16'] {
     --x: 32;
 }
 
-[width='33'] {
-    --x: 33;
-}
-
-[width='34'] {
+w [width='17'] {
     --x: 34;
 }
 
-[width='35'] {
-    --x: 35;
-}
-
-[width='36'] {
+w [width='18'] {
     --x: 36;
 }
 
-[width='37'] {
-    --x: 37;
-}
-
-[width='38'] {
+w [width='19'] {
     --x: 38;
 }
 
-[width='39'] {
-    --x: 39;
-}
-
-[width='40'] {
+w [width='20'] {
     --x: 40;
 }
 
-[width='41'] {
-    --x: 41;
-}
-
-[width='42'] {
+w [width='21'] {
     --x: 42;
 }
 
-[width='43'] {
-    --x: 43;
-}
-
-[width='44'] {
+w [width='22'] {
     --x: 44;
 }
 
-[width='45'] {
-    --x: 45;
-}
-
-[width='46'] {
+w [width='23'] {
     --x: 46;
 }
 
-[width='47'] {
-    --x: 47;
-}
-
-[width='48'] {
+w [width='24'] {
     --x: 48;
 }
 
-[width='49'] {
-    --x: 49;
-}
-
-[width='50'] {
+w [width='25'] {
     --x: 50;
 }
 
+/*------ wh ---------*/
+
+
+wh [width='1'] {
+    --x: 2;
+}
+
+wh [width='2'] {
+    --x: 4;
+}
+
+wh [width='3'] {
+    --x: 6;
+}
+
+wh [width='4'] {
+    --x: 8;
+}
+
+wh [width='5'] {
+    --x: 10;
+}
+
+wh [width='6'] {
+    --x: 12;
+}
+
+wh [width='7'] {
+    --x: 14;
+}
+
+wh [width='8'] {
+    --x: 16;
+}
+
+wh [width='9'] {
+    --x: 18;
+}
+
+wh [width='10'] {
+    --x: 20;
+}
+
+wh [width='11'] {
+    --x: 22;
+}
+
+wh [width='12'] {
+    --x: 24;
+}
+
+wh [width='13'] {
+    --x: 26;
+}
+
+wh [width='14'] {
+    --x: 28;
+}
+
+wh [width='15'] {
+    --x: 30;
+}
+
+wh [width='16'] {
+    --x: 32;
+}
+
+wh [width='17'] {
+    --x: 34;
+}
+
+wh [width='18'] {
+    --x: 36;
+}
+
+wh [width='19'] {
+    --x: 38;
+}
+
+wh [width='20'] {
+    --x: 40;
+}
+
+wh [width='21'] {
+    --x: 42;
+}
+
+wh [width='22'] {
+    --x: 44;
+}
+
+wh [width='23'] {
+    --x: 46;
+}
+
+wh [width='24'] {
+    --x: 48;
+}
+
+wh [width='25'] {
+    --x: 50;
+}
+
+/*---------------*/
 
 [height='1'] {
     --h: 1;

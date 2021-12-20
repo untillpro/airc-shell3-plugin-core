@@ -114,6 +114,7 @@ export const C_COLLECTION_FILTERS = "filter_by";
 export const C_LAYOUTS_NAME = "name";
 export const C_LAYOUTS_TEMPLATE = "template";
 export const C_LAYOUTS_SETTINGS = "settings";
+export const C_LAYOUTS_TEMPLATE_DATA = "template_data";
 
 // ### CHARTS
 

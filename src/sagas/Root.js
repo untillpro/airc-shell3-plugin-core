@@ -168,7 +168,7 @@ function* _fetchEntityData(action) {
     let classifiers = {};
 
     if (isNew) {
-        yield put({ type: ENTITY_DATA_FETCH_SUCCEEDED, payload: { result: null, isNew, isCopy: false } });
+        yield put({ type: ENTITY_DATA_FETCH_SUCCEEDED, payload: { result: {}, isNew, isCopy: false } });
     } else {
         try {
             yield put({ type: SET_ENTITY_LOADING, payload: true });

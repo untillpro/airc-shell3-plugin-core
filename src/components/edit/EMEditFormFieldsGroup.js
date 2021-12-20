@@ -42,14 +42,13 @@ class EMEditFormFieldsGroup extends Component {
             contributions,
         } = this.props;
 
-        const sortedFields = _.sortBy(fields, (o) => o.order);
+       
 
         const header = contributions.getPointContributionValue(TYPE_FORMSGROUPS, group, C_FORMSGROUPS_NAME);
         const isTabs = contributions.getPointContributionValue(TYPE_FORMSGROUPS, group, C_FORMSGROUPS_TABS);
         const tabsProps = contributions.getPointContributionValue(TYPE_FORMSGROUPS, group, C_FORMSGROUPS_PROPS) || {};
 
         this.setState({
-            sortedFields,
             groupHeader: _.isFunction(header) ? header() : header,
             isTabs,
             tabsProps
@@ -105,14 +104,16 @@ class EMEditFormFieldsGroup extends Component {
             embedded,
             isNew,
             isCopy,
+            fields
         } = this.props;
 
         const {
-            sortedFields,
             groupHeader,
             isTabs,
             tabsProps
         } = this.state;
+
+        const sortedFields = _.sortBy(fields, (o) => o.order);
 
         const content = sortedFields.map((field, index) => {
             if (field && field.hidden === true) return null;
