@@ -21,7 +21,7 @@ class MockAlpha2ApiGate {
     constructor(callback) {
         this.name = "MockAlpha2ApiGate";
         this.host = 'https://alpha2.dev.untill.ru/api';
-        //this.host = 'https://rc.dev.untill.ru/api';
+        //this.host = 'https://rc2.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
             callback();
