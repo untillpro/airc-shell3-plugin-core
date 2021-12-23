@@ -18,11 +18,8 @@ import {
     Tooltip,
     Modal,
     Checkbox,
-    Divider,
-    InputNumber,
     DatePicker,
     Row,
-    Col,
     Form,
 } from 'antd';
 
@@ -55,10 +52,10 @@ const rangeConfig = {
     ],
 };
 
-const formTailLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 20 },
-};
+// const formTailLayout = {
+//     labelCol: { span: 7 },
+//     wrapperCol: { span: 20 },
+// };
 
 const formItemLayout = {
     labelCol: {
@@ -79,10 +76,6 @@ class DashboardHeader extends PureComponent {
         };
 
         this.formRef = React.createRef();
-    }
-
-    componentDidMount() {
-        //todo: init charts
     }
 
     openSettings = () => {

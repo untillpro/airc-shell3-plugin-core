@@ -18,7 +18,7 @@
     options = options || {};
     this.headers = options.headers || {};
     this.payload = options.payload !== undefined ? options.payload : '';
-    this.method = options.method || (this.payload && 'POST' || 'GET');
+    this.method = options.method || (this.payload ? 'POST' : 'GET');
     this.withCredentials = !!options.withCredentials;
   
     this.FIELD_SEPARATOR = ':';
@@ -104,7 +104,7 @@
         return;
       }
   
-      if (this.readyState == this.CONNECTING) {
+      if (this.readyState === this.CONNECTING) {
         this.dispatchEvent(new CustomEvent('open'));
         this._setReadyState(this.OPEN);
       }
