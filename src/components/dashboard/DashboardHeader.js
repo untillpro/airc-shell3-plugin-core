@@ -7,11 +7,11 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { 
-    dashboardFrom, 
-    dashboardTo, 
+import {
+    dashboardFrom,
+    dashboardTo,
     dashboardVisibility
- } from '../../selectors';
+} from '../../selectors';
 
 import {
     Button,
@@ -33,10 +33,10 @@ import {
     setDashboardSettings
 } from '../../actions';
 
-import { 
+import {
     SettingOutlined,
     ReloadOutlined
- } from '@ant-design/icons';
+} from '@ant-design/icons';
 
 /**
  * What todo:
@@ -103,7 +103,7 @@ class DashboardHeader extends PureComponent {
     }
 
     onFinish = (data) => {
-        const { charts, period, auto_refresh, refresh_delay } = data;
+        const { charts, period } = data;
         const visibility = {};
 
         if (this.props.charts) {
@@ -118,8 +118,6 @@ class DashboardHeader extends PureComponent {
             visibility,
             from: period ? period[0] : null,
             to: period ? period[1] : null,
-            autoRefresh: !!auto_refresh,
-            refreshDelay: refresh_delay
         };
 
         this.props.setDashboardSettings(payload);
@@ -141,7 +139,7 @@ class DashboardHeader extends PureComponent {
     }
 
     render() {
-        const { charts, from, to, autoRefresh, refreshDelay } = this.props;
+        const { charts, from, to } = this.props;
         const { opened } = this.state;
 
         return (
@@ -151,7 +149,7 @@ class DashboardHeader extends PureComponent {
                 </div>
 
                 <div className="_title">
-                    HOME PAGE {from.format("YYYY/MM/DD HH:mm")} - {to.format("YYYY/MM/DD HH:mm")}
+                    HOME PAGE {from.format("YYYY/MM/DD")} - {to.format("YYYY/MM/DD")}
                 </div>
 
                 <div className="_actions">
@@ -189,8 +187,6 @@ class DashboardHeader extends PureComponent {
                                 onFinish={this.onFinish}
                                 initialValues={{
                                     "period": [from, to],
-                                    "auto_refresh": autoRefresh,
-                                    "refresh_delay": refreshDelay,
                                     "charts": this.getVisibleCharts()
                                 }}
                             >
@@ -210,20 +206,6 @@ class DashboardHeader extends PureComponent {
                                         })}
                                     </Checkbox.Group>
                                 </Form.Item>
-                                <Divider />
-                                <Row>
-                                    <Col span={8}>
-                                        <Form.Item {...formTailLayout} name="auto_refresh" valuePropName="checked">
-                                            <Checkbox>Auto-refresh</Checkbox>
-                                        </Form.Item>
-                                    </Col>
-                                    <Col span={10}>
-                                        <Form.Item {...formTailLayout} name="refresh_delay">
-                                            <InputNumber />
-                                        </Form.Item>
-                                    </Col>
-                                    <Col span={4} style={{ textAlign: "left" }}>sec.</Col>
-                                </Row>
                             </Form>
                         </div>
                     </Modal>
@@ -242,15 +224,12 @@ DashboardHeader.propTypes = {
 
 const mapStateToProps = (state) => {
     const { contributions } = state.context;
-    const { autoRefresh, refreshDelay } = state.dashboards;
 
     return {
         contributions,
         from: dashboardFrom(state),
         to: dashboardTo(state),
-        visibility: dashboardVisibility(state),
-        autoRefresh,
-        refreshDelay,
+        visibility: dashboardVisibility(state)
     };
 };
 

@@ -15,7 +15,7 @@ import {
     sendSelectViewMessage
 } from '../../actions/';
 
-import { UShellAPIGate } from 'airc-shell-core';
+import { UShellAPIGate, getProjectionHandler } from 'airc-shell-core';
 import MockAlpha2ApiGate from '../../mock/MockAlpha2ApiGate';
 import AppLoader from './AppLoader';
 
@@ -24,7 +24,8 @@ class ApiProvider extends Component {
         const API = {
             selectView: (view) => this._selectView(view),
             setLanguage: (lang) => this._setLanguage(lang),
-            init: (payload) => this._init(payload)
+            init: (payload) => this._init(payload),
+            sendEvent: (handlerName, payload) => this._handleEvent(handlerName, payload)
         };
 
         let apiGate = null;
@@ -68,6 +69,16 @@ class ApiProvider extends Component {
         const { api } = this.props;
 
         api.sendLocations(locations);
+    }
+
+    _handleEvent(handlerName, payload) {
+        const handler = getProjectionHandler(handlerName);
+
+        console.log("subscribe handler!", handler)
+
+        if (handler && typeof handler === "function") {
+            handler(payload);
+        }
     }
 
     _init(payload) {

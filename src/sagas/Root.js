@@ -18,7 +18,9 @@ import {
     prepareCopyData,
     prepareReportFilter,
     prepareReportData,
-    getEntityColletionElements
+    getEntityColletionElements,
+    getDashboardElements,
+    getDashboardDays
 } from '../classes/helpers';
 
 import * as Selectors from '../selectors';
@@ -27,12 +29,9 @@ import {
     TYPE_LIST,
     TYPE_COLLECTION,
     TYPE_REPORTS,
-    TYPE_CHARTS,
     C_COLLECTION_ENTITY,
     C_REPORT_EVENT_TYPE,
     C_REPORT_REQUIRED_CLASSIFIERS,
-    C_CHART_REQUIRED_CLASSIFIERS,
-    C_CHART_COMMON_TYPE
 } from '../classes/contributions/Types';
 
 import {
@@ -63,6 +62,8 @@ import {
     SAGA_SET_PLUGIN_LANGUAGE,
     SAGA_SET_LIST_SHOW_DELETED,
 } from './Types';
+
+import pretifyData from '../classes/ResponseDataPretifier';
 
 // worker Saga: will be fired on USER_FETCH_REQUESTED actions
 function* _fetchListData(action) {
@@ -270,33 +271,40 @@ function* _fetchReport(action) {
     }
 }
 
+//TODO: Reimplement
 function* _fetchDashboard() {
+    console.log("SAGA_FETCH_DASHBOARD SAGA HANDLER");
     const locations = yield select(Selectors.locations);
     const api = yield select(Selectors.api);
-    const contributions = yield select(Selectors.contributions);
+    const context = yield select(Selectors.context);
     const from = yield select(Selectors.dashboardFromValue);
     const to = yield select(Selectors.dashboardToValue);
+    const elements = getDashboardElements(context);
 
-    let doProps = {
-        type: ['pbill', 'orders'],
-        from: from,
-        to: to,
-        show: true,
-        from_offset: 0, // mock
-        to_offset: 1000000,// mock
-        required_classifiers: contributions.getPointContributionValues(TYPE_CHARTS, C_CHART_COMMON_TYPE, C_CHART_REQUIRED_CLASSIFIERS)
-    };
+    if (elements.length > 0) {
+        const days = getDashboardDays(context, from, to);
+        const doProps = { elements, days };
 
-    yield put({ type: SET_DASHBOARD_LOADING, payload: true });
+        //yield put({ type: SET_DASHBOARD_LOADING, payload: true });
 
-    try {
-        const result = yield call(api.log.bind(api), locations, doProps);
-        const resultData = prepareReportData(locations, result);
+        try {
+            let wsid = locations[0];
 
-        yield put({ type: DASHBOARD_DATA_FETCHING_SUCCESS, payload: resultData });
-    } catch (e) {
-        yield put({ type: SET_DASHBOARD_LOADING, payload: false });
-        yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
+            const result = yield call(api.dashboard.bind(api), wsid, doProps);
+            let resultData = [];
+
+            if (result && result["result"]) {
+                 resultData = pretifyData(elements, result["result"]);
+            }
+
+            yield put({ type: DASHBOARD_DATA_FETCHING_SUCCESS, payload: resultData });
+        } catch (e) {
+            //yield put({ type: SET_DASHBOARD_LOADING, payload: false });
+            yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
+        }
+
+    } else {
+        yield put({ type: DASHBOARD_DATA_FETCHING_SUCCESS, payload: {}});
     }
 }
 

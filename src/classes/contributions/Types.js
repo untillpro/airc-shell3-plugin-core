@@ -126,6 +126,7 @@ export const C_CHART_TYPE = "type";
 export const C_CHART_OPTIONS = "options";
 export const C_CHART_BUILDER = "builder";
 export const C_CHART_REQUIRED_CLASSIFIERS = "required_classifiers";
+export const C_CHART_ELEMENTS = "chart_elements";
 
 // ### CONST
 

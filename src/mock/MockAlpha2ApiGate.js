@@ -5,9 +5,10 @@
 import _ from 'lodash';
 import axios from 'axios';
 import qs from 'qs';
+import SSE from '../classes/sse';
 
 import { message } from 'antd';
-import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder } from 'airc-shell-core';
+import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectionHandler } from 'airc-shell-core';
 //import TablePlanData from './data/table_plan.json';
 
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjI1NTM2LCJEZXZpY2VJRCI6MSwiZXhwIjoxNTc3NTE5MDQzfQ.dXnbwFUtjcue8_LXNpir3lltj0qoDUarbZ1BDkj5Zno';
@@ -16,16 +17,20 @@ const uploadFileAction = "https://badrequest.ru/tests/uploader/write.php";
 const FUNC_COLLECTION_NAME = 'q.air.collection';
 const FUNC_CDOC_NAME = 'q.air.cdoc';
 const FUNC_CUD_NAME = 'c.sys.CUD';
+const FUNC_DASHBOARD_NAME = 'q.air.Dashboard';
+const FUNC_JOURNAL_NAME = 'q.air.Journal';
 
 class MockAlpha2ApiGate {
     constructor(callback) {
         this.name = "MockAlpha2ApiGate";
-        this.host = 'https://alpha2.dev.untill.ru/api';
+        this.host = 'https://alpha2.dev.untill.ru/';
         //this.host = 'https://rc2.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
             callback();
         }
+
+        this.subscriptions = {}; // Array: SSE
     }
 
     async do(application, wsid, func, params, method = 'get') {
@@ -55,7 +60,7 @@ class MockAlpha2ApiGate {
             const config = this._addAuthHeader({});
 
             //let url = URLToolkit.buildAbsoluteURL(this.host, application, wsid, func);
-            let url = `${this.host}/${application}/${wsid}/${func}`;
+            let url = `${this.host}api/${application}/${wsid}/${func}`;
 
             if (m === 'get') {
                 config.params = data;
@@ -211,71 +216,32 @@ class MockAlpha2ApiGate {
         });
     }
 
-    async sync(entries) {
-        Logger.log({ token, entries }, 'sync method call:',);
+    async log(wsid, props) {
+        //console.log('log method call:', token, props);
+        const { fromDay, tillDay, type } = props;
+        const elements = [{ "fields": ["offset", "eventTime", "event"] }];
+        const args = {};
 
-        return {};
-    }
+        let location = this._checkWSID(wsid);
 
-    async log(wsids, props) {
-        Logger.log({ wsids, props }, 'log call with props: ');
-
-        const { from, to, type, from_offset, to_offset, show, filterBy, required_classifiers } = props;
-
-        const params = {};
-        let location = null;
-
-        if (wsids && _.isArray(wsids)) {
-            location = parseInt(wsids[0], 10);
-            params["WSIDs"] = wsids;
-        } else {
-            throw new Error('api.log() call error: workspace IDs not specified or wrong given: ' + wsids);
+        if (_.isNumber(fromDay) && fromDay >= 0) {
+            args['fromDay'] = parseInt(fromDay);
         }
 
-        if (_.isNumber(from) && from >= 0) {
-            params['FromDateTime'] = parseInt(from);
-        }
-
-        if (_.isNumber(to) && to > 0) {
-            params['ToDateTime'] = parseInt(to);
+        if (_.isNumber(tillDay) && tillDay > 0) {
+            args['tillDay'] = parseInt(tillDay);
         }
 
         if (!_.isNil(type)) {
             if (_.isString(type)) {
-                params['Type'] = [type];
+                args['eventTypes'] = type;
             } else if (_.isArray(type)) {
-                params['Type'] = type;
+                args['eventTypes'] = type.join(',');
             }
         }
 
-        if (from_offset) {
-            params['FromOffset'] = parseInt(from_offset);
-        } else {
-            params['FromOffset'] = 0;
-        }
-
-        if (to_offset && to_offset > 0) {
-            params['ToOffset'] = parseInt(to_offset);
-        }
-
-        if (filterBy) {
-            if (_.isPlainObject(filterBy)) {
-                params['FilterBy'] = JSON.stringify(filterBy);
-            } else if (_.isString(filterBy)) {
-                params['FilterBy'] = filterBy;
-            }
-        }
-
-        if (required_classifiers && _.isArray(required_classifiers)) {
-            params['RequiredClassifiers'] = required_classifiers;
-        }
-
-        params['Show'] = !!show;
-
-        const path = `${location}/log`;
-
-        return this.do(`airs-bp`, path, params, 'post').then((response) => {
-            Logger.log(response, '+++ api.log result');
+        return this.do("airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {
+            Logger.log(response, '+++ api.collection result');
 
             if (response.isError()) {
                 throw new Error(response.getErrorMessage());
@@ -284,13 +250,51 @@ class MockAlpha2ApiGate {
             Logger.log(response.getData(), '+++ resultData');
 
             return response.getData();
+        }).catch((e) => {
+            console.error(e);
+            throw e;
+        });
+    }
+
+    async dashboard(wsid, props) {
+        const { elements, days } = props;
+
+        this.print("Api.dashboard func call: ", wsid, props);
+
+        let location = this._checkWSID(wsid);
+
+        let params = {
+            'args': {
+                'days': days
+            },
+            'elements': elements || [],
+            'orderBy': [
+                {
+                    "field": "day"
+                }
+            ]
+        }
+
+        return this.do("airs-bp", location, FUNC_DASHBOARD_NAME, params, "post").then((response) => {
+            Logger.log(response, '+++ api.dashboard result');
+
+            if (response.isError()) {
+                throw new Error(response.getErrorMessage());
+            }
+
+            Logger.log(response.getData(), '+++ resultData');
+
+            return response.getData();
+        }).catch((e) => {
+            console.error(e);
+            throw e;
         });
     }
 
     async blob(option) {
         const method = 'post';
         const options = { ...option, method, action: uploadFileAction };
-        
+
         /*
         if (option.onProgress && xhr.upload) {
             xhr.upload.onprogress = function progress(e) {
@@ -353,6 +357,82 @@ class MockAlpha2ApiGate {
 
             xhr.send(formData);
         });
+    }
+
+    /**
+     * 
+     *  {
+            "SubjectLogin": "subject",
+            "ProjectionKey": [
+                {
+                    "App": "airs-bp", 
+                    "Projection": "air.dashboard", 
+                    "WS": 1
+                }
+            ]
+        }
+     * 
+     * 
+     */
+    // subscribe to projection
+    async subscribe(projectionKey, handlerName) {
+        /** ProjectionKey: 
+         * {
+                "App": "airs-bp", 
+                "Projection": projectionKey, //"air.dashboard", 
+                "WS": wsid
+            }
+         */
+
+        let payload = {
+            "SubjectLogin": 'mock subject', //mocked. should be passed 
+            "ProjectionKey": [
+                projectionKey
+            ]
+        }
+
+        // const options = {
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`,
+        //          'Content-Type': 'application/json',
+        //     },
+        //     method: "GET",
+        // }
+
+        const key = JSON.stringify(projectionKey);
+        const source = new SSE(`${this.host}n10n/channel?payload=${JSON.stringify(payload)}`);
+
+        const handler = getProjectionHandler(handlerName);
+
+        console.log("subscribe handler!", handler)
+
+        if (handler && typeof handler === "function") {
+            source.addEventListener(key, function (e) {
+                // Assuming we receive JSON-encoded data payloads:
+                console.log("Handle event creataed ", e);
+                var payload = JSON.parse(e.data);
+                console.log(payload);
+
+                handler(payload);
+            });
+        }
+        
+
+        this.subscriptions[key] = source;
+
+
+        source.stream();
+    }
+
+    // unsubscribe from projection  
+    // projectionKey: object
+    async unsubscribe(projectionKey) {
+        const key = JSON.stringify(projectionKey);
+
+        if (this.subscriptions[key]) {
+            this.subscriptions[key].close();
+            delete this.subscriptions[key];
+        }
     }
 
     // ----- private methods -----

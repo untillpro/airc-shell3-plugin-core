@@ -3,8 +3,10 @@
  */
 
 import _ from 'lodash';
+import moment from 'moment';
 
 import {
+    TYPE_CHARTS,
     TYPE_REPORTS,
     TYPE_LIST,
     C_LIST_COLUMNS,
@@ -13,6 +15,7 @@ import {
     C_REPORT_COMPLEX,
     C_REPORT_COMPLEX_TYPE,
     C_REPORT_FIELDS,
+    C_CHART_ELEMENTS,
 } from '../contributions/Types';
 
 export const isValidReport = (context, reportCode) => {
@@ -28,7 +31,6 @@ export const isValidReport = (context, reportCode) => {
     if (!reportPoint) {
         throw new Error(`can't find report contribution with id "${reportCode}"`);
     }
-
 
     let event_type = reportPoint.getContributuionValue(C_REPORT_EVENT_TYPE, true);
 
@@ -193,23 +195,10 @@ export const getBokkpAccaunt = (item) => {
     return "";
 };
 
-export const prepareReportData = (locations, Data) => {
-    const { classifiers = {}, events = {} } = Data;
+export const prepareReportData = (data, elements) => {
     const result = {};
 
-    if (locations && _.isArray(locations)) {
-        _.forEach(locations, (loc) => {
-            result[loc] = {
-                events,
-                classifiers: classifiers[loc] || {}
-            }
-        })
-    } else if (locations && _.isNumber(locations)) {
-        result[locations] = {
-            events,
-            classifiers: classifiers[locations] || {}
-        }
-    }
+    
 
     return result;
 }
@@ -224,4 +213,37 @@ export const getBillTotal = (bill) => {
     }
 
     return total;
+};
+
+// dashboard helpers 
+
+export const getDashboardElements = (context) => {
+    const { contributions  } = context;
+    const elements = [{"fields": ["day"]}];
+
+    const points = contributions.getPoints(TYPE_CHARTS);
+
+    _.forEach(points, (pointName) => {
+        const element =  contributions.getPointContributionValue(TYPE_CHARTS, pointName, C_CHART_ELEMENTS);
+        if (_.isPlainObject(element)) {
+            elements.push(element);
+        }
+    });
+
+
+    return elements;
+};
+
+export const  getDashboardDays = (context, from, to) => {
+    const days = [];
+    const mFrom = moment(from).startOf('day');
+    const mTo = moment(to).startOf('day');
+
+    for (let m = mFrom; m.isBefore(mTo); m.add(1, 'days')) {
+        days.push(m.format('YYYYMMDD'));
+    };
+
+    console.log(days);
+
+    return days.join(',');
 };

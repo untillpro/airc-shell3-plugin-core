@@ -6,6 +6,11 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { 
+    registerProjectionHandler,
+    unregisterProjectionHandler
+} from 'airc-shell-core';
+
 import {
     DashboardHeader,
     DashboardBuilder
@@ -52,38 +57,35 @@ class Dashboards extends Component {
     }
 
     componentDidMount() {
-        this._initChartsList();
-        this._toggleAutoRefresh();
+        const { api, location } = this.props;
+
+        registerProjectionHandler('airDashboard', (event) => {
+            console.log(event);
+            this.props.sendNeedRefreshDataMessage();
+        });
+
+        api.subscribe({
+            "App": "airs-bp", 
+            "Projection": "air.dashboard", //"air.dashboard", 
+            "WS": location
+        }, "airDashboard");
+
+        this.initChartsList();
     }
 
-    componentDidUpdate(oldProps) {
-        const { autoRefresh, refreshDelay } = this.props;
+    componentWillUnmount() {
+        const { api, location } = this.props;
 
-        if ((autoRefresh !== oldProps.autoRefresh) || (refreshDelay !== oldProps.refreshDelay)) {
-            this._toggleAutoRefresh();
-        }
+        api.unsubscribe({
+            "App": "airs-bp", 
+            "Projection": "air.dashboard", //"air.dashboard", 
+            "WS": location
+        });
+
+        unregisterProjectionHandler('airDashboard');
     }
 
-    _toggleAutoRefresh() {
-        const { autoRefresh, refreshDelay } = this.props;
-        const { refreshTimer } = this.state;
-
-        if (refreshTimer) {
-            clearInterval(this.state.refreshTimer);
-        }
-
-        if (autoRefresh === true && _.isNumber(refreshDelay) && refreshDelay > 0) {
-            const timer = setInterval(() => {
-                this.props.sendNeedRefreshDataMessage();
-            }, refreshDelay * 1000);
-
-            this.setState({refreshTimer: timer});
-        } else {
-            this.setState({refreshTimer: null});
-        }
-    }
-
-    _initChartsList() {
+    initChartsList() {
         const { contributions } = this.props;
         const chartPoints = contributions.getPoints(TYPE_CHARTS);
 
@@ -174,6 +176,7 @@ class Dashboards extends Component {
         return (
             <>
                 <DashboardHeader charts={this.state.charts} />
+
                 <div className='content-container'>
                     <DashboardBuilder groups={this.state.chartsGroups} />
 
@@ -185,15 +188,15 @@ class Dashboards extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const { contributions } = state.context;
-    const { autoRefresh, refreshDelay } = state.dashboards;
+    const { locations } = state.locations;
+    const { contributions, api } = state.context;
 
     return { 
+        location: _.isArray(locations) ? locations[0] : locations,
+        api,
         contributions, 
         visibility: dashboardVisibility(state), 
-        customOrder: dashboardCustomOrder(state),
-        autoRefresh, 
-        refreshDelay
+        customOrder: dashboardCustomOrder(state)
     };
 };
 

@@ -21,9 +21,7 @@ const INITIAL_STATE = {
     to: null,
     settings: {},
     customOrder: {},
-    visibility: {},
-    autoRefresh: true,
-    refreshDelay: 15,
+    visibility: {}
 };
 
 const reducer = (state = INITIAL_STATE, action) => {
