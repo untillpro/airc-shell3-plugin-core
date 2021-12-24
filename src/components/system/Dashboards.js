@@ -57,32 +57,41 @@ class Dashboards extends Component {
     }
 
     componentDidMount() {
-        const { api, location } = this.props;
+        const { api } = this.props;
 
         registerProjectionHandler('airDashboard', (event) => {
             console.log(event);
             this.props.sendNeedRefreshDataMessage();
         });
 
-        api.subscribe({
-            "App": "airs-bp", 
-            "Projection": "air.dashboard", //"air.dashboard", 
-            "WS": location
-        }, "airDashboard");
+        api.subscribe(this._key(this.props), "airDashboard");
 
         this.initChartsList();
     }
 
-    componentWillUnmount() {
-        const { api, location } = this.props;
+    componentDidUpdate(oldProps) {
+        const { api } = this.props;
 
-        api.unsubscribe({
-            "App": "airs-bp", 
-            "Projection": "air.dashboard", //"air.dashboard", 
-            "WS": location
-        });
+        if (this.props.location !== oldProps.location) {
+            api.unsubscribe(this._key(oldProps));
+            api.subscribe(this._key(this.props), "airDashboard");
+        }
+    }
+
+    componentWillUnmount() {
+        const { api } = this.props;
+
+        api.unsubscribe(this._key());
 
         unregisterProjectionHandler('airDashboard');
+    }
+
+    _key(props) {
+        return {
+            "App": "airs-bp", 
+            "Projection": "air.dashboard", //"air.dashboard", 
+            "WS": props.location
+        };
     }
 
     initChartsList() {
