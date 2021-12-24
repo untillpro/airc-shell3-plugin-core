@@ -13,7 +13,7 @@ export const dashboardFrom = (state) => {
         return state.dashboards.from;
     }
 
-    return moment().startOf('year');
+    return moment().startOf('day'); 
 };
 
 export const dashboardFromValue = (state) => {
@@ -23,7 +23,7 @@ export const dashboardFromValue = (state) => {
         }
     }
 
-    return moment().startOf('year').valueOf();
+    return moment().startOf('day').valueOf();
 };
 
 export const dashboardTo = (state) => {
@@ -33,7 +33,7 @@ export const dashboardTo = (state) => {
         }
     }
 
-    return moment().endOf('day');
+    return moment().add(1, 'days').endOf('day');
 };
 
 export const dashboardToValue = (state) => {
@@ -45,7 +45,7 @@ export const dashboardToValue = (state) => {
         return state.dashboards.to;
     }
 
-    return moment().endOf('day').valueOf();
+    return moment().add(1, 'days').endOf('day').valueOf();
 };
 
 export const dashboardVisibility = (state) => {

@@ -81,8 +81,7 @@ class Dashboards extends Component {
     componentWillUnmount() {
         const { api } = this.props;
 
-        api.unsubscribe(this._key());
-
+        api.unsubscribe(this._key(this.props));
         unregisterProjectionHandler('airDashboard');
     }
 
