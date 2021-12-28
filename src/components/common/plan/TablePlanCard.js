@@ -9,7 +9,7 @@ import cn from 'classnames';
 import { translate as t, Icon, IconButton, NoImage, getBlobPath } from 'airc-shell-core';
 import * as Icons from 'airc-shell-core/const/Icons';
 
-import { STATE_FIELD_NAME, TABLE_PLAN_ITEMS_FIELD_NAME } from '../../../const/';
+import { STATE_FIELD_NAME, STATUS_ACTIVE, TABLE_PLAN_ITEMS_FIELD_NAME } from '../../../const/';
 
 class TablePlanCard extends PureComponent {
     constructor(props) {
@@ -58,7 +58,7 @@ class TablePlanCard extends PureComponent {
             throw new Error('TablePlanCard data wrong "_entry" specified: ', _entry);
         }
 
-        if (state === 1) {
+        if (state === STATUS_ACTIVE) {
             if (_.isFunction(onDelete)) {
                 onDelete(_entry);
             } else {
@@ -99,7 +99,7 @@ class TablePlanCard extends PureComponent {
 
                     <IconButton
                         onClick={this.handleToggleAction}
-                        icon={<Icon icon={state !== 1 ? Icons.ICON_EYE_SOLID : Icons.ICON_HIDE} />}
+                        icon={<Icon icon={state !== STATUS_ACTIVE ? Icons.ICON_EYE_SOLID : Icons.ICON_HIDE} />}
                         size="small"
                         ghost
                     />
@@ -149,7 +149,7 @@ class TablePlanCard extends PureComponent {
         const { [STATE_FIELD_NAME]: state } = this.props.data;
 
         return (
-            <div className={cn("table-plan-card", { "not-active": state !== 1 })}>
+            <div className={cn("table-plan-card", { "not-active": state !== STATUS_ACTIVE })}>
                 {this.renderImage()}
                 {this.renderInfo()}
             </div>

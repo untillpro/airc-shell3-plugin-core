@@ -16,7 +16,7 @@ import {
 import { Search } from 'airc-shell-core';
 import { HeaderBackButton, ListTable, LocationSelector, Breadcrumbs } from '../common/';
 import { funcOrString } from '../../classes/helpers';
-import { STATE_FIELD_NAME } from '../../const/Common';
+import { STATE_FIELD_NAME, STATUS_ACTIVE } from '../../const/Common';
 
 import {
     setColumnsVisibility,
@@ -267,7 +267,7 @@ class EMList extends Component {
                 break;
 
             case 'remove':
-                if (state === 1) {
+                if (state === STATUS_ACTIVE) {
                     this.props.sendNeedRemoveMessage([e]);
                 } else {
                     this.props.sendNeedReduceMessage([e]);

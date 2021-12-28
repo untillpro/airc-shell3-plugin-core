@@ -14,7 +14,7 @@ import {
     ICON_DEACTIVATE,
 } from '../../../const/Icons';
 
-import { STATE_FIELD_NAME } from '../../../const/Common';
+import { STATE_FIELD_NAME, STATUS_ACTIVE } from '../../../const/Common';
 
 class ListTableRowAction extends PureComponent {
     handleAction(event) {
@@ -39,7 +39,7 @@ class ListTableRowAction extends PureComponent {
             case 'copy': return ICON_DUPLICATE;
             case 'unify': return ICON_UNIFY;
             case 'remove':
-                if (state !== 1) {
+                if (state !== STATUS_ACTIVE) {
                     return ICON_ADD;
                 }
 
@@ -58,7 +58,7 @@ class ListTableRowAction extends PureComponent {
             case 'copy': return 'Duplicate';
             case 'unify': return 'Unify';
             case 'remove':
-                if (state === 1) return 'Remove';
+                if (state === STATUS_ACTIVE) return 'Remove';
                 return 'Restore';
 
             default: return null;

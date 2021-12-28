@@ -11,7 +11,7 @@ import {
     processEntityData
 } from '../../../classes/helpers';
 
-import { STATE_FIELD_NAME } from '../../../const/Common';
+import { STATE_FIELD_NAME, STATUS_DELETED } from '../../../const/Common';
 
 class EmbeddedManagerSelectField extends EmbeddedManagerField {
     initData() {
@@ -41,7 +41,7 @@ class EmbeddedManagerSelectField extends EmbeddedManagerField {
 
         if (index >= 0 && data[index]) {
             const newData = { ...data };
-            newData[index][STATE_FIELD_NAME] = 0;
+            newData[index][STATE_FIELD_NAME] = STATUS_DELETED;
             this.setState({ data: newData });
         }
     }

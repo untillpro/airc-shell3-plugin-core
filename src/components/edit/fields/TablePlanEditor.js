@@ -23,7 +23,7 @@ import {
     TableAreaList
 } from '../../common/plan/';
 
-import { STATE_FIELD_NAME } from '../../../const/Common';
+import { STATE_FIELD_NAME, STATUS_ACTIVE, STATUS_DELETED } from '../../../const/Common';
 
 import TableAreaImageSelect from '../../common/plan/TableAreaImageSelect_2';
 
@@ -393,7 +393,7 @@ class TablePlanEditor extends PureComponent {
             if (_.isNil(table.id)) {
                 table = null;
             } else {
-                table[STATE_FIELD_NAME] = table[STATE_FIELD_NAME] !== 1 ? 1 : 0;
+                table[STATE_FIELD_NAME] = table[STATE_FIELD_NAME] !== STATUS_ACTIVE ? STATUS_ACTIVE : STATUS_DELETED;
             }
 
             newTables[tableIndex] = table;
@@ -565,7 +565,7 @@ class TablePlanEditor extends PureComponent {
 
         return _.map(tables,
             (t, k) => {
-                if (_.isPlainObject(t) && t[STATE_FIELD_NAME] === 1) {
+                if (_.isPlainObject(t) && t[STATE_FIELD_NAME] === STATUS_ACTIVE) {
                     return (
                         <Table
                             {...t}

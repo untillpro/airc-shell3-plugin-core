@@ -128,7 +128,7 @@ class MockAlpha2ApiGate {
             throw new Error('Wrong "operations" prop: expected an array of objects, received' + operations);
         }
 
-        const response = await this.do("airs-bp", location, FUNC_CUD_NAME, params, "post");
+        const response = await this.do("untill/airs-bp", location, FUNC_CUD_NAME, params, "post");
 
         if (response.isError()) {
             throw new Error(response.getErrorMessage());
@@ -150,7 +150,7 @@ class MockAlpha2ApiGate {
             ]
         };
 
-        return this.do("airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
+        return this.do("untill/airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
             Logger.log(response, '+++ api.object result');
 
             if (response.isError()) {
@@ -200,7 +200,7 @@ class MockAlpha2ApiGate {
             //'orderBy': ['']
         }
 
-        return this.do("airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
+        return this.do("untill/airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
             Logger.log(response, '+++ api.collection result');
 
             if (response.isError()) {
@@ -240,7 +240,7 @@ class MockAlpha2ApiGate {
             }
         }
 
-        return this.do("airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {
+        return this.do("untill/airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {
             Logger.log(response, '+++ api.collection result');
 
             if (response.isError()) {
@@ -275,7 +275,7 @@ class MockAlpha2ApiGate {
             ]
         }
 
-        return this.do("airs-bp", location, FUNC_DASHBOARD_NAME, params, "post").then((response) => {
+        return this.do("untill/airs-bp", location, FUNC_DASHBOARD_NAME, params, "post").then((response) => {
             Logger.log(response, '+++ api.dashboard result');
 
             if (response.isError()) {
@@ -365,7 +365,7 @@ class MockAlpha2ApiGate {
             "SubjectLogin": "subject",
             "ProjectionKey": [
                 {
-                    "App": "airs-bp", 
+                    "App": "untill/airs-bp", 
                     "Projection": "air.dashboard", 
                     "WS": 1
                 }
@@ -378,7 +378,7 @@ class MockAlpha2ApiGate {
     async subscribe(projectionKey, handlerName) {
         /** ProjectionKey: 
          * {
-                "App": "airs-bp", 
+                "App": "untill/airs-bp", 
                 "Projection": projectionKey, //"air.dashboard", 
                 "WS": wsid
             }

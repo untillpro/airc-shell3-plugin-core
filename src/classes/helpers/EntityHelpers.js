@@ -13,7 +13,8 @@ import { reduce } from './';
 
 import {
     SYS_ID_PROP,
-    STATE_FIELD_NAME
+    STATE_FIELD_NAME,
+    STATUS_ACTIVE
 } from '../../const/Common';
 
 import {
@@ -349,7 +350,7 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
     const id = entityId || generateTempId();
     let type = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
 
-    if (STATE_FIELD_NAME in data) resultData[STATE_FIELD_NAME] = Number(data[STATE_FIELD_NAME]) || 0;
+    if (STATE_FIELD_NAME in data) resultData[STATE_FIELD_NAME] = Number(data[STATE_FIELD_NAME]) || STATUS_ACTIVE;
 
     const fields = getEntityFields(type, contributions, true);
 
