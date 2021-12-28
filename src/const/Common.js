@@ -8,7 +8,7 @@ export const SCREEN_GROUP_TYPES = {
     2: "OMAN view"
 };
 
-export const STATE_FIELD_NAME = 'state';
+export const STATE_FIELD_NAME = 'sys.Status';
 
 export const SYS_ID_PROP = 'sys.ID';
 export const SYS_PARENT_ID = 'sys.ParentID';

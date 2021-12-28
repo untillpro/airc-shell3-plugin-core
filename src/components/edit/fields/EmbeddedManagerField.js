@@ -96,7 +96,7 @@ class EmbeddedManagerField extends PureComponent {
 
         if (sourceData && typeof sourceData === 'object') {
             _.forEach(sourceData, (row, index) => {
-                if (row && (showDeleted || row.state === 1)) {
+                if (row && (showDeleted || row[STATE_FIELD_NAME] === 1)) {
                     const newRow = { ...row };
                     newRow._index = index;
                     res.push(newRow);
@@ -179,7 +179,7 @@ class EmbeddedManagerField extends PureComponent {
             const flatRow = data[index];
 
             if (flatRow && _.isObject(flatRow)) {
-                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow.state === 0 ? 1 : 0 });
+                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow[STATE_FIELD_NAME] === 0 ? 1 : 0 });
             } else {
                 this.onEditFormProceed(index, { [STATE_FIELD_NAME]: 0 });
             }

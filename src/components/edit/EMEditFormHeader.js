@@ -163,7 +163,7 @@ class EMEditFormHeader extends Component {
     renderActiveToggler() {
         const { data, changedData } = this.props;
 
-        let checked = data ? Boolean(data.state) : false;
+        let checked = data ? Boolean(data[STATE_FIELD_NAME]) : false;
 
         if (STATE_FIELD_NAME in changedData) {
             checked = changedData ? Boolean(changedData[STATE_FIELD_NAME]) : false;
