@@ -9,7 +9,7 @@ import EMEditForm from '../EMEditForm';
 import { Modal, translate as t } from 'airc-shell-core';
 
 import { reduce } from '../../../classes/helpers';
-import { STATE_FIELD_NAME, SYS_ID_PROP } from '../../../const/Common';
+import { STATE_FIELD_NAME, SYS_ID_PROP, STATUS_ACTIVE, STATUS_DELETED } from '../../../const/Common';
 import { ListTable } from '../../common';
 import isEqual from 'react-fast-compare'
 //import log from '../../../classes/Log';
@@ -179,9 +179,9 @@ class EmbeddedManagerField extends PureComponent {
             const flatRow = data[index];
 
             if (flatRow && _.isObject(flatRow)) {
-                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow[STATE_FIELD_NAME] === 0 ? 1 : 0 });
+                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow[STATE_FIELD_NAME] === STATUS_DELETED ? STATUS_ACTIVE : STATUS_DELETED });
             } else {
-                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: 0 });
+                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: STATUS_DELETED });
             }
 
             this.setState({ selectedRows: [] });

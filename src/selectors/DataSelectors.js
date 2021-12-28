@@ -4,7 +4,7 @@
 
 import { createSelector } from 'reselect';
 import _ from 'lodash';
-import { STATE_FIELD_NAME } from '../const/Common';
+import { STATE_FIELD_NAME, STATUS_ACTIVE } from '../const/Common';
 
 
 const getShowDeleted = (state) => state.list.showDeleted;
@@ -18,7 +18,7 @@ export const selectListData = createSelector(
                 return data;
             }
 
-            return _.filter(data, (o) => o[STATE_FIELD_NAME] === 1);
+            return _.filter(data, (o) => o[STATE_FIELD_NAME] === STATUS_ACTIVE);
         }
 
         return [];

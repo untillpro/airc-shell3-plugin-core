@@ -39,7 +39,7 @@ import {
     C_FORMS_SECTIONS
 } from '../../classes/contributions/Types';
 
-import { STATE_FIELD_NAME, SYS_ID_PROP } from '../../const/Common';
+import { STATE_FIELD_NAME, SYS_ID_PROP, STATUS_ACTIVE, STATUS_DELETED } from '../../const/Common';
 
 import {
     sendNeedEditFormMessage,
@@ -167,7 +167,7 @@ class EMEditForm extends Component {
 
     setDefaultValues(sections) {
         const { contributions, entity, data } = this.props;
-        let changedData = { [STATE_FIELD_NAME]: 1 };
+        let changedData = { [STATE_FIELD_NAME]: STATUS_ACTIVE };
 
         const defaultValues = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_DEFAULT);
 
@@ -436,16 +436,10 @@ class EMEditForm extends Component {
     handleStateChanged(state) {
         const { changedData } = this.state;
 
-        let s = 0;
-
-        if (state === 1) {
-            s = 1;
-        }
-
         this.setState({
             changedData: {
                 ...changedData,
-                [STATE_FIELD_NAME]: s,
+                [STATE_FIELD_NAME]: state === STATUS_ACTIVE ? STATUS_ACTIVE : STATUS_DELETED,
             }
         });
     }

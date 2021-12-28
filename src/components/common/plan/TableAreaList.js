@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { translate as t, Button, Empty, Toggler } from 'airc-shell-core';
 
-import { STATE_FIELD_NAME } from '../../../const/Common';
+import { STATE_FIELD_NAME, STATUS_ACTIVE } from '../../../const/Common';
 
 import TableAreaListRow from './TableAreaListRow';
 
@@ -63,7 +63,7 @@ class TableAreaList extends PureComponent {
         const { showHidden } = this.state;
         const { tables } = this.props;
 
-        const totalCount = showHidden ? tables.length || 0 : _.reduce(tables, (count, t) => count += t && t[STATE_FIELD_NAME] === 1 ? 1 : 0, 0)
+        const totalCount = showHidden ? tables.length || 0 : _.reduce(tables, (count, t) => count += t && t[STATE_FIELD_NAME] === STATUS_ACTIVE ? 1 : 0, 0)
 
         return (
             <div className="table-area-list-header">
@@ -92,7 +92,7 @@ class TableAreaList extends PureComponent {
 
         return _.map(tablesSorted, (table, index) => {
 
-            if (_.isNil(table) || (!showHidden && table[STATE_FIELD_NAME] !== 1)) return null;
+            if (_.isNil(table) || (!showHidden && table[STATE_FIELD_NAME] !== STATUS_ACTIVE)) return null;
 
             return <TableAreaListRow
                 key={`table_${index}_${table.number}_${table.id}_${table[STATE_FIELD_NAME]}`}
