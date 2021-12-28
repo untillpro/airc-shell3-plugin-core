@@ -21,7 +21,8 @@ const INITIAL_STATE = {
     to: null,
     settings: {},
     customOrder: {},
-    visibility: {}
+    visibility: {},
+    sound: true
 };
 
 const reducer = (state = INITIAL_STATE, action) => {

@@ -71,3 +71,7 @@ export const dashboardData = (state) => {
 export const dashboardLoading = (state) => {
     return state.dashboards.loading === true;
 }
+
+export const dashboardSound = (state) => {
+    return state.dashboards.sound === true;
+}

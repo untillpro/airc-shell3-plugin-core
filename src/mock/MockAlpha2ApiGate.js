@@ -401,26 +401,15 @@ class MockAlpha2ApiGate {
 
         const key = JSON.stringify(projectionKey);
         const source = new SSE(`${this.host}n10n/channel?payload=${JSON.stringify(payload)}`);
-
         const handler = getProjectionHandler(handlerName);
-
-        console.log("subscribe handler!", handler)
 
         if (handler && typeof handler === "function") {
             source.addEventListener(key, function (e) {
-                // Assuming we receive JSON-encoded data payloads:
-                console.log("Handle event creataed ", e);
-                var payload = JSON.parse(e.data);
-                console.log(payload);
-
-                handler(payload);
+                handler(JSON.parse(e.data));
             });
         }
         
-
         this.subscriptions[key] = source;
-
-
         source.stream();
     }
 

@@ -6,6 +6,7 @@ import ChartBuilder from './ChartBuilder';
 import DashboardBuilder from './DashboardBuilder';
 import DashboardGroup from './DashboardGroup';
 import DashboardHeader from './DashboardHeader';
+import DashboardNotifier from './DashboardNotifier';
 import NoData from './NoData';
 
 export {
@@ -13,5 +14,6 @@ export {
     DashboardBuilder,
     DashboardGroup,
     DashboardHeader,
+    DashboardNotifier,
     NoData,
 };

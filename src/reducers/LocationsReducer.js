@@ -24,8 +24,6 @@ const reducer = (state = INITIAL_STATE, action) => {
 
     switch (action.type) {
         case INIT_PLUGIN:
-            console.log("INIT_PLUGIN: ", payload);
-
             if (_.isPlainObject(payload.options)) {
                 newState = { ...state };
 

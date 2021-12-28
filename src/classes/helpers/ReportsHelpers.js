@@ -242,8 +242,6 @@ export const  getDashboardDays = (context, from, to) => {
     for (let m = mFrom; m.isBefore(mTo); m.add(1, 'days')) {
         days.push(m.format('YYYYMMDD'));
     };
-
-    console.log(days);
-
+    
     return days.join(',');
 };

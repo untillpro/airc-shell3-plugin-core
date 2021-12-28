@@ -13,7 +13,8 @@ import {
 
 import {
     DashboardHeader,
-    DashboardBuilder
+    DashboardBuilder,
+    DashboardNotifier
 } from "../dashboard";
 
 import {
@@ -60,7 +61,6 @@ class Dashboards extends Component {
         const { api } = this.props;
 
         registerProjectionHandler('airDashboard', (event) => {
-            console.log(event);
             this.props.sendNeedRefreshDataMessage();
         });
 
@@ -87,7 +87,7 @@ class Dashboards extends Component {
 
     _key(props) {
         return {
-            "App": "airs-bp", 
+            "App": "untill/airs-bp", 
             "Projection": "air.dashboard", //"air.dashboard", 
             "WS": props.location
         };
@@ -186,6 +186,7 @@ class Dashboards extends Component {
                 <DashboardHeader charts={this.state.charts} />
 
                 <div className='content-container'>
+                    <DashboardNotifier />
                     <DashboardBuilder groups={this.state.chartsGroups} />
 
                     {/*<div className="dashborads-add-group-btn" onClick={this.addGroup}> Add Group </div>*/}

@@ -10,7 +10,8 @@ import { connect } from 'react-redux';
 import {
     dashboardFrom,
     dashboardTo,
-    dashboardVisibility
+    dashboardVisibility,
+    dashboardSound
 } from '../../selectors';
 
 import {
@@ -96,7 +97,7 @@ class DashboardHeader extends PureComponent {
     }
 
     onFinish = (data) => {
-        const { charts, period } = data;
+        const { charts, period, sound } = data;
         const visibility = {};
 
         if (this.props.charts) {
@@ -111,6 +112,7 @@ class DashboardHeader extends PureComponent {
             visibility,
             from: period ? period[0] : null,
             to: period ? period[1] : null,
+            sound
         };
 
         this.props.setDashboardSettings(payload);
@@ -132,7 +134,7 @@ class DashboardHeader extends PureComponent {
     }
 
     render() {
-        const { charts, from, to } = this.props;
+        const { charts, from, to, sound } = this.props;
         const { opened } = this.state;
 
         return (
@@ -180,7 +182,8 @@ class DashboardHeader extends PureComponent {
                                 onFinish={this.onFinish}
                                 initialValues={{
                                     "period": [from, to],
-                                    "charts": this.getVisibleCharts()
+                                    "charts": this.getVisibleCharts(),
+                                    "sound": sound
                                 }}
                             >
                                 <Form.Item name="period" label="Date period" {...rangeConfig}>
@@ -198,6 +201,10 @@ class DashboardHeader extends PureComponent {
                                             );
                                         })}
                                     </Checkbox.Group>
+                                </Form.Item>
+
+                                <Form.Item name="sound" label="Sounds enabled" valuePropName="checked">
+                                    <Checkbox></Checkbox>
                                 </Form.Item>
                             </Form>
                         </div>
@@ -222,7 +229,8 @@ const mapStateToProps = (state) => {
         contributions,
         from: dashboardFrom(state),
         to: dashboardTo(state),
-        visibility: dashboardVisibility(state)
+        visibility: dashboardVisibility(state),
+        sound: dashboardSound(state)
     };
 };
 

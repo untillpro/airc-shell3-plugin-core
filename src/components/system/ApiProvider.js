@@ -74,8 +74,6 @@ class ApiProvider extends Component {
     _handleEvent(handlerName, payload) {
         const handler = getProjectionHandler(handlerName);
 
-        console.log("subscribe handler!", handler)
-
         if (handler && typeof handler === "function") {
             handler(payload);
         }

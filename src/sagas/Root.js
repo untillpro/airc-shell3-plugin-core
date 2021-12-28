@@ -273,7 +273,6 @@ function* _fetchReport(action) {
 
 //TODO: Reimplement
 function* _fetchDashboard() {
-    console.log("SAGA_FETCH_DASHBOARD SAGA HANDLER");
     const locations = yield select(Selectors.locations);
     const api = yield select(Selectors.api);
     const context = yield select(Selectors.context);
