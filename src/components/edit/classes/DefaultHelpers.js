@@ -2,6 +2,21 @@
  * Copyright (c) 2020-present unTill Pro, Ltd.
  */
 import _ from 'lodash';
+import moment from 'moment';
+
+function time(attrs) {
+    let timestamp = attrs[0];
+    let format = attrs[1] || 'DD.MM.YYYY';
+
+    return moment(timestamp).format(format);
+};
+
+function date(attrs) {
+    let timestamp = attrs[0];
+    let format = attrs[1] || 'hh:mm';
+    
+    return moment(timestamp).format(format);
+};
 
 function format(value) {
     if (_.isNumber(value)) {
@@ -133,6 +148,8 @@ function formatNumber(attrs) {
 }
 
 const DefaultHelpers = {
+    time,
+    date,
     condition,
     attribute,
     value,

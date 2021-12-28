@@ -21,7 +21,6 @@ import {
 
 import {
     TYPE_LAYOUTS,
-    TYPE_HELPERS,
     C_LAYOUTS_NAME,
     C_LAYOUTS_TEMPLATE,
     C_LAYOUTS_TEMPLATE_DATA
@@ -241,18 +240,18 @@ class TicketLayoutField extends Component {
     }
 
     getHelpers(code) {
-        const { context } = this.props;
-        const { contributions } = context;
+        // const { context } = this.props;
+        // const { contributions } = context;
 
-        const helpers = {};
+        // const helpers = {};
 
-        const helpersPoint = contributions.getPointContributions(TYPE_HELPERS, code);
+        // const helpersPoint = contributions.getPointContributions(TYPE_HELPERS, code);
 
-        if (_.size(helpersPoint) > 0) {
-            _.each(helpersPoint, (helper, name) => helpers[name] = helper);
-        }
+        // if (_.size(helpersPoint) > 0) {
+        //     _.each(helpersPoint, (helper, name) => helpers[name] = helper);
+        // }
 
-        return helpers;
+        return {};
     }
 
     getDefaultValues(settings) {
