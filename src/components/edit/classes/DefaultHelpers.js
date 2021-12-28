@@ -3,6 +3,13 @@
  */
 import _ from 'lodash';
 
+function format(value) {
+    if (_.isNumber(value)) {
+        return (value / 10000).toLocaleString('en', { minimumFractionDigits: 2 });
+    }
+
+    return '';
+}
 
 function sum(attrs, fn) {
     const items = attrs[0];
@@ -16,7 +23,7 @@ function sum(attrs, fn) {
         });
     }
 
-    return sum;
+    return format(sum);
 }
 
 function count(attrs, fn) {
@@ -40,7 +47,7 @@ function maximum(attrs, fn) {
             max = Math.max(max, _.toNumber(item[prop]));
         });
 
-        return max;
+        return format(max);
     }
 
     return null;
@@ -61,7 +68,7 @@ function minimum(attrs, fn) {
             }
         });
 
-        return min;
+        return format(min);
     }
 
     return null;
@@ -79,7 +86,7 @@ function average(attrs, fn) {
             total += _.toNumber(item[prop]);
         });
 
-        return total / count;
+        return format(total / count);
     }
 
     return 0;
@@ -121,6 +128,10 @@ function value(attrs) {
     return '';
 };
 
+function formatNumber(attrs) {
+    return format(attrs[0]);
+}
+
 const DefaultHelpers = {
     condition,
     attribute,
@@ -131,6 +142,7 @@ const DefaultHelpers = {
     count,
     minimum,
     average,
+    formatNumber
 };
 
 export default DefaultHelpers;
