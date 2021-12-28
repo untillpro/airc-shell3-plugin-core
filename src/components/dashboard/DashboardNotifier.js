@@ -3,7 +3,7 @@
  */
 
 import _ from 'lodash';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useSound from 'use-sound';
 
@@ -19,16 +19,16 @@ const DashboardNotifier = () => {
     const soundOn = useSelector((state) => state.dashboards.sound);
     const dashboardData = useSelector((state) => state.dashboards.data);
 
-    const [ play1 ] = useSound(coinsFx_1);
-    const [ play2 ] = useSound(coinsFx_2);
-    const [ play3 ] = useSound(coinsFx_3);
+    const [play1] = useSound(coinsFx_1);
+    const [play2] = useSound(coinsFx_2);
+    const [play3] = useSound(coinsFx_3);
     // const [ play4 ] = useSound(coinsFx_4);
     // const [ play5 ] = useSound(coinsFx_5);
-    const [ play6 ] = useSound(coinsFx_6);
+    const [play6] = useSound(coinsFx_6);
 
-    const sounds = [play1, play2, play3, play6];
+    const sounds = useMemo(() => [play1, play2, play3, play6], [play1, play2, play3, play6]);
 
-    useEffect(() => soundOn ? () => sounds[_.random(0, sounds.length-1)]() : undefined, [dashboardData, soundOn]);
+    useEffect(() => soundOn ? () => sounds[_.random(0, sounds.length - 1)]() : undefined, [dashboardData, soundOn, sounds]);
 
     return <div className="notifier"></div>;
 }
