@@ -4,25 +4,31 @@
 import _ from 'lodash';
 import moment from 'moment';
 
+const DECIMAL_MULTYPLIER = 10000;
+
 function time(attrs) {
-    let timestamp = attrs[0];
-    let format = attrs[1] || 'DD.MM.YYYY';
-
-    return moment(timestamp).format(format);
-};
-
-function date(attrs) {
     let timestamp = attrs[0];
     let format = attrs[1] || 'hh:mm';
 
     return moment(timestamp).format(format);
 };
 
-function format(value) {
+function date(attrs) {
+    let timestamp = attrs[0];
+    let format = attrs[1] || 'DD.MM.YYYY';
+
+    return moment(timestamp).format(format);
+};
+
+function format(value, isCurrency) {
     let val = _.toNumber(value);
 
     if (_.isNumber(val)) {
-        return (val / 10000).toLocaleString('en', { minimumFractionDigits: 2 });
+        if (isCurrency) {
+            return (val / DECIMAL_MULTYPLIER).toLocaleString('en', { minimumFractionDigits: 2 });
+        } else {
+            return val.toLocaleString('en', { minimumFractionDigits: 2 });
+        }
     }
 
     return '';
@@ -31,18 +37,17 @@ function format(value) {
 function sum(attrs, fn) {
     const items = attrs[0];
     const prop = attrs[1].toString();
+    const isCurrency = attrs[2] === 1;
 
     let sum = 0;
 
     if (_.isArray(items)) {
         items.forEach((item) => {
-            console.log("sum item: ", item);
             sum += item[prop];
         });
     }
 
-    console.log("Sub result: ", sum);
-    return format(sum);
+    return format(sum, isCurrency);
 }
 
 
@@ -59,6 +64,7 @@ function count(attrs, fn) {
 function maximum(attrs, fn) {
     const items = attrs[0];
     const prop = attrs[1];
+    const isCurrency = attrs[2] === 1;
 
     if (_.isArray(items)) {
         let max = 0;
@@ -67,7 +73,7 @@ function maximum(attrs, fn) {
             max = Math.max(max, _.toNumber(item[prop]));
         });
 
-        return format(max);
+        return format(max, isCurrency);
     }
 
     return null;
@@ -76,6 +82,7 @@ function maximum(attrs, fn) {
 function minimum(attrs, fn) {
     const items = attrs[0];
     const prop = attrs[1];
+    const isCurrency = attrs[2] === 1;
 
     if (_.isArray(items)) {
         let min = null;
@@ -88,7 +95,7 @@ function minimum(attrs, fn) {
             }
         });
 
-        return format(min);
+        return format(min, isCurrency);
     }
 
     return null;
@@ -97,6 +104,7 @@ function minimum(attrs, fn) {
 function average(attrs, fn) {
     const items = attrs[0];
     const prop = attrs[1];
+    const isCurrency = attrs[2] === 1;
 
     if (_.isArray(items)) {
         let total = 0;
@@ -106,22 +114,12 @@ function average(attrs, fn) {
             total += _.toNumber(item[prop]);
         });
 
-        return format(total / count);
+        return format(total / count, isCurrency);
     }
 
     return 0;
 }
 
-function condition(attrs, fn) {
-    let prop = attrs[0];
-    let value = attrs[1];
-
-    if (this.settings && this.settings[prop] === value) {
-        return fn(this);
-    }
-
-    return '';
-};
 
 function attribute(attrs) {
     let prop = attrs[0];
@@ -149,7 +147,10 @@ function value(attrs) {
 };
 
 function formatNumber(attrs) {
-    return format(attrs[0]);
+    const num = attrs[0];
+    const isCurrency = attrs[1] === 1;
+
+    return format(num, isCurrency);
 }
 
 function groupBy(attrs, fn) {
@@ -159,7 +160,7 @@ function groupBy(attrs, fn) {
 
     let groups = {};
 
-    if (items.length <= 0 && !groupField) {
+    if (items.length <= 0 || !groupField) {
         return '';
     }
 
@@ -195,7 +196,6 @@ function groupBy(attrs, fn) {
 const DefaultHelpers = {
     time,
     date,
-    condition,
     attribute,
     value,
     groupBy,
