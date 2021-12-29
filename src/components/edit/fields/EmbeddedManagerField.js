@@ -96,7 +96,7 @@ class EmbeddedManagerField extends PureComponent {
 
         if (sourceData && typeof sourceData === 'object') {
             _.forEach(sourceData, (row, index) => {
-                if (row && (showDeleted || row[STATE_FIELD_NAME] === 1)) {
+                if (row && (showDeleted || row[STATE_FIELD_NAME] === STATUS_ACTIVE)) {
                     const newRow = { ...row };
                     newRow._index = index;
                     res.push(newRow);
