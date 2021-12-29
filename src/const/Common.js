@@ -9,10 +9,10 @@ export const SCREEN_GROUP_TYPES = {
     2: "OMAN view"
 };
 
-export const STATUS_ACTIVE = 1;
-export const STATUS_DELETED = 0;
+export const STATUS_ACTIVE = true;
+export const STATUS_DELETED = false;
 
 //export const STATE_FIELD_NAME = 'sys.Status';
-export const STATE_FIELD_NAME = 'state';
+export const STATE_FIELD_NAME = 'sys.IsActive';
 export const SYS_ID_PROP = "sys.ID";
 export const SYS_PARENT_ID = 'sys.ParentID';

@@ -350,7 +350,7 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
     const id = entityId || generateTempId();
     let type = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
 
-    if (STATE_FIELD_NAME in data) resultData[STATE_FIELD_NAME] = Number(data[STATE_FIELD_NAME]) || STATUS_ACTIVE;
+    if (STATE_FIELD_NAME in data) resultData[STATE_FIELD_NAME] = Boolean(data[STATE_FIELD_NAME]) || STATUS_ACTIVE;
 
     const fields = getEntityFields(type, contributions, true);
 

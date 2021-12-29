@@ -14,13 +14,15 @@ function time(attrs) {
 function date(attrs) {
     let timestamp = attrs[0];
     let format = attrs[1] || 'hh:mm';
-    
+
     return moment(timestamp).format(format);
 };
 
 function format(value) {
-    if (_.isNumber(value)) {
-        return (value / 10000).toLocaleString('en', { minimumFractionDigits: 2 });
+    let val = _.toNumber(value);
+
+    if (_.isNumber(val)) {
+        return (val / 10000).toLocaleString('en', { minimumFractionDigits: 2 });
     }
 
     return '';
@@ -34,12 +36,15 @@ function sum(attrs, fn) {
 
     if (_.isArray(items)) {
         items.forEach((item) => {
-            sum += _.toNumber(item[prop]);
+            console.log("sum item: ", item);
+            sum += item[prop];
         });
     }
 
+    console.log("Sub result: ", sum);
     return format(sum);
 }
+
 
 function count(attrs, fn) {
     const items = attrs[0];
@@ -147,12 +152,53 @@ function formatNumber(attrs) {
     return format(attrs[0]);
 }
 
+function groupBy(attrs, fn) {
+    let items = _.isArray(attrs[0]) ? attrs[0] : [];
+    let groupField = _.isString(attrs[1]) ? attrs[1] : null;
+    let order = attrs[2] === 'desc' ? 'desc' : 'asc';
+
+    let groups = {};
+
+    if (items.length <= 0 && !groupField) {
+        return '';
+    }
+
+    items.forEach(item => {
+        let v = _.get(item, groupField);
+
+        if (!groups[v]) {
+            groups[v] = [];
+        }
+
+        groups[v].push(item);
+    });
+
+    let keys = _.keys(groups);
+
+    if (keys.length > 0) {
+        keys = keys.sort();
+        if (order === 'desc') {
+            keys = keys.reverse();
+        }
+    }
+
+    let res = [];
+
+    _.forEach(keys, (key) => {
+        let payload = { groupKey: key, groupValues: groups[key] };
+        res.push(fn(payload));
+    });
+
+    return res.join('');
+}
+
 const DefaultHelpers = {
     time,
     date,
     condition,
     attribute,
     value,
+    groupBy,
 
     sum,
     maximum,

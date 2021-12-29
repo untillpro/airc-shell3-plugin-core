@@ -35,7 +35,7 @@
     "reselect": "^4.0.0",
     "shortid": "^2.2.16",
     "stack-events": "^0.1.18",
-    "stubble4js": "^1.1.0",
+    "stubble4js": "^1.1.1",
     "tagser4js": "^1.0.3",
     "uuid": "^8.3.2",
     "voca": "^1.4.0",
