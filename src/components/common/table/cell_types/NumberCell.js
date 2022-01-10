@@ -18,13 +18,13 @@ class NumberCell extends PureComponent {
     }
 
     format(value) {
-        const { type } = this.props;
+        const { type, prefix, postfix } = this.props;
 
         if (type === 'float' || type === 'double') {
-            return formatNumber(value, 2, ".", " ");
+            return `${prefix ?? ''}${formatNumber(value, 2, ".", " ")}${postfix ?? ''}`;
         }
 
-        return formatNumber(value, 0, ".", " ");
+        return `${prefix ?? ''}${formatNumber(value, 0, ".", " ")}${postfix ?? ''}`;
     }
 
     init(value) {
