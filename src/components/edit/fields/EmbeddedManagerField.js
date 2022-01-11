@@ -113,7 +113,9 @@ class EmbeddedManagerField extends PureComponent {
     //actions
 
     actionEdit(rowIndex = null) {
-        const { selectedRows, data } = this.state;
+        const { selectedRows } = this.state;
+        const data = this.getData();
+
         let index = parseInt(rowIndex);
 
         if (_.isNaN(index) && selectedRows && selectedRows.length > 0) {
@@ -134,7 +136,8 @@ class EmbeddedManagerField extends PureComponent {
     }
 
     actionCopy(rowIndex = null) {
-        const { selectedRows, data } = this.state;
+        const { selectedRows } = this.state;
+        const data = this.getData();
         let index = parseInt(rowIndex);
 
         if (_.isNaN(index) && selectedRows && selectedRows.length > 0) {
@@ -167,8 +170,9 @@ class EmbeddedManagerField extends PureComponent {
     }
 
     actionToggle(rowIndex = null) {
-        const { selectedRows, data } = this.state;
-
+        const { selectedRows } = this.state;
+        const data = this.getData();
+        
         let index = parseInt(rowIndex);
 
         if (_.isNaN(index) && selectedRows && selectedRows.length > 0) {
