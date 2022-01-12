@@ -139,18 +139,10 @@ function* _fetchListData(action) {
 function* _processData(action) {
     const { entity, data, entries } = action.payload;
     const context = yield select(Selectors.context);
-    const { contributions } = context;
-
-    const manual = !!contributions.getPointContributionValue(TYPE_LIST, entity, 'manual');
 
     try {
-        const res = yield call(processEntityData, context, entity, data, entries);
-
-        yield put({ type: PROCESS_DATA_FETCH_SUCCEEDED, payload: { result: res, data } });
-
-        if (manual) {
-            yield put({ type: SAGA_FETCH_LIST_DATA, payload: entity });
-        }
+        yield call(processEntityData, context, entity, data, entries);
+        yield put({ type: SAGA_FETCH_LIST_DATA, payload: entity });
     } catch (e) {
         yield put({ type: SET_COLLECTION_LOADING, payload: false });
         yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
@@ -293,7 +285,7 @@ function* _fetchDashboard() {
             let resultData = [];
 
             if (result && result["result"]) {
-                 resultData = pretifyData(elements, result["result"]);
+                resultData = pretifyData(elements, result["result"]);
             }
 
             yield put({ type: DASHBOARD_DATA_FETCHING_SUCCESS, payload: resultData });
@@ -303,7 +295,7 @@ function* _fetchDashboard() {
         }
 
     } else {
-        yield put({ type: DASHBOARD_DATA_FETCHING_SUCCESS, payload: {}});
+        yield put({ type: DASHBOARD_DATA_FETCHING_SUCCESS, payload: {} });
     }
 }
 

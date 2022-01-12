@@ -1,6 +1,6 @@
 {
   "name": "airc-shell3-plugin-core",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -25,6 +25,7 @@
     "react-keypress": "^0.1.5",
     "react-redux": "^7.2.1",
     "react-scripts": "^4.0.3",
+    "react-error-overlay": "6.0.9",
     "react-color": "^2.19.3",
     "react-image-crop": "^8.6.12",
     "redux": "^4.0.1",
