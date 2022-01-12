@@ -487,9 +487,9 @@ class EMEditForm extends Component {
 
         let mergedData = mergeDeep({}, data, changedData);
 
-        log("EMEditForm data", data);
-        log("EMEditForm changedData", changedData);
-        log("EMEditForm mergedData", mergedData);
+        //log("EMEditForm data", data);
+        //log("EMEditForm changedData", changedData);
+        //log("EMEditForm mergedData", mergedData);
 
         if (sections && sections.length > 0) {
             return sections.map((sec, i) => {
