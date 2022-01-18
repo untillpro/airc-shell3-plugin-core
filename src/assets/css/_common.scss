@@ -20,3 +20,8 @@ body {
 ._relative {
   position: relative;
 }
+
+._column {
+  display: flex;
+  flex-direction: column;
+}

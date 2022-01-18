@@ -73,24 +73,16 @@ class TicketLayoutField extends Component {
         this.handleChange();
     }
 
-    init() {
-        const { context, value } = this.props;
+    layouts() {
+        const { context } = this.props;
         const { contributions } = context;
-
-        let selectedLayout = null;
-        let layoutTemplate = null;
-        let layoutSettings = null;
-        let layoutHelpers = null;
-        let layoutDictionary = null;
-        let layoutData = {};
-        let changedData = null;
-        let templateChanged = false;
 
         const layouts = {};
 
-        if (!contributions)
+        if (!contributions) {
             throw new Error('Contributions property not specified');
-
+        }
+            
         const points = contributions.getPoints(TYPE_LAYOUTS);
 
         if (points.length > 0) {
@@ -102,6 +94,23 @@ class TicketLayoutField extends Component {
                 }
             });
         }
+
+        return layouts;
+    }
+
+    init() {
+        const { value } = this.props;
+
+        let selectedLayout = null;
+        let layoutTemplate = null;
+        let layoutSettings = null;
+        let layoutHelpers = null;
+        let layoutDictionary = null;
+        let layoutData = {};
+        let changedData = null;
+        let templateChanged = false;
+
+        const layouts = this.layouts();
 
         if (value) {
             const buffer = new Buffer(value, 'base64');
@@ -322,19 +331,37 @@ class TicketLayoutField extends Component {
         }
     }
 
+    clearTemplate() {
+        console.log("clearTemplate");
+
+        this.setState({
+            layouts: this.layouts(),
+            selectedLayout: null,
+            layoutTemplate: null,
+            layoutSettings: null,
+            layoutHelpers: null,
+            layoutDictionary: null,
+            layoutData: null,
+            templateChanged: false,
+            error: null
+        });
+    }
+
     renderChangedMessage() {
         const { templateChanged } = this.state;
 
         if (!templateChanged) return null;
 
         return (
-            <Message
-                type="warning"
-                header={t("Template has changed", "form")}
-                footer={<Button onClick={this.refreshTemplate.bind(this)}>{t("Refresh template", "form")}</Button>}
-            >
-                {t("The current version of the template is different from that used in this ticket", "form")}
-            </Message>
+            <>
+                <Message
+                    type="warning"
+                    header={t("Template has changed", "form")}
+                    footer={<Button onClick={this.refreshTemplate.bind(this)}>{t("Refresh template", "form")}</Button>}
+                >
+                    {t("The current version of the template is different from that used in this ticket", "form")}
+                </Message>
+            </>
         );
     }
 
@@ -399,14 +426,19 @@ class TicketLayoutField extends Component {
 
         if (error) {
             return (
-                <Message type='error'>
-                    {error}
-                </Message>
+                <div className="_column">
+                    <Message type='error'>
+                        {error}
+                    </Message>
+                    <br/>
+                    <Button onClick={this.clearTemplate.bind(this)}>Clear template</Button>
+                   
+                </div>
             );
         }
 
         if (layouts.length <= 0) return null;
-        
+
         return (
             <div className="ticket-layout-selector-field" >
                 <Select
