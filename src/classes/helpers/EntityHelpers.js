@@ -13,8 +13,7 @@ import { reduce } from './';
 
 import {
     SYS_ID_PROP,
-    STATE_FIELD_NAME,
-    STATUS_ACTIVE
+    STATE_FIELD_NAME
 } from '../../const/Common';
 
 import {
