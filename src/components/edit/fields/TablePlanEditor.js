@@ -23,7 +23,7 @@ import {
     TableAreaList
 } from '../../common/plan/';
 
-import { STATE_FIELD_NAME, STATUS_ACTIVE, STATUS_DELETED } from '../../../const/Common';
+import { STATE_FIELD_NAME, STATUS_ACTIVE, STATUS_DELETED, SYS_ID_PROP } from '../../../const/Common';
 
 import TableAreaImageSelect from '../../common/plan/TableAreaImageSelect_2';
 
@@ -366,7 +366,7 @@ class TablePlanEditor extends PureComponent {
             tableData.left_c = tableData.left_c + 10;
             tableData.top_c = tableData.top_c + 10;
 
-            tableData.id = null;
+            tableData[SYS_ID_PROP] = null;
 
             this.onTableChange(tableData, null);
         }
