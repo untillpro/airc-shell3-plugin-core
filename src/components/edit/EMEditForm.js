@@ -61,8 +61,7 @@ class EMEditForm extends Component {
             sections: [],
             sectionsErrors: {},
             fieldsErrors: {},
-            component: {},
-            proccessing: false
+            component: {}
         };
 
         this.doProceed = this.doProceed.bind(this);
@@ -260,8 +259,6 @@ class EMEditForm extends Component {
                 if (this.validateFields()) {
                     const submitReducers = this.formContext.getValue("submitReducer");
                     if (_.isArray(submitReducers)) {
-                        this.setState({ proccessing: true });
-
                         const promises = [];
                         submitReducers.forEach(f => promises.push(f()));
 
@@ -274,7 +271,6 @@ class EMEditForm extends Component {
                             onProceed(resultData);
                         }).catch((err) => {
                             this.props.sendError(err);
-                            this.setState({ proccessing: false });
                         });
                     } else {
                         const resultData = this.getProceedData();
@@ -536,8 +532,7 @@ class EMEditForm extends Component {
     }
 
     renderButtons() {
-        const { hideButtons } = this.props;
-        const { proccessing } = this.state;
+        const { hideButtons, loading } = this.props;
         const { allowValidate } = this.state.component;
 
         if (hideButtons) return null;
@@ -553,7 +548,7 @@ class EMEditForm extends Component {
                 ) : null}
 
                 <Button
-                    loading={proccessing}
+                    loading={loading}
                     type="primary"
                     onClick={this.doProceed}
                 >
