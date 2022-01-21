@@ -332,8 +332,6 @@ class TicketLayoutField extends Component {
     }
 
     clearTemplate() {
-        console.log("clearTemplate");
-
         this.setState({
             layouts: this.layouts(),
             selectedLayout: null,

@@ -58,8 +58,8 @@ class TableAreaListRow extends PureComponent {
     handleDelete(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-        
-        const { onDelete, index} = this.props;
+
+        const { onDelete, index } = this.props;
 
         if (_.isFunction(onDelete)) {
             onDelete(index);
@@ -95,7 +95,7 @@ class TableAreaListRow extends PureComponent {
 
                 {isNew ? (
                     <Popconfirm
-                        title={t("Are you sure to delete this table?","form")}
+                        title={t("Are you sure to delete this table?", "form")}
                         onConfirm={this.handleDelete}
                         okText={t("Yes", "common")}
                         cancelText={t("No", "common")}
@@ -114,14 +114,17 @@ class TableAreaListRow extends PureComponent {
     }
 
     render() {
-        const { id, current } = this.props;
+        const { id, current, error } = this.props;
         const state = this.props[STATE_FIELD_NAME];
 
         let isNew = !(_.isNumber(id) && id > 0);
         let isHidden = state !== STATUS_ACTIVE;
 
         return (
-            <div className={cn("table-area-list-row", {'is-new': isNew, 'is-hidden': isHidden, 'is-current': current})} onClick={this.handleClick}>
+            <div
+                className={cn("table-area-list-row", { 'is-new': isNew, 'is-hidden': isHidden, 'is-current': current, 'is-error': error })}
+                onClick={this.handleClick}
+            >
                 {this.renderIcon()}
                 {this.renderLabel()}
                 {this.renderActions(isNew, isHidden)}

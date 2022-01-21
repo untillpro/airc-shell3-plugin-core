@@ -128,7 +128,7 @@ class TablePlan extends PureComponent {
 
 TablePlan.propTypes = {
     name: PropTypes.string.isRequired,
-    data: PropTypes.object,
+    data: PropTypes.array,
     onAdd: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onReduce: PropTypes.func.isRequired

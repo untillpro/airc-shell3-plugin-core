@@ -18,8 +18,8 @@ class Table extends PureComponent {
         this.state = {
             width: 0,
             height: 0,
-            top_c: 0,
-            left_c: 0,
+            top: 0,
+            left: 0,
             angle: 0,
             info: '',
             showInfo: false,
@@ -51,8 +51,8 @@ class Table extends PureComponent {
         const res = {
             width, 
             height, 
-            top: top_c, 
-            left: left_c, 
+            top: top_c || 0, 
+            left: left_c || 0, 
             angle,
         };
 

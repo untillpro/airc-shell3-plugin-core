@@ -7,7 +7,7 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Popconfirm, InputNumber } from 'antd';
 import { Modal, translate as t } from 'airc-shell-core';
-import { withStackEvents } from 'stack-events'; 
+import { withStackEvents } from 'stack-events';
 import EMEditForm from '../EMEditForm';
 
 import {
@@ -36,10 +36,15 @@ import {
 import {
     MIN_PLAN_WIDTH,
     MIN_PLAN_HEIGHT,
-    SIZE_INPUT_STEP
+    SIZE_INPUT_STEP,
+    TABLE_PLAN_NUMBER_ACCESSOR,
+    TABLE_PROP_WIDTH_ACCESSOR,
+    TABLE_PROP_HEIGHT_ACCESSOR,
+    TABLE_PROP_IMAGE_ACCESSOR,
+    TABLE_PROP_PREVIEW_ACCESSOR,
 } from '../../../const';
 
-import { funcOrString } from '../../../classes/helpers';
+import { funcOrString, getContributionProps } from '../../../classes/helpers';
 
 class TablePlanEditor extends PureComponent {
     constructor(props) {
@@ -58,29 +63,29 @@ class TablePlanEditor extends PureComponent {
             maxBoundRight: 0,
             maxBoundBottom: 0,
 
-            step: 10
+            step: 10,
+
+            formError: null
+
+
         };
 
         this.area = null; //TableArea ref
 
         this.changeTables = this.changeTables.bind(this);
-
         this.addTable = this.addTable.bind(this);
         this.editTable = this.editTable.bind(this);
         this.copyTable = this.copyTable.bind(this);
         this.removeTable = this.removeTable.bind(this);
         this.clearImage = this.clearImage.bind(this);
         this.toggleGrid = this.toggleGrid.bind(this);
-
         this.onTableClick = this.onTableClick.bind(this);
         this.onTableDoubleClick = this.onTableDoubleClick.bind(this);
         this.onTableChange = this.onTableChange.bind(this);
         this.onTableMove = this.onTableMove.bind(this);
         this.onFormSubmit = this.onFormSubmit.bind(this);
-
         this.onImageChange = this.onImageChange.bind(this);
         this.onSizeChange = this.onSizeChange.bind(this);
-
         this.handleCancel = this.handleCancel.bind(this);
 
         // stack events
@@ -91,31 +96,38 @@ class TablePlanEditor extends PureComponent {
         //reducer 
 
         this.onBeforeSubmit = this.onBeforeSubmit.bind(this);
+
+        //memo
+
+        this._reduce = _.reduce;
     }
 
     componentDidMount() {
         const { field, formContext } = this.props;
 
-        if (!field) throw new Error('EmbeddedManagerField exception: "field" prop not specified', field);
-
-        const { entity } = field;
-
-        if (!entity || typeof entity !== 'string') {
-            throw new Error('EmbeddedManagerField exception: contribution prop "entity" is not defined or wrong given. String expected.', entity);
-        }
-
-        this.entity = entity;
+        this.field = getContributionProps(
+            field,
+            [
+                'entity',
+                TABLE_PLAN_NUMBER_ACCESSOR,
+                TABLE_PROP_WIDTH_ACCESSOR,
+                TABLE_PROP_HEIGHT_ACCESSOR,
+                TABLE_PROP_IMAGE_ACCESSOR,
+                TABLE_PROP_PREVIEW_ACCESSOR,
+            ],
+            funcOrString(field.header),
+        );
 
         this._initData();
 
-        this.props.pushEvents({ 
-            'keydown': this.handleKeyDown, 
-            'keyup': this.handleKeyUp 
+        this.props.pushEvents({
+            'keydown': this.handleKeyDown,
+            'keyup': this.handleKeyUp
         });
 
         if (formContext && _.isObject(formContext)) {
             formContext.pushValue("submitReducer", this.onBeforeSubmit);
-        } 
+        }
     }
 
     componentWillUnmount() {
@@ -123,16 +135,15 @@ class TablePlanEditor extends PureComponent {
     }
 
     componentDidUpdate(oldProps) {
+        console.log("componentDidUpdate: ", this.props.data);
+        
         if (this.props.data !== oldProps.data) {
             this._initData();
         }
     }
 
     async onBeforeSubmit() {
-        const { field } = this.props;
-        const { preview_accessor } = field;
-
-        if (this.area && _.isString(preview_accessor)) {
+        if (this.area && _.isString(this.field[TABLE_PROP_PREVIEW_ACCESSOR])) {
             return new Promise((resolve, reject) => {
                 return this.area.generatePreview().then((data) => {
                     return this.savePreviewImage(data).then(() => resolve());
@@ -142,15 +153,15 @@ class TablePlanEditor extends PureComponent {
                 });
             });
         }
-     
+
         return null;
     }
 
     async savePreviewImage(data) {
-        const { context, field, onChange } = this.props;
+        const { context, onChange } = this.props;
         const { api } = context;
-        const { preview_accessor } = field;
-        
+        const { [TABLE_PROP_PREVIEW_ACCESSOR]: preview_accessor } = this.field;
+
         if ("blob" in api) {
             return api.blob({
                 filename: "file",
@@ -165,14 +176,14 @@ class TablePlanEditor extends PureComponent {
         }
     }
 
-    handleKeyDown(event) {        
+    handleKeyDown(event) {
         const { currentTable, step, showGrid } = this.state;
         const { keyCode } = event;
 
         if (keyCode === KEY_LEFT || keyCode === KEY_RIGHT || keyCode === KEY_UP || keyCode === KEY_DOWN) {
             event.stopPropagation();
             event.preventDefault();
-            
+
             let delta = showGrid ? step : 1;
 
             if (currentTable >= 0) {
@@ -203,13 +214,20 @@ class TablePlanEditor extends PureComponent {
     }
 
     _initData() {
-        const { value, data, field } = this.props;
-        const { width_accessor, height_accessor, image_accessor } = field;
+        const { value, data } = this.props;
+        const {
+            [TABLE_PROP_WIDTH_ACCESSOR]: width_accessor,
+            [TABLE_PROP_HEIGHT_ACCESSOR]: height_accessor,
+            [TABLE_PROP_IMAGE_ACCESSOR]: image_accessor
+        } = this.field;
 
         const newState = {};
 
+
         if (_.isArray(value) && _.size(value) > 0) {
-            newState.tables = _.sortBy(value, (o) => o.number);
+            //newState.tables = _.sortBy(value, (o) => o.number);
+
+            newState.tables = value;
         }
 
         if (_.isString(width_accessor) && _.isNumber(data[width_accessor]) && data[width_accessor] > 0) {
@@ -227,6 +245,18 @@ class TablePlanEditor extends PureComponent {
         this.setState(newState);
     }
 
+    _getTables() {
+        const { value } = this.props;
+
+        return this._reduce(value, (result, table, index) => {
+            if (!_.isNil(table)) {
+                result.push({ ...table, index });
+            }
+
+            return result;
+        }, []);
+    }
+
     _getBounds() {
         const { width, height } = this.state;
 
@@ -234,7 +264,7 @@ class TablePlanEditor extends PureComponent {
     }
 
     _getMinSizes() {
-        const { tables } = this.state;
+        const tables = this._getTables();
 
         let minWidth = 0, minHeight = 0;
 
@@ -264,20 +294,22 @@ class TablePlanEditor extends PureComponent {
     }
 
     _getNextFreeNumber(tableData) {
-        const { tables } = this.state;
+        const { [TABLE_PLAN_NUMBER_ACCESSOR]: number_accessor } = this.field;
+
+        const tables = this._getTables();
 
         let expected = 1;
 
-        if (_.isPlainObject(tableData) && "number" in tableData) {
-            expected = parseInt(tableData.number, 10);
+        if (_.isPlainObject(tableData) && number_accessor in tableData) {
+            expected = parseInt(tableData[number_accessor], 10);
         }
 
         if (_.isArray(tables)) {
             let tableNumbers = [];
 
-            _.forEach(tables,(item) => {
-                if (_.isObject(item) && "number" in item) {
-                    tableNumbers.push(parseInt(item.number, 10)); 
+            _.forEach(tables, (item) => {
+                if (_.isObject(item) && number_accessor in item) {
+                    tableNumbers.push(parseInt(item[number_accessor], 10));
                 }
             });
 
@@ -289,6 +321,7 @@ class TablePlanEditor extends PureComponent {
                 return 0;
             });
 
+            /*
             for (let i = 0; i <= tableNumbers.length; i++) {
                 if (tableNumbers[i] < expected) {
                     continue;
@@ -302,11 +335,40 @@ class TablePlanEditor extends PureComponent {
                     expected++;
                 }
             }
+            */
+
+            expected = _.last(tableNumbers) + 1;
 
             return expected;
         }
 
         return _.size(tables);
+    }
+
+    _setError(accessor, message) {
+        if (_.isNil(accessor)) {
+            this.setState({ formError: null });
+        } else {
+            this.setState({
+                formError: {
+                    [accessor]: [message]
+                }
+            });
+        }
+    }
+
+    _isDuplicateTableNumber(tableNumber) {
+        const number_accessor = this.field[TABLE_PLAN_NUMBER_ACCESSOR];
+
+        const tables = this._getTables();
+
+        let index = _.findIndex(tables, (t) => t[number_accessor] === tableNumber);
+
+        if (index < 0) {
+            return false;
+        }
+
+        return true;
     }
 
     handleCancel() {
@@ -329,7 +391,8 @@ class TablePlanEditor extends PureComponent {
     }
 
     editTable(index) {
-        const { currentTable, tables } = this.state;
+        const { currentTable } = this.state;
+        const tables = this._getTables();
 
         let tableIndex = currentTable;
 
@@ -348,7 +411,7 @@ class TablePlanEditor extends PureComponent {
     }
 
     copyTable(index) {
-        const { tables } = this.state;
+        const tables = this._getTables();
         let tableIndex = null;
 
         if (_.isNumber(index) && index >= 0) {
@@ -373,7 +436,8 @@ class TablePlanEditor extends PureComponent {
     }
 
     removeTable(index) {
-        const { currentTable, tables } = this.state;
+        const { currentTable } = this.state;
+        const tables = this._getTables();
 
         let tableIndex = currentTable;
 
@@ -390,7 +454,7 @@ class TablePlanEditor extends PureComponent {
             let table = { ...tables[tableIndex] };
             const newTables = [...tables];
 
-            if (_.isNil(table.id)) {
+            if (_.isNil(table[SYS_ID_PROP])) {
                 table = null;
             } else {
                 table[STATE_FIELD_NAME] = table[STATE_FIELD_NAME] !== STATUS_ACTIVE ? STATUS_ACTIVE : STATUS_DELETED;
@@ -405,7 +469,7 @@ class TablePlanEditor extends PureComponent {
     }
 
     moveTable(index, dx, dy, step) {
-        const { tables } = this.state;
+        const tables = this._getTables();
         const table = tables[index];
 
         if (table) {
@@ -421,7 +485,7 @@ class TablePlanEditor extends PureComponent {
                 newTables[index].top_c = t * step + dy;
             }
 
-            this.setState({ tables: newTables});
+            this.setState({ tables: newTables });
         }
     }
 
@@ -430,11 +494,12 @@ class TablePlanEditor extends PureComponent {
     }
 
     toggleGrid() {
-        this.setState({showGrid: !this.state.showGrid});
+        this.setState({ showGrid: !this.state.showGrid });
     }
 
     onTableClick(index) {
-        const { currentTable, tables } = this.state;
+        const { currentTable } = this.state;
+        const tables = this._getTables();
 
         if (index >= 0) {
             if (currentTable !== index) {
@@ -459,7 +524,7 @@ class TablePlanEditor extends PureComponent {
 
     onTableMove(left, top, width, height) {
         if (this.area) {
-            this.area.scrollTo([left-10, top-10, left + width+10, top + height+10], true);
+            this.area.scrollTo([left - 10, top - 10, left + width + 10, top + height + 10], true);
         }
     }
 
@@ -473,7 +538,7 @@ class TablePlanEditor extends PureComponent {
     }
 
     onTableChange(tableData, index, ops = {}) {
-        const { tables } = this.state;
+        const tables = this._getTables();
         const newTables = [...tables];
 
         if (index >= 0 && tables[index]) {
@@ -489,12 +554,27 @@ class TablePlanEditor extends PureComponent {
     }
 
     onFormSubmit(index, tableData) {
-        this.onTableChange(tableData, index, { modal: false, currentTable: null });
+        let number_accessor = this.field[TABLE_PLAN_NUMBER_ACCESSOR];
+        let tableNumber = tableData[number_accessor];
+
+        if (this._isDuplicateTableNumber(tableNumber)) {
+            this._setError(number_accessor, t("Duplicate table number", "errors"));
+        } else {
+            this.onTableChange(
+                tableData,
+                index,
+                {
+                    modal: false,
+                    currentTable: null,
+                    formError: null,
+                },
+            );
+        }
     }
 
     onImageChange(data) {
-        const { onChange, field } = this.props;
-        const { image_accessor } = field;
+        const { onChange } = this.props;
+        const { [TABLE_PROP_IMAGE_ACCESSOR]: image_accessor } = this.field;
 
         let img = null;
 
@@ -510,9 +590,12 @@ class TablePlanEditor extends PureComponent {
     }
 
     onSizeChange(props) {
-        const { onChange, field } = this.props;
+        const { onChange } = this.props;
         const { width, height } = props;
-        const { width_accessor, height_accessor } = field;
+        const {
+            [TABLE_PROP_WIDTH_ACCESSOR]: width_accessor,
+            [TABLE_PROP_HEIGHT_ACCESSOR]: height_accessor,
+        } = this.field;
 
         const newState = {};
         const changedData = {};
@@ -557,7 +640,8 @@ class TablePlanEditor extends PureComponent {
 
     renderTables() {
         const { context } = this.props;
-        const { tables, currentTable } = this.state;
+        const { currentTable } = this.state;
+        const tables = this._getTables();
 
         if (!_.isArray(tables) || _.size(tables) === 0) return null;
 
@@ -588,7 +672,8 @@ class TablePlanEditor extends PureComponent {
 
     renderModal() {
         const { locations } = this.props;
-        const { modal, currentTable: current, tables } = this.state;
+        const { modal, currentTable: current, formError } = this.state;
+        const tables = this._getTables();
 
         if (modal !== true) return null;
 
@@ -602,6 +687,8 @@ class TablePlanEditor extends PureComponent {
 
         let isNew = !(_.isNumber(current) && current >= 0);
 
+        console.log("formError: ", formError);
+
         return (
             <Modal
                 title={t("Add table", "form")}
@@ -612,12 +699,13 @@ class TablePlanEditor extends PureComponent {
             >
                 {
                     <EMEditForm
-                        entity={this.entity}
+                        entity={this.field.entity}
                         isNew={isNew}
                         data={data}
                         onProceed={(newData) => this.onFormSubmit(!isNew ? current : null, newData)}
                         onCancel={this.handleCancel}
                         locations={locations}
+                        formErrors={formError}
                     />
                 }
             </Modal>
@@ -715,9 +803,11 @@ class TablePlanEditor extends PureComponent {
 
     render() {
         const { context } = this.props;
-        const { currentTable, width, height, image, showGrid, step, tables } = this.state;
+        const { currentTable, width, height, image, showGrid, step } = this.state;
 
         const canBeEdited = this._isEditable();
+
+        const tables = this._getTables();
 
         return (
             <div className="table-plan-editor _bs">
@@ -742,6 +832,7 @@ class TablePlanEditor extends PureComponent {
                                 onPress={this.onTableClick}
                                 tables={tables}
                                 currentTable={currentTable}
+                                numberProp={this.field[TABLE_PLAN_NUMBER_ACCESSOR]}
                             />
 
                             <TableArea
@@ -758,11 +849,11 @@ class TablePlanEditor extends PureComponent {
                             </TableArea>
                         </>
                     ) : (
-                            <TableAreaImageSelect
-                                context={context}
-                                setImage={this.onImageChange}
-                            />
-                        )}
+                        <TableAreaImageSelect
+                            context={context}
+                            setImage={this.onImageChange}
+                        />
+                    )}
 
                 </div>
 

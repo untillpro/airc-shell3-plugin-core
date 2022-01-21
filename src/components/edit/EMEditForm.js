@@ -479,13 +479,15 @@ class EMEditForm extends Component {
 
     buildSectionContent() {
         const { sections, section, sectionsErrors, changedData, fieldsErrors } = this.state;
-        const { data, classifiers, entity, contributions, isNew, isCopy, locations } = this.props;
+        const { data, classifiers, entity, contributions, isNew, isCopy, locations, formErrors } = this.props;
 
         let mergedData = mergeDeep({}, data, changedData);
 
         //log("EMEditForm data", data);
         //log("EMEditForm changedData", changedData);
         //log("EMEditForm mergedData", mergedData);
+
+        const errors = { ...formErrors || {}, ...fieldsErrors || {} };
 
         if (sections && sections.length > 0) {
             return sections.map((sec, i) => {
@@ -506,7 +508,7 @@ class EMEditForm extends Component {
                         data={mergedData}
                         classifiers={classifiers}
                         changedData={changedData}
-                        fieldsErrors={fieldsErrors}
+                        fieldsErrors={errors}
 
                         isNew={isNew}
                         isCopy={isCopy}
@@ -600,6 +602,7 @@ EMEditForm.propTypes = {
     entity: PropTypes.string.isRequired,
     locations: PropTypes.arrayOf(PropTypes.number).isRequired,
     contributions: PropTypes.object.isRequired,
+    formErrors: PropTypes.object,
     sendNeedEditFormMessage: PropTypes.func.isRequired,
     sendNeedCopyFormMessage: PropTypes.func.isRequired,
     sendError: PropTypes.func.isRequired,

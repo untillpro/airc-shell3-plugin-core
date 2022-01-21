@@ -54,7 +54,7 @@ ImageSetSelectorElement.propTypes = {
     disabled: PropTypes.bool,
     showError: PropTypes.bool,
     errors: PropTypes.array,
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     value: PropTypes.any,
     data: PropTypes.object,
     classifiers: PropTypes.object,

@@ -81,28 +81,36 @@ class TableAreaList extends PureComponent {
 
     renderList() {
         const { showHidden } = this.state;
-        const { tables, onEdit, onCopy, onDelete, onPress, currentTable } = this.props;
+        const { tables, onEdit, onCopy, onDelete, onPress, currentTable, numberProp } = this.props;
 
         if (!_.isArray(tables) || _.size(tables) === 0) {
             return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
         }
 
-        //const tablesSorted = _.sortBy(tables, (o) => o.number);
-        let tablesSorted = tables;
+        const tableNumbers = {};
 
+        _.forEach(tables, (table, index) => {
+            table.index = index;
+            tableNumbers[table[numberProp]] = tableNumbers[table[numberProp]] ? tableNumbers[table[numberProp]] + 1 : 1;
+        });
+
+        const tablesSorted = _.sortBy(tables, (o) => o[numberProp]);
+    
         return _.map(tablesSorted, (table, index) => {
+            let num = table[numberProp];
 
             if (_.isNil(table) || (!showHidden && table[STATE_FIELD_NAME] !== STATUS_ACTIVE)) return null;
 
             return <TableAreaListRow
-                key={`table_${index}_${table.number}_${table.id}_${table[STATE_FIELD_NAME]}`}
-                current={currentTable === index}
+                key={`table_${index}_${num}_${table.id}_${table[STATE_FIELD_NAME]}`}
+                current={currentTable === table.index}
                 {...table}
-                index={index}
+                //index={index}
                 onEdit={onEdit}
                 onCopy={onCopy}
                 onDelete={onDelete}
                 onPress={onPress}
+                error={tableNumbers[num] > 1}
             />;
         }
 

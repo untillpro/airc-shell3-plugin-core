@@ -180,6 +180,10 @@ $resizerColor: #176ddd;
             background-color: var(--color-brand-300);
         }
 
+        &.is-error {
+            background-color: var(--color-danger-700);
+        }
+
         .form-ico {
             width: 20px;
             height: 20px;

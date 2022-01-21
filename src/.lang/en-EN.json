@@ -175,7 +175,8 @@
             "Selected layout not presented in available ticket layouts": "Selected layout not presented in available ticket layouts",
             "Layout's template not specified or wrong given": "Layout's template not specified or wrong given",
             "Please select datetime range": "Please select datetime range",
-            "No periods found": "No periods found"
+            "No periods found": "No periods found",
+            "Duplicate table number": "Duplicate table number"
         }
     }
 }

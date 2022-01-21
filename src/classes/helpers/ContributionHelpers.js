@@ -82,3 +82,19 @@ export const translateOptionValue = (value, options, entity) => {
 
     return res;
 }
+
+export const getContributionProps = (fieldProps, propsList, fieldName) => {
+    const props = {};
+
+    if (_.isPlainObject(fieldProps) && _.isArray(propsList)) {
+        _.forEach(propsList, (propName) => {
+            if(_.isNil(fieldProps[propName])) {
+                throw new Error(`Contribution prop "${propName}" is not defined or wrong given for field "${fieldName}".`);
+            }
+
+            props[propName] = fieldProps[propName];
+        });
+    }
+
+    return props;
+}

@@ -124,7 +124,7 @@ class TableArea extends PureComponent {
                     height={height}
                     draggable={false}
                     alt=""
-                    crossorigin={"anonymous"}
+                    crossOrigin={"anonymous"}
                 />
             );
         }

@@ -42,7 +42,7 @@ class TablePlanGrid extends PureComponent {
 }
 
 TablePlanGrid.propTypes = {
-    data: PropTypes.object,
+    data: PropTypes.array,
     onAdd: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
