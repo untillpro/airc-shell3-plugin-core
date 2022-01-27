@@ -14,8 +14,8 @@ import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectio
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjI1NTM2LCJEZXZpY2VJRCI6MSwiZXhwIjoxNTc3NTE5MDQzfQ.dXnbwFUtjcue8_LXNpir3lltj0qoDUarbZ1BDkj5Zno';
 const uploadFileAction = "https://badrequest.ru/tests/uploader/write.php";
 
-const FUNC_COLLECTION_NAME = 'q.air.collection';
-const FUNC_CDOC_NAME = 'q.air.cdoc';
+const FUNC_COLLECTION_NAME = 'q.air.Collection';
+const FUNC_CDOC_NAME = 'q.air.Cdoc';
 const FUNC_CUD_NAME = 'c.sys.CUD';
 const FUNC_DASHBOARD_NAME = 'q.air.Dashboard';
 const FUNC_JOURNAL_NAME = 'q.air.Journal';
@@ -359,27 +359,12 @@ class MockAlpha2ApiGate {
         });
     }
 
-    /**
-     * 
-     *  {
-            "SubjectLogin": "subject",
-            "ProjectionKey": [
-                {
-                    "App": "untill/airs-bp", 
-                    "Projection": "air.dashboard", 
-                    "WS": 1
-                }
-            ]
-        }
-     * 
-     * 
-     */
     // subscribe to projection
     async subscribe(projectionKey, handlerName) {
         /** ProjectionKey: 
          * {
                 "App": "untill/airs-bp", 
-                "Projection": projectionKey, //"air.dashboard", 
+                "Projection": projectionKey, 
                 "WS": wsid
             }
          */

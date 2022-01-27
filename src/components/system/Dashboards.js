@@ -88,7 +88,7 @@ class Dashboards extends Component {
     _key(props) {
         return {
             "App": "untill/airs-bp", 
-            "Projection": "air.dashboard", //"air.dashboard", 
+            "Projection": "air.Dashboard",
             "WS": props.location
         };
     }
