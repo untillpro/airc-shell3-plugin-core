@@ -412,7 +412,7 @@ class MockAlphaApiGate {
 
         if (handler && typeof handler === "function") {
             source.addEventListener(key, function (e) {
-                handler(JSON.parse(e.data));
+                handler(JSON.parse(e.data), e.type);
             });
         }
 
