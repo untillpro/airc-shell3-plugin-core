@@ -53,6 +53,7 @@ class AddNewDeviceWizzard extends React.Component {
 
         this._onFormLayoutChange = this._onFormLayoutChange.bind(this);
         this.timer = null;
+        this.subscribed = false;
     }
 
     componentDidMount() {
@@ -108,10 +109,15 @@ class AddNewDeviceWizzard extends React.Component {
             isInit: true
         });
 
-        registerProjectionHandler('airDeviceWizzardHandler', () => {
-            console.log("airDeviceWizzardHandler");
-            dispatch(sendCancelMessage);
-            //dispatch(sendNeedRefreshDataMessage);
+        registerProjectionHandler('airDeviceWizzardHandler', (data, type) => {
+            let key = JSON.stringify(this._key(this.props));
+            
+            if (type === key && this.subscribed) {
+                dispatch(sendCancelMessage());
+                dispatch(sendNeedRefreshDataMessage());
+            }
+
+            this.subscribed = true;
         });
 
         api.subscribe(this._key(this.props), "airDeviceWizzardHandler");
@@ -153,7 +159,7 @@ class AddNewDeviceWizzard extends React.Component {
     _key(props) {
         return {
             "App": "untill/airs-bp",
-            "Projection": "ComputersDeviceProfileWSIDIdx",
+            "Projection": "air.ComputersDeviceProfileWSIDIdx",
             "WS": props.location
         };
     }
