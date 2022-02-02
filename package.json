@@ -1,6 +1,6 @@
 {
   "name": "airc-shell3-plugin-core",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "private": true,
   "homepage": ".",
   "dependencies": {
@@ -41,7 +41,8 @@
     "uuid": "^8.3.2",
     "voca": "^1.4.0",
     "xlsx": "^0.16.9",
-    "use-sound": "^4.0.1"
+    "use-sound": "^4.0.1",
+    "qrcode.react": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

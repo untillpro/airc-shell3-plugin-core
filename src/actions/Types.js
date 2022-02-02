@@ -95,3 +95,9 @@ export const SET_DASHBOARD_SETTINGS = "set_dashboard_settings";
 export const SET_DASHBOARD_LOADING = "set_dashboard_loading";
 export const DASHBOARD_DATA_FETCHING_SUCCESS = "dashboard_data_fetching_success";
 
+
+/* WIZZARD ATIONS*/
+
+export const NEED_LINK_DEVICE_TOKEN = 'need_link_device_token';
+export const SET_WIZZARD_DEVICE_LINK_TOKEN = 'set_wizzard_device_link_token';
+export const CLEAR_TOKEN_DATA = 'clear_token_data';

@@ -16,6 +16,7 @@ import {
 
 import EMEditFormHeader from './EMEditFormHeader';
 import EMEditFormFieldsBuilder from './EMEditFormFieldsBuilder';
+import EMEditFormWizzard from './EMEditFormWizzard';
 
 import {
     Context,
@@ -34,9 +35,11 @@ import {
 
 import {
     TYPE_FORMS,
+    TYPE_SECTIONS,
     C_FORMS_DEFAULT,
     C_FORMS_EMBEDDED_TYPE,
-    C_FORMS_SECTIONS
+    C_FORMS_SECTIONS,
+    C_FORMS_CREATE_WIZZARD
 } from '../../classes/contributions/Types';
 
 import { STATE_FIELD_NAME, SYS_ID_PROP, STATUS_ACTIVE, STATUS_DELETED } from '../../const/Common';
@@ -61,7 +64,8 @@ class EMEditForm extends Component {
             sections: [],
             sectionsErrors: {},
             fieldsErrors: {},
-            component: {}
+            component: {},
+            wizzard: null
         };
 
         this.doProceed = this.doProceed.bind(this);
@@ -157,15 +161,13 @@ class EMEditForm extends Component {
     }
 
     handleUnifyAction() {
-        //TODO
+        //TODO: implement me
         this.props.sendError('not implemented yet!');
         return;
-
-        //this.props.sendNeedUnifyFormMessage();
     }
 
     setDefaultValues(sections) {
-        const { contributions, entity, data } = this.props;
+        const { contributions, entity, data, classifiers } = this.props;
         let changedData = { [STATE_FIELD_NAME]: STATUS_ACTIVE };
 
         const defaultValues = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_DEFAULT);
@@ -184,7 +186,7 @@ class EMEditForm extends Component {
                             field.value !== undefined) {
 
                             if (_.isFunction(field.value)) {
-                                changedData[field.accessor] = field.value();
+                                changedData[field.accessor] = field.value(changedData, classifiers);
                             } else {
                                 changedData[field.accessor] = field.value;
                             }
@@ -314,7 +316,7 @@ class EMEditForm extends Component {
         }
 
         if (data) {
-            const cc = contributions.getPointContributions("forms", entity);
+            const cc = contributions.getPointContributions(TYPE_FORMS, entity);
 
             const embedded_types = _.get(cc, [C_FORMS_EMBEDDED_TYPE]);
 
@@ -365,8 +367,9 @@ class EMEditForm extends Component {
     }
 
     prepareProps() {
-        const { contributions, entity } = this.props;
-        const entityListContributions = contributions.getPointContributions('forms', entity);
+        const { contributions, entity, isNew } = this.props;
+        const entityListContributions = contributions.getPointContributions(TYPE_FORMS, entity);
+        let wizzard = null;
         let componentProps = {};
 
         if (entityListContributions) {
@@ -382,8 +385,13 @@ class EMEditForm extends Component {
             });
         }
 
+        if (isNew) {
+            wizzard = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_CREATE_WIZZARD);
+        }
+
         return {
             component: componentProps,
+            wizzard: _.isString(wizzard) ? wizzard : null,
         };
     }
 
@@ -392,11 +400,11 @@ class EMEditForm extends Component {
         let sections = [];
 
         if (contributions && entity) {
-            const point = contributions.getPointContributions('forms', entity);
+            const point = contributions.getPointContributions(TYPE_FORMS, entity);
 
             if (point && point[C_FORMS_SECTIONS]) {
                 _.each(point[C_FORMS_SECTIONS], (sectionName) => {
-                    const conts = contributions.getPointContributions('sections', sectionName);
+                    const conts = contributions.getPointContributions(TYPE_SECTIONS, sectionName);
 
                     if (conts) {
                         if (embeded) conts.embedded = entity;
@@ -522,7 +530,21 @@ class EMEditForm extends Component {
     }
 
     buildForm() {
-        const { component } = this.state;
+        const { api, classifiers, data, loading, entity, onCancel, locations } = this.props;
+        const { component, wizzard } = this.state;
+
+        if (wizzard != null) {
+            return <EMEditFormWizzard 
+                api={api}
+                wizzard={wizzard}
+                entity={entity}
+                data={data}
+                classifiers={classifiers}
+                loading={loading}
+                onCancel={onCancel}
+                location={locations[0]}
+            />;
+        }
 
         return (
             <div className={cn('page-section', { 'vertical': component.vertical })}>
@@ -622,9 +644,9 @@ EMEditForm.propTypes = {
 
 const mapStateToProps = (state) => {
     const { locations } = state.locations;
-    const { contributions } = state.context;
+    const { contributions, api } = state.context;
 
-    return { locations, contributions };
+    return { api, locations, contributions };
 }
 
 const mapDispatchToProps = {

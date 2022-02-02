@@ -25,32 +25,25 @@ class SelectField extends Component {
     }
 
     componentDidMount() {
-        const { field, data, value } = this.props;
+        const { field, data, value, classifiers } = this.props;
+        const { manual, selector, options, mapper, classifier } = field;
 
-        if (!field) return;
-
-        const { manual, selector, options, mapper } = field;
+        let resultData = [];
 
         if (!manual) {
             if (options) {
-                let ops = {};
-
                 if (_.isFunction(options)) {
-                    ops = options();
+                    resultData = options();
                 } else if (_.isPlainObject(options)) {
-                    ops = options;
+                    resultData = options;
                 }
-
-                this.setState({
-                    data: ops
-                });
             } else if (selector) {
                 let selectData = null;
 
                 if (typeof selector === 'string') {
-                    selectData = _.get(data, selector);
+                    resultData = _.get(data, selector);
                 } else if (typeof selector === 'object') {
-                    selectData = selector;
+                    resultData = selector;
                 }
 
                 if (_.isObject(selectData)) {
@@ -61,17 +54,19 @@ class SelectField extends Component {
                     selectData = mapper(selectData);
                 }
 
-                this.setState({
-                    data: selectData
-                });
+                resultData = selectData;
+            } else if (_.isString(classifier) && classifiers[classifier]) {
+                resultData = _.values(classifiers[classifier]);
             }
         } else {
             if (_.isPlainObject(value)) {
-                this.setState({
-                    data: [value]
-                });
+                resultData = [value];
             }
         }
+
+        this.setState({
+            data: resultData
+        });
     }
 
     fetchData() {
@@ -105,8 +100,7 @@ class SelectField extends Component {
         this.setState({ loading: true });
     }
 
-    handleChange(value) {
-        const { data } = this.state;
+    handleChange(data, value) {
         const { onChange, field } = this.props;
         const { accessor, value_accessor } = field;
 
@@ -243,7 +237,7 @@ class SelectField extends Component {
                 disabled={disabled}
                 value={val}
                 loading={loading}
-                onChange={(value) => this.handleChange(value)}
+                onChange={(value) => this.handleChange(data, value)}
                 onFocus={() => this.handleFocus()}
             >
                 {this.buildOptions(data)}

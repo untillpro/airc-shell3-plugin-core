@@ -10,3 +10,4 @@ export * from './ReportsActions';
 export * from './ContextActions';
 export * from './OptionsActions';
 export * from './DashboardActions';
+export * from './WizzardActions';

@@ -206,7 +206,8 @@ export const processClassifier = (item, classifiers = {}, entity, maxLevel = 3, 
 
     _.forEach(item, (value, key) => {
         if (_.isArray(value)) {
-            _.each(value, (val, i) => item[key][i] = processClassifier(val, classifiers, key, maxLevel, level + 1));
+            let scheme = schemeForContainer(key);
+            _.each(value, (val, i) => item[key][i] = processClassifier(val, classifiers, scheme, maxLevel, level + 1));
         } else if (_.isObject(value)) {
             processClassifier(value, classifiers, key, maxLevel, level + 1)
         } else {
@@ -275,6 +276,8 @@ export const getEntityRequiredClassifiers = (context, entity) => {
 
     return contributions.getPointContributionValues(TYPE_COLLECTION, entity, C_COLLECTION_REQUIRED_CLASSIFIERS);
 };
+
+export const schemeForContainer = (container) => `untill.${container}`;
 
 // DATA PROCESSING
 

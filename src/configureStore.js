@@ -22,7 +22,8 @@ const persistConfigDefauult = {
         'collection',
         'entity',
         'report',
-        //'dashboards'
+        //'dashboards',
+        'wizzard'
     ]
 };
 

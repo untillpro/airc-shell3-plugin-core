@@ -48,7 +48,9 @@ import {
     REPORT_DATA_FETCHING_SUCCESS,
     SEND_LANGUAGE_CHANGED_MESSAGE,
     DASHBOARD_DATA_FETCHING_SUCCESS,
-    //SET_DASHBOARD_LOADING
+    //SET_DASHBOARD_LOADING,
+    NEED_LINK_DEVICE_TOKEN,
+    SET_WIZZARD_DEVICE_LINK_TOKEN,
 } from '../actions/Types';
 
 import {
@@ -159,14 +161,12 @@ function* _fetchEntityData(action) {
     let data = [];
     let classifiers = {};
 
-    if (isNew) {
-        yield put({ type: ENTITY_DATA_FETCH_SUCCEEDED, payload: { result: {}, isNew, isCopy: false } });
-    } else {
-        try {
-            yield put({ type: SET_ENTITY_LOADING, payload: true });
+    try {
+        yield put({ type: SET_ENTITY_LOADING, payload: true });
 
-            let scheme = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
+        let scheme = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
 
+        if (!isNew) {
             const result = yield call(getObject, context, { scheme, wsid, id, props: {} }, true);
 
             Logger.log(result, 'SAGA.fetchEntityData() fetched data:', "rootSaga.fetchEntityData");
@@ -176,25 +176,25 @@ function* _fetchEntityData(action) {
             if (_.isPlainObject(resolvedData)) {
                 data = checkForEmbededTypes(context, entity, resolvedData);
             }
-
-            let required_classifiers = getEntityRequiredClassifiers(context, entity);
-
-            if (_.size(required_classifiers) > 0) {
-                for (let c of required_classifiers) {
-                    let cData = yield call(getCollection, context, { scheme: c, wsid, props: {} }, true);
-                    classifiers[c] = cData?.resolvedData || null;
-                }
-            }
-
-            if (isCopy) {
-                data = prepareCopyData(data);
-            }
-
-            yield put({ type: ENTITY_DATA_FETCH_SUCCEEDED, payload: { data, classifiers, isNew, isCopy } });
-        } catch (e) {
-            yield put({ type: SET_ENTITY_LOADING, payload: false });
-            yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
         }
+
+        let required_classifiers = getEntityRequiredClassifiers(context, entity);
+
+        if (_.size(required_classifiers) > 0) {
+            for (let c of required_classifiers) {
+                let cData = yield call(getCollection, context, { scheme: c, wsid, props: {} }, true);
+                classifiers[c] = cData?.resolvedData || null;
+            }
+        }
+
+        if (isCopy) {
+            data = prepareCopyData(data);
+        }
+
+        yield put({ type: ENTITY_DATA_FETCH_SUCCEEDED, payload: { data, classifiers, isNew, isCopy } });
+    } catch (e) {
+        yield put({ type: SET_ENTITY_LOADING, payload: false });
+        yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
     }
 }
 
@@ -353,6 +353,38 @@ function* _setListShowDeleted(action) {
     }
 }
 
+//TODO: implement saga!!!
+function* _getLinkDeviceToken(action) {
+    const data = action.payload;
+    const locations = yield select(Selectors.locations);
+    const api = yield select(Selectors.api);
+    const elements = [
+        {
+            "fields": [
+                "deviceToken", "durationMS"
+            ]
+        }
+    ]; //todo
+
+    try {
+        let wsid = locations[0];
+
+        const result = yield call(api.qr.bind(api), data, wsid);
+        let resultData = [];
+
+        if (result && result["result"]) {
+            resultData = pretifyData(elements, result["result"]);
+        }
+
+        yield put({ type: SET_WIZZARD_DEVICE_LINK_TOKEN, payload: resultData });
+    } catch (e) {
+        //yield put({ type: SET_DASHBOARD_LOADING, payload: false });
+        yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
+    }
+
+
+}
+
 function* rootSaga() {
     yield takeLatest(SAGA_FETCH_LIST_DATA, _fetchListData);
     yield takeLatest(SAGA_FETCH_REPORT, _fetchReport);
@@ -362,6 +394,7 @@ function* rootSaga() {
     yield takeLatest(SAGA_PROCESS_ENTITY_DATA, _processEntityData);
     yield takeLatest(SAGA_SET_PLUGIN_LANGUAGE, _setPluginLanguage);
     yield takeLatest(SAGA_SET_LIST_SHOW_DELETED, _setListShowDeleted);
+    yield takeLatest(NEED_LINK_DEVICE_TOKEN, _getLinkDeviceToken);
 }
 
 export default rootSaga;

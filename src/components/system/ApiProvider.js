@@ -16,7 +16,7 @@ import {
 } from '../../actions/';
 
 import { UShellAPIGate, getProjectionHandler } from 'airc-shell-core';
-import MockAlpha2ApiGate from '../../mock/MockAlpha2ApiGate';
+import MockAlphaApiGate from '../../mock/MockAlphaApiGate';
 import AppLoader from './AppLoader';
 
 class ApiProvider extends Component {
@@ -33,7 +33,7 @@ class ApiProvider extends Component {
         if (isProd.isProduction()) {
             apiGate = new UShellAPIGate(API, '', this.props.apiInitDone);
         } else {
-            apiGate = new MockAlpha2ApiGate(this.props.apiInitDone);
+            apiGate = new MockAlphaApiGate(this.props.apiInitDone);
         }
 
         this.props.setContext("api", apiGate);

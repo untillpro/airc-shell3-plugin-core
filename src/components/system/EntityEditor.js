@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { 
+import {
     EMEditForm,
     EMMassEditForm
 } from '../../components';
@@ -26,7 +26,7 @@ class EntityEditor extends Component {
         }
     }
 
-   componentDidUpdate(nextProps) {
+    componentDidUpdate(nextProps) {
         const { id } = this.props;
 
         if (id !== nextProps.id) {
@@ -35,23 +35,14 @@ class EntityEditor extends Component {
     }
 
     render() {
-        const { massedit, data, classifiers, locations, entity, isCopy, isNew, loading } = this.props;
+        const { data, classifiers, locations, entity, isCopy, isNew, loading, processing } = this.props;
 
         return (
             <div className='content-container'>
-                {massedit ? (
-                    <EMMassEditForm 
-                        showHeader 
-                        data={data}
-                        entity={entity}
-
-                        onValidate={() => this.props.sendNeedValidateMessage(data)}
-                        onProceed={(data) => this.props.sendNeedProccessMessage(data)}
-                    />
-                ) : (
-                    <EMEditForm 
-                        loading={loading}
-                        showHeader 
+                {loading ? null : (
+                    <EMEditForm
+                        loading={processing}
+                        showHeader
                         showBreadcrumbs
                         data={data}
                         classifiers={classifiers}
@@ -74,10 +65,11 @@ class EntityEditor extends Component {
 const mapStateToProps = (state) => {
     const { locations } = state.locations;
     const { entity } = state.plugin;
-    const { loading, id, data, isCopy, isNew, classifiers } = state.entity
+    const { loading, processing, id, data, isCopy, isNew, classifiers } = state.entity
 
-    return { 
+    return {
         loading,
+        processing, 
         isCopy,
         isNew,
         locations,

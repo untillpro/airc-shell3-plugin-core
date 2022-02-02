@@ -1,0 +1,38 @@
+.plugin-wizzard-header {
+    font-size: 22px;
+    font-weight: 600;
+
+    .sub-header {
+        font-size: 14px;
+        opacity: 0.6;
+        margin-top: 4px;
+        font-weight: normal;
+    }
+
+    margin-bottom: 30px;
+}
+
+.plugin-wizzard-container {
+    padding: 30px;
+    align-items: center;
+
+    .loading {
+        display: inline-block;
+        padding: 2em 0px;
+    }
+}
+
+.plugin-wizzard-qr-code-container {
+    width: 460px;
+    margin-bottom: 30px;
+
+    .qr-code {
+        display: inline-block;
+        padding: 10px;
+        border: 1px solid #efefef;
+    }
+}
+
+.plugin-wizzard-form-container {
+    flex: 1;
+}

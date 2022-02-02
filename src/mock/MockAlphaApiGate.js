@@ -3,71 +3,88 @@
  */
 
 import _ from 'lodash';
-import Axios from 'axios';
-import { message } from 'antd';
+import axios from 'axios';
+import qs from 'qs';
+import SSE from '../classes/sse';
 
-import { SProtBuilder } from 'airc-shell-core';
+import { message } from 'antd';
+import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectionHandler } from 'airc-shell-core';
 //import TablePlanData from './data/table_plan.json';
 
-const operationKeys = ['ID', 'Type', 'ParentID', 'ParentType', /*'PartID', 'PartType',*/ 'DocID', 'DocType', 'Data'];
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjI1NTM2LCJEZXZpY2VJRCI6MSwiZXhwIjoxNTc3NTE5MDQzfQ.dXnbwFUtjcue8_LXNpir3lltj0qoDUarbZ1BDkj5Zno';
-
 const uploadFileAction = "https://badrequest.ru/tests/uploader/write.php";
+
+const FUNC_COLLECTION_NAME = 'q.air.Collection';
+const FUNC_CDOC_NAME = 'q.air.Cdoc';
+const FUNC_CUD_NAME = 'c.sys.CUD';
+const FUNC_DASHBOARD_NAME = 'q.air.Dashboard';
+const FUNC_JOURNAL_NAME = 'q.air.Journal';
+const FUNC_DEVICE_TOKEN_NAME = 'q.air.IssueLinkDeviceToken';
 
 class MockAlphaApiGate {
     constructor(callback) {
         this.name = "MockAlphaApiGate";
-        this.host = 'https://air-alpha.untill.ru/api';
-        //this.host = 'https://air-rc.untill.ru/api';
+        this.host = 'https://alpha2.dev.untill.ru/';
+        //this.host = 'https://rc2.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
             callback();
         }
+
+        this.subscriptions = {}; // Array: SSE
     }
 
+    async do(application, wsid, func, params, method = 'get') {
+        this.print('this.do call: ', application, wsid, func, params, method);
 
-    async do(queueId, resource, params, method = 'get') {
-        const m = method ? method.toLowerCase() : 'get';
+        let data = {};
 
-        const config = {}
-        config.headers = {
-            'Authorization': `Bearer ${token}`
-        };
+        if (params) {
+            if (typeof params === 'string') {
+                try {
+                    const parsedData = JSON.parse(params);
 
-        if (Axios[m]) {
-            let prom = null;
-
-            switch (m) {
-                case 'delete':
-                case 'head':
-                case 'options':
-                case 'get': prom = Axios[m](`${this.host}/${queueId}/${resource}`, params); break;
-
-                case 'post':
-                case 'put':
-                case 'patch': prom = Axios[m](`${this.host}/${queueId}/${resource}`, params, config); break;
-
-                default: break;
-            }
-
-            if (prom) {
-                return prom.then((e) => {
-                    if (e.data && e.status === 200) {
-                        return e.data;
-                    } else {
-                        throw new Error(e.data.Data);
+                    if (parsedData) {
+                        data = { ...data, ...parsedData };
                     }
-                }).catch((e) => {
-                    if (e.response) {
-                        throw new Error(e.response.data);
-                    }
+                } catch (e) {
+                    console.error('Wrong params format in api.invoke() method: json string or object expected', params)
+                }
 
-                    throw e;
-                });
+            } else if (typeof params === 'object') {
+                data = { ...data, ...params };
             }
         }
 
-        throw new Error(`method "${m}" not alowed at Axios`);
+        return new Promise(async (resolve, reject) => {
+            const m = method ? method.toLowerCase() : 'post';
+            const config = this._addAuthHeader({});
+
+            //let url = URLToolkit.buildAbsoluteURL(this.host, application, wsid, func);
+            let url = `${this.host}api/${application}/${wsid}/${func}`;
+
+            if (m === 'get') {
+                config.params = data;
+                config.paramsSerializer = params => {
+                    return qs.stringify(params, { arrayFormat: 'repeat' })
+                }
+            } else {
+                config.data = data;
+            }
+
+            config.method = m;
+            config.validateStatus = () => true;
+
+            try {
+                let resp = await axios(url, config);
+                resolve(new ResponseBuilder(resp));
+            } catch (e) {
+                //resolve(new ResponseErrorBuilder(e));
+                reject(e);
+            }
+        }).catch(e => {
+            throw new ResponseErrorBuilder(e);
+        });
     }
 
     async sendError(text) {
@@ -87,186 +104,219 @@ class MockAlphaApiGate {
     }
 
     async sendLocations(locations) {
-        console.log('+++ Mock call of api.sendLocations() with locations: ', locations);
+        this.print('+++ Mock call of api.sendLocations() with locations: ', locations);
     };
 
-    async conf(operations, wsids, timestamp, offset) {
-        console.log('+++ Conf method call:', operations, wsids, timestamp, offset);
+    async qr(data, wsid) {
+        this.print('+++ qr method call:', data, wsid);
+
+        const params = {
+            "args": data,
+            "elements": [{ "fields": ["deviceToken", "durationMs"] }]
+        }
+
+        let location = this._checkWSID(wsid);
+
+        //return { "result": [[[[`mockLinkDeviceToken.${JSON.stringify(data)}.${wsid}.${Math.random(0, 1)}`, 60000]]]] };
+
+        const response = await this.do("untill/airs-bp", location, FUNC_DEVICE_TOKEN_NAME, params, "post");
+
+        if (response.isError()) {
+            throw new Error(response.getErrorMessage());
+        }
+
+        return response.getData();
+    }
+
+    /**
+     * url example: POST http://127.0.0.1:8822/api/airs-bp/1/c.sys.CUD
+     * 
+     * 
+     * @param {object[]} operations 
+     * @param {int} wsid 
+     * @returns Promise
+     */
+    async conf(operations, wsid) {
+        this.print('+++ conf method call:', operations, wsid);
 
         const params = {};
 
-        let location = null;
+        let location = this._checkWSID(wsid);
 
         if (operations) {
-            params['Operations'] = this._checkConfOperations(operations);
+            let builder = new CUDBuilder();
+            params['cuds'] = builder.build(operations);
         } else {
             throw new Error('Wrong "operations" prop: expected an array of objects, received' + operations);
         }
 
-        if (wsids && _.isArray(wsids) && wsids.length > 0) {
-            params['WSIDs'] = wsids;
-            location = parseInt(wsids[0]);
-        } else {
-            throw new Error('Wrong "WSIDs" prop: expected an array of integers, received ', wsids);
+        const response = await this.do("untill/airs-bp", location, FUNC_CUD_NAME, params, "post");
+
+        if (response.isError()) {
+            throw new Error(response.getErrorMessage());
         }
 
-        if (timestamp && timestamp > 0) {
-            params['Timestamp'] = parseInt(timestamp);
-        } else {
-            params['Timestamp'] = new Date().valueOf();
-        }
-
-        if (_.isNumber(offset) && offset >= 0) {
-            params['Offset'] = parseInt(offset);
-        } else {
-            params['Offset'] = 0; //TODO
-        }
-
-        return this.do("airs-bp", `${location}/conf`, params, "post");
+        return response;
     }
 
-    //${this.host}/${queueId}/${resource}
+    //
+    async object(wsid, id) {
+        const params = {
+            "args": { id },
+            "elements": [
+                {
+                    "fields": [
+                        "result"
+                    ]
+                }
+            ]
+        };
+
+        return this.do("untill/airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
+            Logger.log(response, '+++ api.object result');
+
+            if (response.isError()) {
+                throw new Error(response.getErrorMessage());
+            }
+
+            let result = {};
+
+            try {
+                let jsonData = response.getData().result[0][0][0][0];
+                Logger.log(jsonData, "jsonData");
+                result = JSON.parse(jsonData);
+
+                Logger.log(result, "result: ");
+            } catch (e) {
+                Logger.error(e);
+                result = {};
+            }
+
+            Logger.log(result, '+++ resultData');
+
+            return result;
+        }).catch((e) => {
+            Logger.error(e);
+            throw e;
+        });
+    }
+
+    //{application}/{wsid}/{function}
     //Mock api call for /collection/ function
-    async collection(type, wsids, props = {}) {
-        const { entries, page, page_size, show_deleted, required_fields, required_classifiers, filter_by } = props;
-        const builder = new SProtBuilder();
+    async collection(scheme, wsid, props = {}) {
+        const { elements, filters, orderBy, start_from, count } = props;
 
-        console.log("Api.Collection func call: ", type, wsids, props);
+        this.print("Api.Collection func call: ", scheme, wsid, props);
 
-        /*
-        if (type === 'table_plan') {
-            console.log('TablePlanData:', TablePlanData['sections']);
-            let mockData = builder.build(TablePlanData['sections']);
-
-            console.log('mockData: ', mockData);
-            return mockData
-        }
-        */
-
-        let resultData = {};
+        let location = this._checkWSID(wsid);
 
         let params = {
-            "Page": page,
-            "PageSize": page_size,
-            "ShowDeleted": !!show_deleted,
-            "Type": type,
-            "WSIDs": _.isArray(wsids) ? wsids : [wsids],
-            "Entries": entries,
-            "Fields": required_fields || [],
-            "RequiredClassifiers": required_classifiers || [],
-            "EmbeddedAsArrays": true,
-            "FilterBy": filter_by || null
+            'args': {
+                'schema': scheme
+            },
+            'elements': elements || null,
+            'filters': filters || null,
+            'orderBy': orderBy || null,
+            'startFrom': start_from || null,
+            'count': count || null,
+            //'orderBy': ['']
         }
 
-        return this.do("airs-bp", `${_.isArray(wsids) ? wsids[0] : wsids}/collection`, params, "post").then((response) => {
-            console.log('+++ api.collection result', response);
+        return this.do("untill/airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
+            Logger.log(response, '+++ api.collection result');
 
-            const { status, sections, errorDescription, error } = response;
-
-            if (status && status !== 200) {
-                throw new Error(errorDescription || error);
+            if (response.isError()) {
+                throw new Error(response.getErrorMessage());
             }
 
-            if (sections && _.isArray(sections)) {
-                resultData = builder.build(sections);
-            }
+            Logger.log(response.getData(), '+++ resultData');
 
-            console.log('+++ resultData', resultData);
-
-            return resultData;
+            return response.getData();
         }).catch((e) => {
             console.error(e);
             throw e;
         });
     }
 
-    async sync(entries) {
-        //todo
-        console.log('sync method call:', token, entries);
+    async log(wsid, props) {
+        //console.log('log method call:', token, props);
+        const { fromDay, tillDay, type } = props;
+        const elements = [{ "fields": ["offset", "eventTime", "event"] }];
+        const args = {};
 
-        return {};
-    }
+        let location = this._checkWSID(wsid);
 
-    async log(wsids, props) {
-        console.log('log call with props: ', wsids, props);
-        const { from, to, type, from_offset, to_offset, show, filterBy, required_classifiers } = props;
-
-        const params = {};
-        let location = null;
-
-        if (wsids && _.isArray(wsids)) {
-            location = parseInt(wsids[0], 10);
-            params["WSIDs"] = wsids;
-        } else {
-            throw new Error('api.log() call error: workspace IDs not specified or wrong given: ' + wsids);
+        if (_.isNumber(fromDay) && fromDay >= 0) {
+            args['fromDay'] = parseInt(fromDay);
         }
 
-        if (_.isNumber(from) && from >= 0) {
-            params['FromDateTime'] = parseInt(from);
-        }
-
-        if (_.isNumber(to) && to > 0) {
-            params['ToDateTime'] = parseInt(to);
+        if (_.isNumber(tillDay) && tillDay > 0) {
+            args['tillDay'] = parseInt(tillDay);
         }
 
         if (!_.isNil(type)) {
             if (_.isString(type)) {
-                params['Type'] = [type];
+                args['eventTypes'] = type;
             } else if (_.isArray(type)) {
-                params['Type'] = type;
+                args['eventTypes'] = type.join(',');
             }
         }
 
-        if (from_offset) {
-            params['FromOffset'] = parseInt(from_offset);
-        } else {
-            params['FromOffset'] = 0;
-        }
+        return this.do("untill/airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {
+            Logger.log(response, '+++ api.collection result');
 
-        if (to_offset && to_offset > 0) {
-            params['ToOffset'] = parseInt(to_offset);
-        }
-
-        if (filterBy) {
-            if (_.isPlainObject(filterBy)) {
-                params['FilterBy'] = JSON.stringify(filterBy);
-            } else if (_.isString(filterBy)) {
-                params['FilterBy'] = filterBy;
+            if (response.isError()) {
+                throw new Error(response.getErrorMessage());
             }
-        }
 
-        if (required_classifiers && _.isArray(required_classifiers)) {
-            params['RequiredClassifiers'] = required_classifiers;
-        }
+            Logger.log(response.getData(), '+++ resultData');
 
-        params['Show'] = !!show;
+            return response.getData();
+        }).catch((e) => {
+            console.error(e);
+            throw e;
+        });
+    }
 
-        const path = `${location}/log`;
+    async dashboard(wsid, props) {
+        const { elements, days } = props;
 
-        return this.do(`airs-bp`, path, params, 'post').then((res) => {
-            let result = {};
+        this.print("Api.dashboard func call: ", wsid, props);
 
-            if (res) {
-                try {
-                    let resBuilder = new SProtBuilder();
+        let location = this._checkWSID(wsid);
 
-                    if (res.sections && _.isArray(res.sections)) {
-                        result = resBuilder.build(res.sections);
-                    }
-                } catch (e) {
-                    console.error(e);
-                    throw new Error(e);
+        let params = {
+            'args': {
+                'days': days
+            },
+            'elements': elements || [],
+            'orderBy': [
+                {
+                    "field": "day"
                 }
+            ]
+        }
 
+        return this.do("untill/airs-bp", location, FUNC_DASHBOARD_NAME, params, "post").then((response) => {
+            Logger.log(response, '+++ api.dashboard result');
+
+            if (response.isError()) {
+                throw new Error(response.getErrorMessage());
             }
 
-            return result;
+            Logger.log(response.getData(), '+++ resultData');
+
+            return response.getData();
+        }).catch((e) => {
+            console.error(e);
+            throw e;
         });
     }
 
     async blob(option) {
         const method = 'post';
-        const options = { ...option, method, action: uploadFileAction};
+        const options = { ...option, method, action: uploadFileAction };
+
         /*
         if (option.onProgress && xhr.upload) {
             xhr.upload.onprogress = function progress(e) {
@@ -296,13 +346,13 @@ class MockAlphaApiGate {
             if (options.withCredentials && 'withCredentials' in xhr) {
                 xhr.withCredentials = true;
             }
-    
+
             const headers = options.headers || {};
-    
+
             if (headers['X-Requested-With'] !== null) {
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             }
-    
+
             Object.keys(headers).forEach(h => {
                 if (headers[h] !== null) {
                     xhr.setRequestHeader(h, headers[h]);
@@ -331,7 +381,73 @@ class MockAlphaApiGate {
         });
     }
 
+    // subscribe to projection
+    async subscribe(projectionKey, handlerName) {
+        /** ProjectionKey: 
+         * {
+                "App": "untill/airs-bp", 
+                "Projection": projectionKey, 
+                "WS": wsid
+            }
+         */
+
+        let payload = {
+            "SubjectLogin": 'mock subject', //mocked. should be passed 
+            "ProjectionKey": [
+                projectionKey
+            ]
+        }
+
+        // const options = {
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`,
+        //          'Content-Type': 'application/json',
+        //     },
+        //     method: "GET",
+        // }
+
+        const key = JSON.stringify(projectionKey);
+        const source = new SSE(`${this.host}n10n/channel?payload=${JSON.stringify(payload)}`);
+        const handler = getProjectionHandler(handlerName);
+
+        if (handler && typeof handler === "function") {
+            source.addEventListener(key, function (e) {
+                handler(JSON.parse(e.data));
+            });
+        }
+
+        this.subscriptions[key] = source;
+        source.stream();
+    }
+
+    // unsubscribe from projection  
+    // projectionKey: object
+    async unsubscribe(projectionKey) {
+        const key = JSON.stringify(projectionKey);
+
+        if (this.subscriptions[key]) {
+            this.subscriptions[key].close();
+            delete this.subscriptions[key];
+        }
+    }
+
     // ----- private methods -----
+
+    _checkWSID(wsid) {
+        if (_.isNumber(wsid) && wsid > 0) {
+            return wsid;
+        } else {
+            throw new Error('Wrong "WSID" given: an integer expected; received ', wsid);
+        }
+    }
+
+    _addAuthHeader(conf) {
+        conf.headers = {
+            'Authorization': `Bearer ${token}`
+        };
+
+        return conf;
+    }
 
     _getError(option, xhr) {
         const msg = `cannot ${option.method} ${option.action} ${xhr.status}'`;
@@ -364,47 +480,9 @@ class MockAlphaApiGate {
         }
     }
 
-    _checkOperation(operation) {
-        const o = {};
-
-        if (operation && _.isObject(operation)) {
-            _.forEach(operationKeys, (key) => {
-                if (key in operation) {
-                    o[key] = operation[key];
-                } else {
-                    throw new Error(`missing mandatory field ${key}`);
-                }
-            });
-        } else {
-            throw new Error(`operation wrong specified: ${operation}`);
-        }
-
-        return o;
-    };
-
-    _checkConfOperations(operations) {
-        const ops = [];
-
-        if (operations) {
-            if (_.isArray(operations)) {
-                _.forEach(operations, (operation, i) => {
-                    try {
-                        const o = this._checkOperation(operation);
-                        ops.push(o);
-                    } catch (e) {
-                        throw new Error(`Operation ${i} error: ${e}`);
-                    }
-                });
-            } else {
-                throw new Error('Operations must be an array'); // операции должны быть массивом
-            }
-
-        } else {
-            throw new Error('Operations are not specified.'); // операции пустые
-        }
-
-        return ops;
-    };
+    print(label, ...args) {
+        Logger.log(label, args);
+    }
 }
 
 export default MockAlphaApiGate;

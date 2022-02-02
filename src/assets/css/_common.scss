@@ -25,3 +25,12 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+._row {
+  display: flex;
+  flex-direction: row;
+}
+
+.ant-alert {
+  margin-bottom: 16px;
+}

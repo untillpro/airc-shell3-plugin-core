@@ -10,3 +10,4 @@ export * from './PaymentKind';
 export * from './Order';
 export * from './Period';
 export * from './TablePlan';
+export * from './Wizzards';

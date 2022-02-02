@@ -89,6 +89,7 @@ export const C_FORMS_SECTIONS = "sections";
 export const C_FORMS_EMBEDDED_TYPE = "embeddedTypes";
 export const C_FORMS_HIDDEN = "hidden";
 export const C_FORMS_DEFAULT = "default";
+export const C_FORMS_CREATE_WIZZARD = "create_wizzard";
 
 // ### FORMSGROUPS
 

@@ -14,6 +14,7 @@ import LocationsReducer from './LocationsReducer';
 import ListReducer from './ListReducer';
 import EntityReducer from './EntityReducer';
 import DashboardsReducer from './DashboardsReducer';
+import WizzardReducer from './WizzardReducer';
 
 export default combineReducers({
     context: ContextReducer,
@@ -25,5 +26,6 @@ export default combineReducers({
     locations: LocationsReducer,
     dashboards: DashboardsReducer,
     list: ListReducer,
-    entity: EntityReducer
+    entity: EntityReducer,
+    wizzard: WizzardReducer,
 });

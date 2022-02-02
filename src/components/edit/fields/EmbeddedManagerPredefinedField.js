@@ -23,6 +23,7 @@ import {
 
 class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
     initData() {
+        console.log("EmbeddedManagerPredefinedField.initData: ", this.props.value);
         const { value } = this.props;
 
         this.setState({ headerActions: this.prepareHeaderActions() });
@@ -130,11 +131,13 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
         const { field } = this.props;
         const { entity, depended_entity } = field;
 
+        console.log("data, dep_data: ", data, dep_data);
         if (!data || data.length <= 0) return dep_data;
 
         let fk = getParentForeignKey(entity, depended_entity);
         const resData = [...dep_data];
 
+        console.log("fk: ", fk);
         _.each(data, (obj) => {
             const k = [fk, SYS_ID_PROP];
             const id = _.get(obj, [fk, SYS_ID_PROP]);
@@ -149,6 +152,8 @@ class EmbeddedManagerPredefinedField extends EmbeddedManagerField {
                 resData[i] = obj;
             }
         });
+
+        console.log("resData: ", resData);
 
         return resData;
     }
