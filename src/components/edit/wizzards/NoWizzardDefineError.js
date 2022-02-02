@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-present unTill Pro, Ltd.
+ */
+
 import { Result, Button } from 'antd';
 
 const NoWizzardDefineError = (props) => {

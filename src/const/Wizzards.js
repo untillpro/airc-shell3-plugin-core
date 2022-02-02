@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020-present unTill Pro, Ltd.
+ */
+
 export const DEVICE_CREATION_WIZZARD = 'device_creation_wizzard';
 export const TOKEN_FIELD_KEY = 'deviceToken';
 export const TOKEN_DURATION_FIELD_KEY = 'durationMS';
