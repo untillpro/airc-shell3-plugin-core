@@ -213,6 +213,7 @@ function* _processEntityData(action) {
             yield put({ type: SEND_CANCEL_MESSAGE, payload: { refresh: true } });
         } catch (e) {
             yield put({ type: SET_ENTITY_LOADING, payload: false });
+            yield put({ type: SET_ENTITY_DATA_PROCESSING, payload: false });
             yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
         }
     }
