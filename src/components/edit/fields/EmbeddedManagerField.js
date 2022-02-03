@@ -182,11 +182,17 @@ class EmbeddedManagerField extends PureComponent {
         if (index >= 0) {
             const flatRow = data[index];
 
-            if (flatRow && _.isObject(flatRow)) {
-                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow[STATE_FIELD_NAME] === STATUS_DELETED ? STATUS_ACTIVE : STATUS_DELETED });
+            if (_.isNumber(flatRow[SYS_ID_PROP])) {
+                if (flatRow && _.isObject(flatRow)) {
+                    this.onEditFormProceed(index, { [STATE_FIELD_NAME]: flatRow[STATE_FIELD_NAME] === STATUS_DELETED ? STATUS_ACTIVE : STATUS_DELETED });
+                } else {
+                    this.onEditFormProceed(index, { [STATE_FIELD_NAME]: STATUS_DELETED });
+                }
             } else {
-                this.onEditFormProceed(index, { [STATE_FIELD_NAME]: STATUS_DELETED });
+                this.onEditFormProceed(index, null);
             }
+
+            
 
             this.setState({ selectedRows: [] });
         }
@@ -392,12 +398,14 @@ class EmbeddedManagerField extends PureComponent {
 
         let resultData = [];
 
-        if (newData && _.size(newData) > 0) {
+        if (!_.isNil(newData) && _.size(newData) > 0) {
             if (!_.isNil(i) && i >= 0) {
                 resultData[i] = { [SYS_ID_PROP]: value[i][SYS_ID_PROP], ...newData };
             } else {
                 resultData[dataLength] = { ...newData };
             }
+        } else {
+            resultData[i] = null;
         }
 
         this.handleChange(resultData);
