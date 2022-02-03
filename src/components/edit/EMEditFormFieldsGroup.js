@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { Tabs, Logger } from 'airc-shell-core';
 
 import {
+    containerForScheme,
     funcOrString,
     mergeDeep
 } from '../../classes/helpers';
@@ -76,7 +77,8 @@ class EMEditFormFieldsGroup extends Component {
         let data = {};
 
         if (embedded_type) {
-            value = { [embedded_type]: value };
+            let container = containerForScheme(embedded_type);
+            value = { [container]: value };
         }
 
         if (_.isPlainObject(changedData)) data = { ...changedData };

@@ -30,7 +30,8 @@ import {
 import {
     makeValidator,
     mergeDeep,
-    funcOrString
+    funcOrString,
+    containerForScheme
 } from '../../classes/helpers';
 
 import {
@@ -317,13 +318,14 @@ class EMEditForm extends Component {
 
         if (data) {
             const cc = contributions.getPointContributions(TYPE_FORMS, entity);
-
             const embedded_types = _.get(cc, [C_FORMS_EMBEDDED_TYPE]);
 
             if (embedded_types && embedded_types.length > 0) {
-                _.each(embedded_types, (eType) => {
-                    if (_.isPlainObject(data[eType]) && resultData[eType]) {
-                        resultData[eType][SYS_ID_PROP] = data[eType][SYS_ID_PROP];
+                _.each(embedded_types, (scheme) => {
+                    let container = containerForScheme(scheme);
+
+                    if (_.isPlainObject(data[container]) && resultData[container]) {
+                        resultData[container][SYS_ID_PROP] = data[container][SYS_ID_PROP];
                     }
                 });
             }
@@ -347,7 +349,9 @@ class EMEditForm extends Component {
         sections.forEach((section, index) => {
             if (section && section.fields && section.fields.length > 0) {
                 section.fields.forEach((field) => {
-                    const errors = validator.validate(field, resultData, section.embedded);
+                    let container = section.embedded ? containerForScheme(section.embedded) : null;
+
+                    const errors = validator.validate(field, resultData, container);
 
                     if (errors && errors.length > 0) {
                         fieldsErrors[field.accessor] = errors;

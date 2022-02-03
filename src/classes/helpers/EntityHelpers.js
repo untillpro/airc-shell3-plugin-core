@@ -278,6 +278,7 @@ export const getEntityRequiredClassifiers = (context, entity) => {
 };
 
 export const schemeForContainer = (container) => `untill.${container}`;
+export const containerForScheme = (scheme) => scheme.replace("untill.", '');
 
 // DATA PROCESSING
 
@@ -321,11 +322,13 @@ export const proccessEntry = async (context, entityId, type, wsid, data) => {
     const embedded_types = getEntityEmbeddedTypes(type, contributions);
 
     if (embedded_types && embedded_types.length > 0) {
-        _.each(embedded_types, (eType) => {
-            if (data[eType]) {
-                let d = data[eType];
+        _.each(embedded_types, (scheme) => {
+            let container = containerForScheme(scheme);
+
+            if (data[container]) {
+                let d = data[container];
                 let eId = d && d[SYS_ID_PROP] ? parseInt(d[SYS_ID_PROP]) : null;
-                let ops = getOperation(context, d, eId, eType, id, type);
+                let ops = getOperation(context, d, eId, scheme, id, type);
 
                 if (ops && ops.length > 0) {
                     operations = [...operations, ...ops];
@@ -402,7 +405,8 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
             _id: id,
             _scheme: type,
             _parent_id: parentId,
-            _data: resultData
+            _data: resultData,
+            _container: containerForScheme(type),
         });
     }
 
@@ -447,9 +451,11 @@ export const checkForEmbededTypes = (context, entity, data) => {
     const embedded_types = pointContributions ? pointContributions[C_FORMS_EMBEDDED_TYPE] : null;
 
     if (embedded_types && embedded_types.length > 0) {
-        _.each(embedded_types, (type) => {
-            if (_.isArray(Data[type]) && Data[type].length > 0) {
-                Data[type] = Data[type][0];
+        _.each(embedded_types, (scheme) => {
+            let container = containerForScheme(scheme);
+
+            if (_.isArray(Data[container]) && Data[container].length > 0) {
+                Data[container] = Data[container][0];
             }
         });
     }

@@ -16,6 +16,7 @@ import {
 } from './classes/Utils';
 
 import {
+    containerForScheme,
     funcOrString
 } from '../../classes/helpers';
 
@@ -60,12 +61,14 @@ class EMEditFormField extends Component {
             return true;
         }
 
+        let container = embedded_type ? containerForScheme(embedded_type) : null;
+
         switch (type) {
-            case 'table_plan_editor': return tablePlanMutateCheck(nextProps.data, this.props.data, field, embedded_type);
-            case 'ml_text': return mlTextMutateCheck(nextProps.data, this.props.data, field, embedded_type);
+            case 'table_plan_editor': return tablePlanMutateCheck(nextProps.data, this.props.data, field, container);
+            case 'ml_text': return mlTextMutateCheck(nextProps.data, this.props.data, field, container);
             case 'commands_list': return nextProps.data !== this.props.data;
 
-            default: return simpleMutateCheck(nextProps.data, this.props.data, field, embedded_type)
+            default: return simpleMutateCheck(nextProps.data, this.props.data, field, container)
         }
     }
 
@@ -89,21 +92,18 @@ class EMEditFormField extends Component {
     getValue() {
         const { data, field, embedded_type } = this.props;
         const { accessor } = field;
-
-        console.log("EMEditFormField.getValue(): ", data, embedded_type, accessor);
-
+        
         let val = '';
         let path = accessor;
 
         if (data && path && typeof path === 'string') {
             if (embedded_type) {
-                path = [embedded_type, path];
+                let container = containerForScheme(embedded_type);
+                path = [container, path];
             }
 
             val =  _.get(data, path);
         }
-        
-        console.log("EMEditFormField.getValue() val:", val);
 
         return val;
     }

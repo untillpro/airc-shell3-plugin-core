@@ -5,13 +5,13 @@
 import _ from 'lodash';
 import isEqual from 'react-fast-compare';
 
-export const simpleMutateCheck = (data, oldData, field, embedded_type) => {
+export const simpleMutateCheck = (data, oldData, field, container) => {
     const { accessor } = field;
 
     let path = accessor || null ;
 
-    if (embedded_type) {
-        path = [embedded_type, path];
+    if (container) {
+        path = [container, path];
     }
 
     const v1 = _.get(data, path);

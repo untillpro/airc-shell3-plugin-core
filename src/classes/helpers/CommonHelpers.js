@@ -89,12 +89,7 @@ export const mergeDeep = (target, ...sources) => {
                 if (!target[key]) Object.assign(target, { [key]: {} });
                 mergeDeep(target[key], source[key]);
             } else if (_.isArray(source[key]) && _.isArray(target[key])) {
-
                 let newArray = _.isArray(target[key]) ? [...target[key]] : [];
-                //let newArray = [];
-
-                console.log("mergeDeep.newArray: ", newArray);
-                console.log("mergeDeep.source[key]: ", source[key]);
 
                 source[key].forEach((elem, index) => {
                     if (elem === null) {
@@ -103,8 +98,6 @@ export const mergeDeep = (target, ...sources) => {
                         newArray[index] = _.merge({}, target[key][index], elem);
                     }
                 });
-
-                console.log("mergeDeep.newArray result: ", newArray);
 
                 newArray = _.reduce(newArray, (arr, item) => {
                     if (item !== null) arr.push(item);

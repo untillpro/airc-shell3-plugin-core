@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { translate as t } from 'airc-shell-core';
 
 class FieldValidator {
-    validate(field, data, embedded_type) {
+    validate(field, data, container) {
         const errors = [];
 
         if (!field) return false;
@@ -15,8 +15,8 @@ class FieldValidator {
 
         let path = accessor;
 
-        if (embedded_type) {
-            path = [embedded_type, path];
+        if (container) {
+            path = [container, path];
         }
 
         if (path) {
