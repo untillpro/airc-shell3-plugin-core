@@ -80,7 +80,7 @@ export const isObject = (item) => {
 
 export const mergeDeep = (target, ...sources) => {
     if (!sources.length) return target;
-    
+
     const source = sources.shift();
 
     if (_.isPlainObject(target) && _.isPlainObject(source)) {
@@ -89,15 +89,27 @@ export const mergeDeep = (target, ...sources) => {
                 if (!target[key]) Object.assign(target, { [key]: {} });
                 mergeDeep(target[key], source[key]);
             } else if (_.isArray(source[key]) && _.isArray(target[key])) {
-                //let newArray = _.isArray(target[key]) ? [ ...target[key] ] : [];
-                let newArray = [];
+
+                let newArray = _.isArray(target[key]) ? [...target[key]] : [];
+                //let newArray = [];
+
+                console.log("mergeDeep.newArray: ", newArray);
+                console.log("mergeDeep.source[key]: ", source[key]);
 
                 source[key].forEach((elem, index) => {
-                    if (!_.isNil(elem)) {
-                        newArray.push(_.merge({}, target[key][index], elem));
-                        //newArray[index] = _.merge({}, target[key][index], elem);
+                    if (elem === null) {
+                        newArray[index] = null;
+                    } else if (elem !== undefined) {
+                        newArray[index] = _.merge({}, target[key][index], elem);
                     }
                 });
+
+                console.log("mergeDeep.newArray result: ", newArray);
+
+                newArray = _.reduce(newArray, (arr, item) => {
+                    if (item !== null) arr.push(item);
+                    return arr;
+                }, []);
 
                 Object.assign(target, { [key]: newArray });
             } else {
@@ -218,8 +230,8 @@ export function makeLoopGenerator(maxValue, startFrom = 1) {
     return function () {
         if (currentCount >= maxValue) {
             currentCount = startFrom;
-        } 
-        
+        }
+
         return currentCount++;;
     };
 }
@@ -432,7 +444,7 @@ export const legalMultiply = (A, B, decimalPlaces = 2) => {
     let valueA = A * m ^ 0;
     let valueB = B * m ^ 0;
 
-    return bankRounding(valueA * valueB / m**2, decimalPlaces);
+    return bankRounding(valueA * valueB / m ** 2, decimalPlaces);
 };
 
 export const bankRounding = (num, decimalPlaces = 2) => {
@@ -442,6 +454,6 @@ export const bankRounding = (num, decimalPlaces = 2) => {
     var i = Math.floor(n), f = n - i;
     var e = 1e-8; // Allow for rounding errors in f
     var r = (f > 0.5 - e && f < 0.5 + e) ? ((i % 2 === 0) ? i : i + 1) : Math.round(n);
-    
+
     return d ? r / m : r;
 };
