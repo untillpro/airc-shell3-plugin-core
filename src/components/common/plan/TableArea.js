@@ -105,14 +105,14 @@ class TableArea extends PureComponent {
     }
 
     renderImage() {
-        const { image, width, height } = this.props;
+        const { locations, image, width, height } = this.props;
 
         let url = null;
 
         if (_.isString(image)) {
             url = image;
         } else if (_.isNumber(image)) {
-            url = getBlobPath(image);
+            url = getBlobPath(locations[0], image);
         }
 
         if (url) {
@@ -170,6 +170,7 @@ class TableArea extends PureComponent {
 }
 
 TableArea.propTypes = {
+    locations: PropTypes.arrayOf(PropTypes.number),
     children: PropTypes.node,
     width: PropTypes.number,
     height: PropTypes.number,
