@@ -158,7 +158,7 @@ function* _fetchEntityData(action) {
 
     //const verifiedEntries = checkEntries(entries);
     let isNew = !id;
-    let data = [];
+    let data = {};
     let classifiers = {};
 
     try {
