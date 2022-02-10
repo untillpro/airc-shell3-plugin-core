@@ -8,14 +8,14 @@ const DECIMAL_MULTYPLIER = 10000;
 
 function time(attrs) {
     let timestamp = attrs[0];
-    let format = attrs[1] || 'hh:mm';
+    let format = attrs[1] || 'HH:mm';
 
     return moment(timestamp).format(format);
 };
 
 function date(attrs) {
     let timestamp = attrs[0];
-    let format = attrs[1] || 'DD.MM.YYYY';
+    let format = attrs[1] || 'dd.MM.yyyy';
 
     return moment(timestamp).format(format);
 };
