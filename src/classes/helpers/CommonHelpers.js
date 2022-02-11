@@ -327,6 +327,20 @@ export const valueFromClassifierField = (value, accessor, defaultValue) => {
     return resultValue;
 }
 
+export const valueFromClassifier = (arr, id, prop, path, defaultValue) => {
+    let value = null;
+    
+    if (_.isArray(arr)) {
+        let index = _.findIndex(arr, (o) => o[prop] = id);
+
+        if (index >= 0) {
+            value = _.get(arr[index], path);
+        }
+    }
+
+    return value || defaultValue;
+}
+
 export const getPaymentKind = (kind) => {
     return t(PAYMENT_KIND[kind], "payment_kind");
 }

@@ -240,7 +240,7 @@ class MockAlphaApiGate {
 
     async log(wsid, props) {
         //console.log('log method call:', token, props);
-        const { fromDay, tillDay, type } = props;
+        const { fromDay, tillDay, type, index } = props;
         const elements = [{ "fields": ["offset", "eventTime", "event"] }];
         const args = {};
 
@@ -260,6 +260,10 @@ class MockAlphaApiGate {
             } else if (_.isArray(type)) {
                 args['eventTypes'] = type.join(',');
             }
+        }
+
+        if (_.isString(index) && index.length > 0) {
+            args["index"] = index;
         }
 
         return this.do("untill/airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {

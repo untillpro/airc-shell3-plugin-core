@@ -16,3 +16,12 @@ export const STATUS_DELETED = false;
 export const STATE_FIELD_NAME = 'sys.IsActive';
 export const SYS_ID_PROP = "sys.ID";
 export const SYS_PARENT_ID = 'sys.ParentID';
+export const SYS_QNAME = 'sys.QName';
+
+export const ORDERS_QNAME = 'air.Orders';
+export const PBILL_QNAME = 'air.Pbill';
+export const BILLS_QNAME = 'air.Bill';
+export const CUD_QNAME = 'sys.CUD';
+
+export const API_ARGUMENTS_FIELD = 'args';
+export const API_CUDS_FIELD = 'cuds';

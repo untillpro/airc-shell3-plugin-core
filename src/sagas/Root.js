@@ -16,8 +16,8 @@ import {
     getEntityRequiredClassifiers,
     checkForEmbededTypes,
     prepareCopyData,
-    prepareReportFilter,
-    prepareReportData,
+    // prepareReportFilter,
+    // prepareReportData,
     getEntityColletionElements,
     getDashboardElements,
     getDashboardDays
@@ -221,42 +221,61 @@ function* _processEntityData(action) {
 
 //TODO - continue with REPORTS
 function* _fetchReport(action) {
-    const locations = yield select(Selectors.locations);
+    //const locations = yield select(Selectors.locations);
     const context = yield select(Selectors.context);
     const { contributions, api } = context;
-    const { report, from, to, filterBy, props } = action.payload;
+    const { report, from, to, props } = action.payload;
+    const elements = [{ "fields": ["offset", "eventTime", "event"] }];
+
+    let data = [];
+    let classifiers = {};
 
     let event_type = contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_EVENT_TYPE);
+    let required_classifiers = contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_REQUIRED_CLASSIFIERS);
 
     let doProps = {
         type: event_type,
-        from,
-        to,
-        show: true,
-        from_offset: 0, // mock
-        to_offset: 1000000,// mock
-        required_classifiers: contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_REQUIRED_CLASSIFIERS)
+        fromDay: from,
+        tillDay: to,
     };
 
     if (_.isPlainObject(props)) {
         doProps = { ...doProps, ...props };
     }
 
-    if (filterBy && _.isPlainObject(filterBy)) {
-        const filterProps = prepareReportFilter(context, report, filterBy);
-
-        if (filterProps && _.size(filterProps) > 0) {
-            doProps["filterBy"] = filterProps;
-        }
-    }
+    //doProps["index"] = "air.PbillDates";
 
     yield put({ type: SET_REPORT_DATA_FETCHING, payload: true });
 
     try {
-        const result = yield call(api.log.bind(api), locations, doProps);
-        const mockResult = prepareReportData(locations, result);
+        //const wsid = locations[0];
+        const wsid = 140737488486517;
+        const result = yield call(api.log.bind(api), wsid, doProps);
 
-        yield put({ type: REPORT_DATA_FETCHING_SUCCESS, payload: mockResult });
+        if (result && result["result"]) {
+            data = pretifyData(elements, result["result"]);
+        }
+
+        let tasks = [];
+        let tasksPath = [];
+
+
+        if (_.size(required_classifiers) > 0) {
+            for (let c of required_classifiers) {
+                tasks.push(call(getCollection, context, { scheme: c, wsid, props: {} }, true))
+                tasksPath.push([ c ]);
+            }
+        }
+
+        const classifiersData = yield all(tasks);
+
+        for (let i = 0; i < tasksPath.length; i++) {
+            _.set(classifiers, tasksPath[i], classifiersData[i]['resolvedData']);
+        }
+
+        //console.log(REPORT_DATA_FETCHING_SUCCESS, ' ', { data, classifiers });
+
+        yield put({ type: REPORT_DATA_FETCHING_SUCCESS, payload: { data, classifiers } });
     } catch (e) {
         yield put({ type: SET_REPORT_DATA_FETCHING, payload: false });
         yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });

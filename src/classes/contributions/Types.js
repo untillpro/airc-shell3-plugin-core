@@ -4,8 +4,9 @@
 
 // # EVENT TYPES
 
-export const EVENT_ORDER = 'orders';
-export const EVENT_BILL = 'pbill';
+export const EVENT_ORDERS = 'orders';
+export const EVENT_BILLS = 'bills';
+export const EVENT_PBILLS = 'pbills';
 
 // ## CONTRIBUTION TYPES
 
