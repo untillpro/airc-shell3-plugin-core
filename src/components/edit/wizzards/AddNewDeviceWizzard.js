@@ -141,8 +141,6 @@ class AddNewDeviceWizzard extends React.Component {
                 clearTimeout(this.timer);
             }
 
-            console.log("deviceTokenTtl:", deviceTokenTtl);
-
             this.timer = setTimeout(() => {
                 dispatch(requestLinkDeviceToken(this.state.formValues));
             }, deviceTokenTtl || DEFAULT_DEVICE_TOKEN_TTL);

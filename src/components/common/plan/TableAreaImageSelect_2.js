@@ -29,13 +29,11 @@ class TableAreaImageSelect extends PureComponent {
 
                 api.blob(wsid, file)
                     .then((resp) => {
-                        console.log("!!!");
                         this.onSuccess(resp);
                         return resp;
 
                     }).catch((err) => {
                         console.error(err);
-                        console.log("???");
                         this.onError(err)
                         return err;
                     });

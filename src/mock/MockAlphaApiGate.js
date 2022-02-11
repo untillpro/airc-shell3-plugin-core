@@ -77,7 +77,7 @@ class MockAlphaApiGate {
 
             try {
                 let resp = await axios(url, config);
-                console.log("resp: ", resp);
+
                 resolve(new ResponseBuilder(resp));
             } catch (e) {
                 //resolve(new ResponseErrorBuilder(e));
