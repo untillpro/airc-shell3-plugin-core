@@ -119,10 +119,11 @@ class TablePlanCard extends PureComponent {
     }
 
     renderImage() {
+        const { location } = this.props;
         const { image, preview } = this.props?.data;
 
         if (_.isNumber(image)) {
-            const url = getBlobPath(preview || image);
+            const url = getBlobPath(location, preview || image);
             const styles = { backgroundImage: `url(${url})` };
 
             return (
@@ -158,6 +159,7 @@ class TablePlanCard extends PureComponent {
 }
 
 TablePlanCard.propTypes = {
+    location: PropTypes.number,
     data: PropTypes.object.isRequired,
     onEdit: PropTypes.func.isRequired,
     onReduce: PropTypes.func.isRequired,

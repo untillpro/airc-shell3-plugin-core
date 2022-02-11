@@ -94,10 +94,11 @@ class TablePlanRow extends PureComponent {
     }
 
     renderImage() {
+        const { location } = this.props;
         const { image } = this.props?.data;
 
         if (_.isNumber(image)) {
-            const url = getBlobPath(image);
+            const url = getBlobPath(location, image);
             const styles = { backgroundImage: `url(${url})` };
 
             return (
@@ -127,6 +128,7 @@ class TablePlanRow extends PureComponent {
 }
 
 TablePlanRow.propTypes = {
+    location: PropTypes.number,
     name: PropTypes.string,
     table: PropTypes.object,
     hide: PropTypes.bool,

@@ -163,10 +163,7 @@ class TablePlanEditor extends PureComponent {
         const { [TABLE_PROP_PREVIEW_ACCESSOR]: preview_accessor } = this.field;
 
         if ("blob" in api) {
-            return api.blob({
-                filename: "file",
-                file: data,
-            }).then((res) => {
+            return api.blob(data).then((res) => {
                 const { status, response } = res;
 
                 if (status === 200 && _.isFunction(onChange)) {
@@ -572,14 +569,14 @@ class TablePlanEditor extends PureComponent {
         }
     }
 
-    onImageChange(data) {
+    onImageChange(id) {
         const { onChange } = this.props;
         const { [TABLE_PROP_IMAGE_ACCESSOR]: image_accessor } = this.field;
 
         let img = null;
 
-        if (_.isPlainObject(data) && "url" in data) {
-            img = data.id;
+        if (_.isNumber(id)) {
+            img = id;
         }
 
         this.setState({ image: img });
@@ -686,8 +683,6 @@ class TablePlanEditor extends PureComponent {
         }
 
         let isNew = !(_.isNumber(current) && current >= 0);
-
-        console.log("formError: ", formError);
 
         return (
             <Modal
@@ -802,7 +797,7 @@ class TablePlanEditor extends PureComponent {
     }
 
     render() {
-        const { context } = this.props;
+        const { context, locations } = this.props;
         const { currentTable, width, height, image, showGrid, step } = this.state;
 
         const canBeEdited = this._isEditable();
@@ -836,6 +831,7 @@ class TablePlanEditor extends PureComponent {
                             />
 
                             <TableArea
+                                locations={locations}
                                 grid={showGrid}
                                 gridSize={step}
                                 width={width}
@@ -851,6 +847,7 @@ class TablePlanEditor extends PureComponent {
                     ) : (
                         <TableAreaImageSelect
                             context={context}
+                            locations={locations}
                             setImage={this.onImageChange}
                         />
                     )}
