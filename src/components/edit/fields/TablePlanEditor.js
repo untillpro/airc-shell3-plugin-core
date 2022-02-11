@@ -168,7 +168,7 @@ class TablePlanEditor extends PureComponent {
                 const { status, response } = res;
 
                 if (status === 200 && _.isFunction(onChange)) {
-                    onChange({ [preview_accessor]: response.id });
+                    onChange({ [preview_accessor]: response });
                 }
             }).catch(e => console.error(e));
         }
