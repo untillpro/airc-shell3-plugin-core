@@ -46,12 +46,12 @@ class ReportDetails extends Component {
         let fields = this.initFields();
         let periods = getDatetimePeriods(contributions, mostUsedPeriods);
 
-        this.setState({ 
-            ...fields, 
+        this.setState({
+            ...fields,
             periods,
             reportFilter: filterBy || {},
             reportProps: reportProps || {}
-         });
+        });
     }
 
     componentDidMount() {
@@ -131,7 +131,7 @@ class ReportDetails extends Component {
             });
         }
 
-        this.setState({fieldsErrors});
+        this.setState({ fieldsErrors });
 
         return validated;
     }
@@ -189,7 +189,7 @@ class ReportDetails extends Component {
                         customTitle={t("Custom", "form")}
 
                         nowLabel={t("now", "form")}
-                        
+
                         fromLabel={t("From", "form")}
                         toLabel={t("To", "form")}
 
@@ -208,6 +208,7 @@ class ReportDetails extends Component {
         if (reportFields && reportFields.length > 0) {
             return (
                 <EMEditFormFieldsBuilder
+                    formContext={{}}
                     locations={locations}
                     fields={reportFields}
                     fieldsErrors={fieldsErrors}
@@ -231,6 +232,7 @@ class ReportDetails extends Component {
         if (propsFields && propsFields.length > 0) {
             return (
                 <EMEditFormFieldsBuilder
+                    formContext={{}}
                     locations={locations}
                     fields={propsFields}
                     opened={true}
@@ -283,17 +285,17 @@ class ReportDetails extends Component {
 ReportDetails.propTypes = {
     locations: PropTypes.array,
     contributions: PropTypes.object,
-    fromDateTime: PropTypes.object,
-    toDateTime: PropTypes.object,
-    workingHoursFrom: PropTypes.object,
-    workingHoursTo: PropTypes.object,
+    fromDateTime: PropTypes.number,
+    toDateTime: PropTypes.number,
+    workingHoursFrom: PropTypes.string,
+    workingHoursTo: PropTypes.string,
     filterBy: PropTypes.object,
     reportProps: PropTypes.object,
-    mostUsedPeriods: PropTypes.array,
+    mostUsedPeriods: PropTypes.object,
     debug: PropTypes.bool,
-    report: PropTypes.object,
+    report: PropTypes.string,
     group: PropTypes.string.isRequired,
-}; 
+};
 
 const mapStateToProps = (state) => {
     const { contributions } = state.context;

@@ -261,6 +261,7 @@ class EMEditForm extends Component {
             if (onProceed && typeof onProceed === 'function') {
                 if (this.validateFields()) {
                     const submitReducers = this.formContext.getValue("submitReducer");
+                    
                     if (_.isArray(submitReducers)) {
                         const promises = [];
                         submitReducers.forEach(f => promises.push(f()));
