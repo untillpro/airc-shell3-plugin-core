@@ -221,7 +221,7 @@ function* _processEntityData(action) {
 
 //TODO - continue with REPORTS
 function* _fetchReport(action) {
-    //const locations = yield select(Selectors.locations);
+    const locations = yield select(Selectors.locations);
     const context = yield select(Selectors.context);
     const { contributions, api } = context;
     const { report, from, to, props } = action.payload;
@@ -248,8 +248,7 @@ function* _fetchReport(action) {
     yield put({ type: SET_REPORT_DATA_FETCHING, payload: true });
 
     try {
-        //const wsid = locations[0];
-        const wsid = 140737488486517;
+        const wsid = locations[0];
         const result = yield call(api.log.bind(api), wsid, doProps);
 
         if (result && result["result"]) {
