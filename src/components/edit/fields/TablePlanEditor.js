@@ -158,12 +158,13 @@ class TablePlanEditor extends PureComponent {
     }
 
     async savePreviewImage(data) {
-        const { context, onChange } = this.props;
+        const { locations, context, onChange } = this.props;
         const { api } = context;
         const { [TABLE_PROP_PREVIEW_ACCESSOR]: preview_accessor } = this.field;
+        const wsid = locations[0];
 
         if ("blob" in api) {
-            return api.blob(data).then((res) => {
+            return api.blob(wsid, data).then((res) => {
                 const { status, response } = res;
 
                 if (status === 200 && _.isFunction(onChange)) {

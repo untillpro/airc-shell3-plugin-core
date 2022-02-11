@@ -11,7 +11,7 @@ import { message } from 'antd';
 import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectionHandler } from 'airc-shell-core';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbSIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NTE2LCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY0NDU2Njc0OCwiaWF0IjoxNjQ0NDgwMzQ4fQ.kWympZskdYuiCvKpjJq74-B-9-WoP4Ih0R1OUajDQAw';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbSIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NTE2LCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY0NDY1MzQ4MCwiaWF0IjoxNjQ0NTY3MDgwfQ.KSCrClZT_88rWsEOVCuxUtJ-QTKujJZRJbAk_nyMjdc';
 
 const FUNC_COLLECTION_NAME = '/q.air.Collection';
 const FUNC_CDOC_NAME = '/q.air.Cdoc';
@@ -33,13 +33,13 @@ class MockAlphaApiGate {
         this.subscriptions = {}; // Array: SSE
     }
 
-    async do(application, wsid, tail, params, method = 'get', type = null) {
+    async do(application, wsid, tail, params, method = 'get') {
         this.print('this.do call: ', application, wsid, tail, params, method);
 
         let data = {};
 
         if (params) {
-            if (type === 'blob') {
+            if (params instanceof FormData) {
                 data = params;
             } else if (typeof params === 'string') {
 
@@ -319,32 +319,22 @@ class MockAlphaApiGate {
     async blob(wsid, file) {
         let location = this._checkWSID(wsid);
 
-        return new Promise((resolve, reject) => {
-            const readFile = (event) => {
-                const blob = event.target.result;
+        var formData = new FormData();
+        formData.append(file.name, file, file.name);
 
-                this.do('blob/untill/airs-bp', location, `?name=${file.name}&mimeType=${file.type}`, blob, "post", "blob")
-                    .then((response) => {
-                        if (response.isError()) {
-                            reject(response.getErrorMessage());
-                        }
+        return this.do('blob/untill/airs-bp', location, ``, formData, "post")
+            .then((response) => {
+                if (response.isError()) {
+                    throw new Error(response.getErrorMessage());
+                }
 
-                        resolve({
-                            response: response.getData(),
-                            status: response.getStatus(),
-                        });
-                    }).catch((e) => {
-                        reject(e);
-                    });
-            }
-
-            var reader = new FileReader();
-
-            reader.addEventListener('load', readFile);
-            reader.addEventListener('error', () => reject(reader.error));
-
-            reader.readAsText(file);
-        });
+                return ({
+                    response: response.getData(),
+                    status: response.getStatus(),
+                });
+            }).catch((e) => {
+                throw e;
+            });
     }
 
     // subscribe to projection
