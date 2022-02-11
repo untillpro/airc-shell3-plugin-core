@@ -11,15 +11,14 @@ import { message } from 'antd';
 import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectionHandler } from 'airc-shell-core';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOjI1NTM2LCJEZXZpY2VJRCI6MSwiZXhwIjoxNTc3NTE5MDQzfQ.dXnbwFUtjcue8_LXNpir3lltj0qoDUarbZ1BDkj5Zno';
-const uploadFileAction = "https://badrequest.ru/tests/uploader/write.php";
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbSIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NTE2LCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY0NDY1MzQ4MCwiaWF0IjoxNjQ0NTY3MDgwfQ.KSCrClZT_88rWsEOVCuxUtJ-QTKujJZRJbAk_nyMjdc';
 
-const FUNC_COLLECTION_NAME = 'q.air.Collection';
-const FUNC_CDOC_NAME = 'q.air.Cdoc';
-const FUNC_CUD_NAME = 'c.sys.CUD';
-const FUNC_DASHBOARD_NAME = 'q.air.Dashboard';
-const FUNC_JOURNAL_NAME = 'q.air.Journal';
-const FUNC_DEVICE_TOKEN_NAME = 'q.air.IssueLinkDeviceToken';
+const FUNC_COLLECTION_NAME = '/q.air.Collection';
+const FUNC_CDOC_NAME = '/q.air.Cdoc';
+const FUNC_CUD_NAME = '/c.sys.CUD';
+const FUNC_DASHBOARD_NAME = '/q.air.Dashboard';
+const FUNC_JOURNAL_NAME = '/q.air.Journal';
+const FUNC_DEVICE_TOKEN_NAME = '/q.air.IssueLinkDeviceToken';
 
 class MockAlphaApiGate {
     constructor(callback) {
@@ -34,13 +33,16 @@ class MockAlphaApiGate {
         this.subscriptions = {}; // Array: SSE
     }
 
-    async do(application, wsid, func, params, method = 'get') {
-        this.print('this.do call: ', application, wsid, func, params, method);
+    async do(application, wsid, tail, params, method = 'get') {
+        this.print('this.do call: ', application, wsid, tail, params, method);
 
         let data = {};
 
         if (params) {
-            if (typeof params === 'string') {
+            if (params instanceof FormData) {
+                data = params;
+            } else if (typeof params === 'string') {
+
                 try {
                     const parsedData = JSON.parse(params);
 
@@ -50,7 +52,6 @@ class MockAlphaApiGate {
                 } catch (e) {
                     console.error('Wrong params format in api.invoke() method: json string or object expected', params)
                 }
-
             } else if (typeof params === 'object') {
                 data = { ...data, ...params };
             }
@@ -60,8 +61,7 @@ class MockAlphaApiGate {
             const m = method ? method.toLowerCase() : 'post';
             const config = this._addAuthHeader({});
 
-            //let url = URLToolkit.buildAbsoluteURL(this.host, application, wsid, func);
-            let url = `${this.host}api/${application}/${wsid}/${func}`;
+            let url = `${this.host}${application}/${wsid}${tail}`;
 
             if (m === 'get') {
                 config.params = data;
@@ -77,6 +77,7 @@ class MockAlphaApiGate {
 
             try {
                 let resp = await axios(url, config);
+
                 resolve(new ResponseBuilder(resp));
             } catch (e) {
                 //resolve(new ResponseErrorBuilder(e));
@@ -119,7 +120,7 @@ class MockAlphaApiGate {
 
         //return { "result": [[[[`mockLinkDeviceToken.${JSON.stringify(data)}.${wsid}.${Math.random(0, 1)}`, 60000]]]] };
 
-        const response = await this.do("untill/airs-bp", location, FUNC_DEVICE_TOKEN_NAME, params, "post");
+        const response = await this.do("api/untill/airs-bp", location, FUNC_DEVICE_TOKEN_NAME, params, "post");
 
         if (response.isError()) {
             throw new Error(response.getErrorMessage());
@@ -150,7 +151,7 @@ class MockAlphaApiGate {
             throw new Error('Wrong "operations" prop: expected an array of objects, received' + operations);
         }
 
-        const response = await this.do("untill/airs-bp", location, FUNC_CUD_NAME, params, "post");
+        const response = await this.do("api/untill/airs-bp", location, FUNC_CUD_NAME, params, "post");
 
         if (response.isError()) {
             throw new Error(response.getErrorMessage());
@@ -172,7 +173,7 @@ class MockAlphaApiGate {
             ]
         };
 
-        return this.do("untill/airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
+        return this.do("api/untill/airs-bp", wsid, FUNC_CDOC_NAME, params, "post").then((response) => {
             Logger.log(response, '+++ api.object result');
 
             if (response.isError()) {
@@ -222,7 +223,7 @@ class MockAlphaApiGate {
             //'orderBy': ['']
         }
 
-        return this.do("untill/airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
+        return this.do("api/untill/airs-bp", location, FUNC_COLLECTION_NAME, params, "post").then((response) => {
             Logger.log(response, '+++ api.collection result');
 
             if (response.isError()) {
@@ -266,7 +267,7 @@ class MockAlphaApiGate {
             args["index"] = index;
         }
 
-        return this.do("untill/airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {
+        return this.do("api/untill/airs-bp", location, FUNC_JOURNAL_NAME, { args, elements }, "post").then((response) => {
             Logger.log(response, '+++ api.collection result');
 
             if (response.isError()) {
@@ -301,7 +302,7 @@ class MockAlphaApiGate {
             ]
         }
 
-        return this.do("untill/airs-bp", location, FUNC_DASHBOARD_NAME, params, "post").then((response) => {
+        return this.do("api/untill/airs-bp", location, FUNC_DASHBOARD_NAME, params, "post").then((response) => {
             Logger.log(response, '+++ api.dashboard result');
 
             if (response.isError()) {
@@ -317,72 +318,27 @@ class MockAlphaApiGate {
         });
     }
 
-    async blob(option) {
-        const method = 'post';
-        const options = { ...option, method, action: uploadFileAction };
 
-        /*
-        if (option.onProgress && xhr.upload) {
-            xhr.upload.onprogress = function progress(e) {
-                if (e.total > 0) {
-                    e.percent = (e.loaded / e.total) * 100;
+
+    async blob(wsid, file) {
+        let location = this._checkWSID(wsid);
+
+        var formData = new FormData();
+        formData.append(file.name, file, file.name);
+
+        return this.do('blob/untill/airs-bp', location, ``, formData, "post")
+            .then((response) => {
+                if (response.isError()) {
+                    throw new Error(response.getErrorMessage());
                 }
-                option.onProgress(e);
-            };
-        }
-        */
 
-        const formData = new FormData();
-
-        if (options.file instanceof Blob) {
-            formData.append(options.filename, options.file, options.file.name);
-        } else {
-            formData.append(options.filename, options.file);
-        }
-
-        const that = this;
-
-        return new Promise(function (resolve, reject) {
-            var xhr = new XMLHttpRequest();
-
-            xhr.open(method, options.action, true);
-
-            if (options.withCredentials && 'withCredentials' in xhr) {
-                xhr.withCredentials = true;
-            }
-
-            const headers = options.headers || {};
-
-            if (headers['X-Requested-With'] !== null) {
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            }
-
-            Object.keys(headers).forEach(h => {
-                if (headers[h] !== null) {
-                    xhr.setRequestHeader(h, headers[h]);
-                }
+                return ({
+                    response: response.getData(),
+                    status: response.getStatus(),
+                });
+            }).catch((e) => {
+                throw e;
             });
-
-            xhr.onload = function () {
-                const data = {
-                    response: that._getBody(xhr),
-                    status: this.status,
-                    statusText: xhr.statusText,
-                };
-
-                if (this.status >= 200 && this.status < 300) {
-                    resolve(data);
-                } else {
-                    reject(that._getError(options, xhr));
-                }
-            };
-
-            xhr.onerror = function () {
-                reject(that._getError(options, xhr));
-            };
-
-            xhr.send(formData);
-        });
     }
 
     // subscribe to projection

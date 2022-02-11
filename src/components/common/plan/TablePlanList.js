@@ -12,7 +12,7 @@ import EmptyImage from '../../../assets/images/empty/no-free-tables.png';
 
 class TablePlanList extends PureComponent {
     render() {
-        const { data, onEdit, onDelete, onReduce, onAdd } = this.props;
+        const { location, data, onEdit, onDelete, onReduce, onAdd } = this.props;
 
         if (_.isEmpty(data)) {
             return (
@@ -29,7 +29,7 @@ class TablePlanList extends PureComponent {
             );
         }
 
-        const ops = { onEdit, onDelete, onReduce };
+        const ops = { location, onEdit, onDelete, onReduce };
 
         return (
             <div className="table-plan-list">
@@ -40,6 +40,7 @@ class TablePlanList extends PureComponent {
 }
 
 TablePlanList.propTypes = {
+    location: PropTypes.number,
     data: PropTypes.object,
     onAdd: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,

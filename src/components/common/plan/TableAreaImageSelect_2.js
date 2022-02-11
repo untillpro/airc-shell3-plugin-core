@@ -6,33 +6,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { Empty, message } from 'antd';
 
-const saveFile = async (context, file, onSuccess, onError) => {
-    const { api } = context;
-
-    if (file && file instanceof File && "blob" in api) {
-        const options = {
-            filename: "file",
-            file: file,
-        };
-
-        api.blob(options)
-            .then((resp) => {
-                if (onSuccess && typeof onSuccess === 'function') {
-                    onSuccess(resp);
-                }
-
-                return resp;
-
-            }).catch((err) => {
-                if (onError && typeof onError === 'function') {
-                    onError(err)
-                }
-
-                return err;
-            });
-    }
-};
-
 class TableAreaImageSelect extends PureComponent {
     constructor(props) {
         super(props);
@@ -43,17 +16,29 @@ class TableAreaImageSelect extends PureComponent {
     }
 
     handleFileChange(fileData) {
-        const { context } = this.props;
+        const { context, locations } = this.props;
+        const { api } = context;
 
         let file = null;
 
         if (fileData && fileData.target && fileData.target.files) {
             file = fileData.target.files[0];
 
-            saveFile(context, file, this.onSuccess, this.onError);
+            if (file && file instanceof File && "blob" in api) {
+                let wsid = locations[0];
+
+                api.blob(wsid, file)
+                    .then((resp) => {
+                        this.onSuccess(resp);
+                        return resp;
+
+                    }).catch((err) => {
+                        console.error(err);
+                        this.onError(err)
+                        return err;
+                    });
+            }
         }
-
-
     }
 
     onSuccess(data) {
@@ -86,6 +71,7 @@ class TableAreaImageSelect extends PureComponent {
 TableAreaImageSelect.propTypes = {
     context: PropTypes.object.isRequired,
     setImage: PropTypes.func.isRequired,
+    locations: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
 export default TableAreaImageSelect;
