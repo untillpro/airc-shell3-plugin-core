@@ -139,7 +139,7 @@ class ListTable extends PureComponent {
 
     getCellRenderer(d, opts, isDynamic) {
         const { defaultCurrency } = this.props;
-        const { type, value_accessor, currency_accessor, editable, entity, rate, prefix, postfix } = opts;
+        const { type, value_accessor, currency_accessor, editable, entity, rate, prefix, postfix, disabled } = opts;
 
         const props = {
             cell: d,
@@ -173,6 +173,14 @@ class ListTable extends PureComponent {
         }
 
         props.onSave = this.handleCellSave;
+
+        if (_.isBoolean(disabled)) {
+            props.disabled = disabled;
+        } else if (_.isFunction(disabled)) {
+            props.disabled = disabled(d);
+        }
+
+        //props.disabled = true;
 
         switch (type) {
             case 'location':

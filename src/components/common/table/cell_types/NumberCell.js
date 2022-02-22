@@ -55,12 +55,15 @@ class NumberCell extends PureComponent {
     }
 
     render() {
+        const { disabled } = this.props;
+
         return <EditableCell
             {...this.props}
             formatter={this.format}
             type="number"
             preparearer={this.prepare}
             initier={this.init}
+            disabled={disabled}
         />;
     }
 }

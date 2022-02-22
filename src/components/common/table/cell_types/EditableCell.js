@@ -5,6 +5,7 @@
 import _ from 'lodash';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
 import { withStackEvents } from 'stack-events';
 import { Input } from 'airc-shell-core';
 
@@ -176,12 +177,10 @@ class EditableCell extends PureComponent {
     }
 
     defaultRender() {
-        const { editable } = this.props;
+        const { editable, disabled } = this.props;
         const { value, edit, loading } = this.state;
 
         if (edit) {
-            let disabled = loading === true;
-
             return (
                 <Input
                     className="value-input"
@@ -190,7 +189,7 @@ class EditableCell extends PureComponent {
                     defaultValue={value}
                     value={value}
                     bordered={false}
-                    disabled={disabled}
+                    disabled={loading === true}
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
                     onChange={this.handleChange}
@@ -210,7 +209,7 @@ class EditableCell extends PureComponent {
             );
         }
 
-        return (<span className="value">{this.format(value)}</span>);
+        return (<span className={cn('value', {'disabled': disabled})}>{this.format(value)}</span>);
     }
 
     render() {
