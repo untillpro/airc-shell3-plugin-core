@@ -25,7 +25,7 @@ class ApiProvider extends Component {
             selectView: (view) => this._selectView(view),
             setLanguage: (lang) => this._setLanguage(lang),
             init: (payload) => this._init(payload),
-            sendEvent: (handlerName, payload) => this._handleEvent(handlerName, payload)
+            sendEvent: (handlerName, payload, type) => this._handleEvent(handlerName, payload, type)
         };
 
         let apiGate = null;
@@ -71,11 +71,11 @@ class ApiProvider extends Component {
         api.sendLocations(locations);
     }
 
-    _handleEvent(handlerName, payload) {
+    _handleEvent(handlerName, payload, type) {
         const handler = getProjectionHandler(handlerName);
 
         if (handler && typeof handler === "function") {
-            handler(payload);
+            handler(payload, type);
         }
     }
 
