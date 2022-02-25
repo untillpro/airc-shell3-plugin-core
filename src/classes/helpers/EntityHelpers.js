@@ -283,7 +283,7 @@ export const containerForScheme = (scheme) => scheme.replace("untill.", '');
 // DATA PROCESSING
 
 export const processEntityData = async (context, entity, data, entries) => {
-    Logger.log("processEntityData: ", data);
+    Logger.log("processEntityData: ", {entity, data, entries});
 
     if (!data || typeof data !== 'object') {
         throw new Error('Wrong data specified to .', data);
@@ -369,7 +369,7 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
                 _.each(data[accessor], (d) => {
                     if (!d) return;
 
-                    const ops = getOperation(context, d, d[SYS_ID_PROP], fentity, id, entity);
+                    const ops = getOperation(context, d, d[SYS_ID_PROP], fentity, id, type);
 
                     if (ops && ops.length > 0) {
                         operations = [...operations, ...ops];

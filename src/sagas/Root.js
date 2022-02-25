@@ -199,7 +199,7 @@ function* _fetchEntityData(action) {
 }
 
 function* _processEntityData(action) {
-    let { entity, data, entries } = action.payload
+    let { entity, data, entries } = action.payload;
     const context = yield select(Selectors.context);
 
     if (_.size(data) === 0) {
