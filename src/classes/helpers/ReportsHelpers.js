@@ -243,7 +243,7 @@ export const  getDashboardDays = (context, from, to) => {
         days.push(m.format('YYYYMMDD'));
     };
 
-    if (days.length == 0) {
+    if (days.length === 0) {
         days.push(mFrom.format('YYYYMMDD'));
     }
     
