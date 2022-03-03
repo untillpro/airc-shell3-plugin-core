@@ -22,7 +22,7 @@ const INITIAL_STATE = {
     settings: {},
     customOrder: {},
     visibility: {},
-    sound: true
+    sound: false
 };
 
 const reducer = (state = INITIAL_STATE, action) => {
