@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { Modal, Button, Radio, translate as t} from 'airc-shell-core';
+import { Modal, Button, Radio, translate as t } from 'airc-shell-core';
 
 import {
     setLocation
@@ -30,7 +30,7 @@ class LocationSelector extends Component {
 
     openModal() {
         this.setState({
-            open: true, 
+            open: true,
             selectedLocation: this.getCurrentLocation()
         });
     }
@@ -65,7 +65,7 @@ class LocationSelector extends Component {
 
         return null;
     }
-    
+
     setLocation(location) {
         if (location) {
             if (_.isArray(location)) {
@@ -83,7 +83,7 @@ class LocationSelector extends Component {
     handleRadioGroupChange(event) {
         const loc = Number(event.target.value);
 
-        this.setState({selectedLocation: loc});
+        this.setState({ selectedLocation: loc });
     }
 
     renderLocations() {
@@ -114,34 +114,45 @@ class LocationSelector extends Component {
 
         if (current) {
             return <span className="v">{t("Location", "common")}: <span className="c">{locationsOptions[current]}</span> </span>;
-        } 
+        }
 
         return <span className="v">{t("Not selected", "common")}</span>;
-        
+
     }
 
     render() {
+        const { locations } = this.props;
         const { open } = this.state;
 
         return (
             <div className="location-selector">
-                <div className="select-button">
-                    <Button onClick={this.openModal}>{t("Change", "common")}</Button>
-                </div>
+                {_.size(locations) > 1 ? (
+                    <>
+                        <div className="select-button">
+                            <Button onClick={this.openModal}>{t("Change", "common")}</Button>
+                        </div>
+
+                        <Modal
+                            visible={open}
+                            onOk={this.modalSubmit}
+                            onCancel={this.closeModal}
+                            size="medium"
+                        >
+                            <div className="location-selector-container">
+                                {this.renderLocations()}
+                            </div>
+                        </Modal>
+                    </>
+
+
+
+                ) : null}
+
                 <div className="current-location">
                     {this.renderCurrentLocation()}
                 </div>
 
-                <Modal
-                    visible={open}
-                    onOk={this.modalSubmit}
-                    onCancel={this.closeModal}
-                    size="medium"
-                >
-                    <div className="location-selector-container">
-                        {this.renderLocations()}
-                    </div>
-                </Modal>
+
             </div>
         );
     }
@@ -152,7 +163,7 @@ LocationSelector.propTypes = {
     locationsOptions: PropTypes.object,
     locationsGroups: PropTypes.array,
     setLocation: PropTypes.func.isRequired,
-}; 
+};
 
 const mapStateToProps = (state) => {
     const { locations, locationsOptions, locationsGroups } = state.locations;
