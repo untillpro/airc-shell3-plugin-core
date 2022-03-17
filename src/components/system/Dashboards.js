@@ -64,7 +64,13 @@ class Dashboards extends Component {
             this.props.sendNeedRefreshDataMessage();
         });
 
-        api.subscribe(this._key(this.props), "airDashboard");
+        const key = this._key(this.props);
+
+        api.subscribe(key, "airDashboard");
+
+        window.addEventListener('beforeunload', () => {
+            api.unsubscribe(key);
+        });
 
         this.initChartsList();
     }
@@ -73,15 +79,19 @@ class Dashboards extends Component {
         const { api } = this.props;
 
         if (this.props.location !== oldProps.location) {
-            api.unsubscribe(this._key(oldProps));
-            api.subscribe(this._key(this.props), "airDashboard");
+            const key = this._key(oldProps);
+
+            api.subscribe(key, "airDashboard");
         }
     }
 
     componentWillUnmount() {
         const { api } = this.props;
+        const key = this._key(this.props);
 
-        api.unsubscribe(this._key(this.props));
+        //console.log("Dashboards.componentWillUnmount : unsubscribe projection: ", key);
+
+        api.unsubscribe(key);
         unregisterProjectionHandler('airDashboard');
     }
 
