@@ -135,7 +135,7 @@ class TablePlanEditor extends PureComponent {
     }
 
     componentDidUpdate(oldProps) {
-        console.log("componentDidUpdate: ", this.props.data);
+        //console.log("componentDidUpdate: ", this.props.data);
         
         if (this.props.data !== oldProps.data) {
             this._initData();
