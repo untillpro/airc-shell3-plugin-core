@@ -130,7 +130,7 @@ class GridLocationSelector extends PureComponent {
     render() {
         const { showLocationSelector, locationsOptions } = this.props;
 
-        if (showLocationSelector === true && _.isObject(locationsOptions) && _.size(locationsOptions) > 0) {
+        if (showLocationSelector === true && _.isObject(locationsOptions) && _.size(locationsOptions) > 1) {
             Logger.log(locationsOptions, 'Available locations: ');
 
             return (
