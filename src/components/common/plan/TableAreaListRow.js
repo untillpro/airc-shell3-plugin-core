@@ -10,7 +10,7 @@ import { Icon, translate as t } from 'airc-shell-core';
 import * as Icons from 'airc-shell-core/const/Icons';
 import cn from 'classnames';
 
-import { STATE_FIELD_NAME, STATUS_ACTIVE } from '../../../const/Common';
+import { SYS_ID_PROP, STATE_FIELD_NAME, STATUS_ACTIVE } from '../../../const/Common';
 
 class TableAreaListRow extends PureComponent {
     constructor(props) {
@@ -85,13 +85,17 @@ class TableAreaListRow extends PureComponent {
     renderActions(isNew, isHidden) {
         return (
             <div className="actions">
-                <div className="action" onClick={this.handleEdit}>
-                    <Icon icon={Icons.ICON_EDIT} />
-                </div>
+                {!isHidden ? (
+                    <>
+                        <div className="action" onClick={this.handleEdit}>
+                            <Icon icon={Icons.ICON_EDIT} />
+                        </div>
 
-                <div className="action" onClick={this.handleCopy}>
-                    <Icon icon={Icons.ICON_COPY} />
-                </div>
+                        <div className="action" onClick={this.handleCopy}>
+                            <Icon icon={Icons.ICON_COPY} />
+                        </div>
+                    </>
+                ) : null}
 
                 {isNew ? (
                     <Popconfirm
@@ -114,7 +118,7 @@ class TableAreaListRow extends PureComponent {
     }
 
     render() {
-        const { id, current, error } = this.props;
+        const { [SYS_ID_PROP]: id, current, error } = this.props;
         const state = this.props[STATE_FIELD_NAME];
 
         let isNew = !(_.isNumber(id) && id > 0);

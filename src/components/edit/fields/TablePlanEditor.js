@@ -318,23 +318,7 @@ class TablePlanEditor extends PureComponent {
 
                 return 0;
             });
-
-            /*
-            for (let i = 0; i <= tableNumbers.length; i++) {
-                if (tableNumbers[i] < expected) {
-                    continue;
-                }
-
-                if (tableNumbers[i] > expected) {
-                    return expected;
-                }
-
-                if (tableNumbers[i] === expected) {
-                    expected++;
-                }
-            }
-            */
-
+            
             expected = _.last(tableNumbers) + 1;
 
             return expected;
