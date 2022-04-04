@@ -226,12 +226,9 @@ class AddNewDeviceWizzard extends React.Component {
 
     renderQRCode() {
         const { state } = this.props;
-        const { deviceLinkTokenData } = state;
 
-        if (deviceLinkTokenData) {
-            let data = JSON.stringify(deviceLinkTokenData);
-
-            return <div className="qr-code"><QRCode value={data} size={400} /></div>;
+        if (_.isString(state.deviceLinkTokenData)) {
+            return <div className="qr-code"><QRCode value={state.deviceLinkTokenData} size={400} /></div>;
         }
 
         return <Empty description={"No token to display QR-code"} />;
