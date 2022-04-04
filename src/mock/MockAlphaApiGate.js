@@ -9,9 +9,10 @@ import SSE from '../classes/sse';
 
 import { message } from 'antd';
 import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectionHandler } from 'airc-shell-core';
+import pretifyData from '../classes/ResponseDataPretifier';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbSIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NTE2LCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY0NDY1MzQ4MCwiaWF0IjoxNjQ0NTY3MDgwfQ.KSCrClZT_88rWsEOVCuxUtJ-QTKujJZRJbAk_nyMjdc';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbTExIiwiTG9naW5DbHVzdGVySUQiOjEsIlByb2ZpbGVXU0lEIjoxNDA3Mzc0ODg0ODY0MjgsIlN1YmplY3RLaW5kIjoxLCJhdWQiOiJwYXlsb2Fkcy5QcmluY2lwYWxQYXlsb2FkIiwiZXhwIjoxNjQ5MTQxMzIxLCJpYXQiOjE2NDkwNTQ5MjF9.6RP8QtKACPJNGm4j-1O6Mm8cEw5Tm8iTTFkyHX7Ldjs';
 
 const FUNC_COLLECTION_NAME = '/q.air.Collection';
 const FUNC_CDOC_NAME = '/q.air.Cdoc';
@@ -108,13 +109,10 @@ class MockAlphaApiGate {
         this.print('+++ Mock call of api.sendLocations() with locations: ', locations);
     };
 
-    async qr(data, wsid) {
-        this.print('+++ qr method call:', data, wsid);
-
-        const params = {
-            "args": data,
-            "elements": [{ "fields": ["deviceToken", "durationMs"] }]
-        }
+    async qr(args, wsid) {
+        this.print('+++ qr method call:', args, wsid);
+        const elements = [{ "fields": ["deviceToken", "durationMs"] }];
+        const params = { args, elements };
 
         let location = this._checkWSID(wsid);
 
@@ -126,7 +124,18 @@ class MockAlphaApiGate {
             throw new Error(response.getErrorMessage());
         }
 
-        return response.getData();
+        let result = { principalToken: token, wsid };
+        const data = response.getData();
+
+        if (data && data["result"]) {
+            const resultData = pretifyData(elements, data["result"]);
+
+            if (_.isArray(resultData) && _.size(resultData) > 0) {
+                result = { ...result, ...resultData[0] };
+            }
+        }
+
+        return result;
     }
 
     /**

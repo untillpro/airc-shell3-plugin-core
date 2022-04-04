@@ -8,13 +8,13 @@ import {
 } from '../actions/Types';
 
 const INITIAL_STATE = {
-    locations: [1],
+    locations: [],
     locationsOptions: {
-        1: "UI Development",
-        2: "Server Development",
-        3: "QA",
-        4: "Demo",
-        5: "Location 5",
+        //140737488486417: "Test Location (140737488486417)",
+        // 2: "Server Development",
+        // 3: "QA",
+        // 4: "Demo",
+        // 5: "Location 5",
     },
 }
 

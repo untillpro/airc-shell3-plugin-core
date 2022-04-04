@@ -23,7 +23,8 @@ const persistConfigDefauult = {
         'entity',
         'report',
         //'dashboards',
-        'wizzard'
+        'wizzard',
+        'locations',
     ]
 };
 

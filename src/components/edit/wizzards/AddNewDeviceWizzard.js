@@ -129,14 +129,14 @@ class AddNewDeviceWizzard extends React.Component {
 
     componentDidUpdate(oldProps, oldState) {
         const { dispatch, state } = this.props;
-        const { deviceLinkToken, deviceTokenTtl } = state;
+        const { deviceLinkTokenData, deviceTokenTtl } = state;
 
 
         if (!_.isEqual(this.state.formValues, oldState.formValues) && this._checkFields(this.state.formValues)) {
             dispatch(requestLinkDeviceToken(this.state.formValues));
         }
 
-        if (deviceLinkToken !== oldProps.state.deviceLinkToken) {
+        if (deviceLinkTokenData !== oldProps.state.deviceLinkTokenData) {
             if (this.timer != null) {
                 clearTimeout(this.timer);
             }
@@ -225,11 +225,11 @@ class AddNewDeviceWizzard extends React.Component {
     }
 
     renderQRCode() {
-        const { state, location } = this.props;
-        const { deviceLinkToken } = state;
+        const { state } = this.props;
+        const { deviceLinkTokenData } = state;
 
-        if (deviceLinkToken) {
-            let data = JSON.stringify({"wsid": location, "token": deviceLinkToken});
+        if (deviceLinkTokenData) {
+            let data = JSON.stringify(deviceLinkTokenData);
 
             return <div className="qr-code"><QRCode value={data} size={400} /></div>;
         }

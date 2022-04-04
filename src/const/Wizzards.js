@@ -3,8 +3,8 @@
  */
 
 export const DEVICE_CREATION_WIZZARD = 'device_creation_wizzard';
-export const TOKEN_FIELD_KEY = 'deviceToken';
-export const TOKEN_DURATION_FIELD_KEY = 'durationMS';
+export const DEVICE_LINK_TOKEN_FIELD_KEY = 'deviceToken';
+export const TOKEN_DURATION_FIELD_KEY = 'durationMs';
 export const TICKET_TYPE_PROP = 'is_report';
 
 export const TICKET_BILL_TYPE = 2;

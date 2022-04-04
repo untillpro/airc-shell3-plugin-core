@@ -372,36 +372,20 @@ function* _setListShowDeleted(action) {
     }
 }
 
-//TODO: implement saga!!!
 function* _getLinkDeviceToken(action) {
     const data = action.payload;
     const locations = yield select(Selectors.locations);
     const api = yield select(Selectors.api);
-    const elements = [
-        {
-            "fields": [
-                "deviceToken", "durationMS"
-            ]
-        }
-    ]; //todo
 
     try {
         let wsid = locations[0];
 
         const result = yield call(api.qr.bind(api), data, wsid);
-        let resultData = [];
 
-        if (result && result["result"]) {
-            resultData = pretifyData(elements, result["result"]);
-        }
-
-        yield put({ type: SET_WIZZARD_DEVICE_LINK_TOKEN, payload: resultData });
+        yield put({ type: SET_WIZZARD_DEVICE_LINK_TOKEN, payload: result });
     } catch (e) {
-        //yield put({ type: SET_DASHBOARD_LOADING, payload: false });
         yield put({ type: SEND_ERROR_MESSAGE, payload: { text: e.message, description: e.message } });
     }
-
-
 }
 
 function* rootSaga() {
