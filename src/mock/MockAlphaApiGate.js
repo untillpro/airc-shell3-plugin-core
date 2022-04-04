@@ -124,14 +124,15 @@ class MockAlphaApiGate {
             throw new Error(response.getErrorMessage());
         }
 
-        let result = { principalToken: token, wsid };
+        let result = {};
+        
         const data = response.getData();
 
         if (data && data["result"]) {
             const resultData = pretifyData(elements, data["result"]);
 
             if (_.isArray(resultData) && _.size(resultData) > 0) {
-                result = { ...result, ...resultData[0] };
+                result = { wsid, ...resultData[0] };
             }
         }
 
