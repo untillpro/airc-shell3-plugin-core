@@ -13,6 +13,7 @@ import EntityRenderer from './EntityRenderer';
 import EntityEditor from './EntityEditor';
 import ReportView from './ReportView';
 import Dashboards from './Dashboards';
+import AppLoader from './AppLoader';
 
 import { toggleLocationSelector } from '../../actions/';
 
@@ -29,9 +30,13 @@ class MainController extends Component {
     }
 
     renderStateComponent() {
-        const { step } = this.props;
+        const { step, pluginInitialized } = this.props;
 
         log(`%cCurrent step is: ${step}`, 'color: #e83f6f ; font-size: 140%; font-weight: bold;');
+
+        if (!pluginInitialized) {
+            return <AppLoader loading={true} />;
+        }
 
         if (step) {
             switch (step) {
@@ -101,9 +106,9 @@ class MainController extends Component {
 
 const mapStateToProps = (state) => {
     const { contributions } = state.context;
-    const { step } = state.plugin;
+    const { step, pluginInitialized } = state.plugin;
     
-    return { contributions, step };
+    return { contributions, step, pluginInitialized };
 };
 
 export default connect(mapStateToProps, { toggleLocationSelector })(MainController);

@@ -94,19 +94,27 @@ class ApiProvider extends Component {
     }
 
     render() {
-        const { initialized } = this.props;
+        const { apiInitialized } = this.props;
 
-        return initialized === true ? this.props.children : <AppLoader loading={true} />;
+        return apiInitialized === true ? this.props.children : <AppLoader loading={true} />;
     }
 }
 
 const mapStateToProps = (state) => {
-    const { initialized } = state.plugin;
+    const { apiInitialized } = state.plugin;
     const { api } = state.context;
     const { info, error, warning, success } = state.messages;
     const { locations } = state.locations;
 
-    return { initialized, api, info, error, warning, success, locations };
+    return { 
+        apiInitialized, 
+        api, 
+        info, 
+        error, 
+        warning, 
+        success, 
+        locations, 
+    };
 };
 
 export default connect(mapStateToProps, { 
