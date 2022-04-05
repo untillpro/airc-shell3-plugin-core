@@ -73,6 +73,8 @@ class Dashboards extends Component {
         });
 
         this.initChartsList();
+
+        this.props.sendNeedRefreshDataMessage();
     }
 
     componentDidUpdate(oldProps) {

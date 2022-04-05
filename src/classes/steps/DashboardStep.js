@@ -13,9 +13,9 @@ class DashboardStep extends StateMachineStep {
         return 'DashboardStep';
     }
 
-    MessageInit() {
-        return this.fetchData();
-    }
+    // MessageInit() {
+    //     return this.fetchData();
+    // }
 
     MessageRefreshData() {
         return this.fetchData();

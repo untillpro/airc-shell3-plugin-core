@@ -9,34 +9,41 @@ const INITIAL_STATE = {
     view: null,
     entity: null,
     step: null,
-    initialized: false
+    apiInitialized: false,
+    pluginInitialized: false,
 };
 
 const reducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case Types.API_INITIALIZED: 
-            return { 
-                ...state, 
-                initialized: true 
+        case Types.API_INITIALIZED:
+            return {
+                ...state,
+                apiInitialized: true
             };
 
-        case Types.SEND_STATE_MACHINE_DATA: 
+        case Types.INIT_PLUGIN:
+            return {
+                ...state,
+                pluginInitialized: true,
+            };
+
+        case Types.SEND_STATE_MACHINE_DATA:
             return mergeExisting(state, action.payload);
 
-        case Types.SET_VIEW: 
+        case Types.SET_VIEW:
             return {
                 ...state,
                 view: action.payload,
                 entity: null
             };
-        
-        case Types.SET_ENTITY: 
+
+        case Types.SET_ENTITY:
             return {
                 ...state,
                 entity: action.payload
             };
 
-        default: 
+        default:
             return state;
     }
 };
