@@ -33,7 +33,7 @@ class ApiProvider extends Component {
         if (isProd.isProduction()) {
             apiGate = new UShellAPIGate(API, '', this.props.apiInitDone);
         } else {
-            apiGate = new MockAlphaApiGate(this.props.apiInitDone);
+            apiGate = new MockAlphaApiGate(this.props.apiInitDone, this._init.bind(this));
         }
 
         this.props.setContext("api", apiGate);

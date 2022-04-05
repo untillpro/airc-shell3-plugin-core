@@ -12,7 +12,30 @@ import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectio
 import pretifyData from '../classes/ResponseDataPretifier';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbTExIiwiTG9naW5DbHVzdGVySUQiOjEsIlByb2ZpbGVXU0lEIjoxNDA3Mzc0ODg0ODY0MjgsIlN1YmplY3RLaW5kIjoxLCJhdWQiOiJwYXlsb2Fkcy5QcmluY2lwYWxQYXlsb2FkIiwiZXhwIjoxNjQ5MTQxMzIxLCJpYXQiOjE2NDkwNTQ5MjF9.6RP8QtKACPJNGm4j-1O6Mm8cEw5Tm8iTTFkyHX7Ldjs';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbTEwIiwiTG9naW5DbHVzdGVySUQiOjEsIlByb2ZpbGVXU0lEIjoxNDA3Mzc0ODg0ODY0NDAsIlN1YmplY3RLaW5kIjoxLCJhdWQiOiJwYXlsb2Fkcy5QcmluY2lwYWxQYXlsb2FkIiwiZXhwIjoxNjQ5MjM2NzEzLCJpYXQiOjE2NDkxNTAzMTN9.VcQoU8t0gkgxJJhY_wVh92N_CS4yVF5hs29UHloTAwM';
+
+const initPayload = {
+    "options": {
+        "defaultLanguage": {
+            "name": "English",
+            "code": "en-EN",
+            "locale": "en",
+            "hex": "0000"
+        },
+        "currentLanguage": {
+            "name": "English",
+            "code": "en-EN",
+            "locale": "en",
+            "hex": "0000"
+        },
+        "locations": [
+            140737488486428
+        ],
+        "locationsOptions": {
+            "140737488486428": "Location 140737488486428"
+        }
+    }
+};
 
 const FUNC_COLLECTION_NAME = '/q.air.Collection';
 const FUNC_CDOC_NAME = '/q.air.Cdoc';
@@ -22,13 +45,17 @@ const FUNC_JOURNAL_NAME = '/q.air.Journal';
 const FUNC_DEVICE_TOKEN_NAME = '/q.air.IssueLinkDeviceToken';
 
 class MockAlphaApiGate {
-    constructor(callback) {
+    constructor(callback, init) {
         this.name = "MockAlphaApiGate";
         this.host = 'https://alpha2.dev.untill.ru/';
         //this.host = 'https://rc2.dev.untill.ru/api';
 
         if (callback && typeof callback === 'function') {
             callback();
+        }
+        
+        if (init && typeof init === 'function') {
+            init(initPayload);
         }
 
         this.subscriptions = {}; // Array: SSE
@@ -125,7 +152,7 @@ class MockAlphaApiGate {
         }
 
         let result = {};
-        
+
         const data = response.getData();
 
         if (data && data["result"]) {
