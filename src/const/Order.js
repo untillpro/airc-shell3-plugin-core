@@ -33,6 +33,7 @@ export const ORDER_BUTTON_TYPES = {
     "next_course": "next_course",
     "change_course": "change_course",
     "fire_next_course": "fire_next_course",
+    "transfer_table": "transfer_table",
 
     //"common_header": "",
     //"confirm": "confirm",

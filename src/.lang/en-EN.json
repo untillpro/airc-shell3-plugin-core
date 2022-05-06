@@ -137,7 +137,11 @@
             "add_payer": "Add payer",
             "add_client": "Add client",
             "info": "Info",
-            "allergens": "Allergens"
+            "allergens": "Allergens",
+            "next_course": "Next course",
+            "change_course": "Change course",
+            "fire_next_course": "Fire next course",
+            "transfer_table": "Transfer table"
         },
         "period_value_types": {
             "weekly": "Weekly values",
