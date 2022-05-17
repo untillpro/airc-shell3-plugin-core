@@ -138,7 +138,11 @@
             "add_payer": "Добавить плательщика",
             "add_client": "Добавить клиента",
             "info": "Информация",
-            "allergens": "Аллергены"
+            "allergens": "Аллергены",
+            "next_course": "Следующий курс",
+            "change_course": "Изменить курс",
+            "fire_next_course": "Следующая подача блюд",
+            "transfer_table": "Переместить заказ"
         },
         "period_value_types": {
             "weekly": "Еженедельное",
