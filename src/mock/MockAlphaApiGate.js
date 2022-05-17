@@ -37,11 +37,11 @@ const initPayload = {
     }
 };
 
-const FUNC_COLLECTION_NAME = '/q.air.Collection';
-const FUNC_CDOC_NAME = '/q.air.Cdoc';
+const FUNC_COLLECTION_NAME = '/q.sys.Collection';
+const FUNC_CDOC_NAME = '/q.sys.Cdoc';
 const FUNC_CUD_NAME = '/c.sys.CUD';
 const FUNC_DASHBOARD_NAME = '/q.air.Dashboard';
-const FUNC_JOURNAL_NAME = '/q.air.Journal';
+const FUNC_JOURNAL_NAME = '/q.sys.Journal';
 const FUNC_DEVICE_TOKEN_NAME = '/q.air.IssueLinkDeviceToken';
 
 class MockAlphaApiGate {
