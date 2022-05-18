@@ -235,6 +235,26 @@ export const processClassifier = (item, classifiers = {}, entity, maxLevel = 3, 
     return item;
 }
 
+export const pretifyClassifiers = (sourceClassifiers) => {
+    const resultClassifiers = {};
+
+    if (_.isPlainObject(sourceClassifiers)) {
+        _.forEach(sourceClassifiers, (elements, entity) => {
+            if (_.isArray(elements)) {
+                const res = {};
+
+                _.forEach(elements, (element) => {
+                    res[element[SYS_ID_PROP]] = element;
+                });
+
+                resultClassifiers[entity] = res;
+            }
+        });
+    }
+
+    return resultClassifiers;
+}
+
 // mutating given data with i18n values for fields, that has ML value
 export const applyML = (context, data, Entity) => {
     let entity = String(Entity).toLowerCase();
@@ -283,7 +303,7 @@ export const containerForScheme = (scheme) => scheme.replace("untill.", '');
 // DATA PROCESSING
 
 export const processEntityData = async (context, entity, data, entries) => {
-    Logger.log("processEntityData: ", {entity, data, entries});
+    Logger.log("processEntityData: ", { entity, data, entries });
 
     if (!data || typeof data !== 'object') {
         throw new Error('Wrong data specified to .', data);

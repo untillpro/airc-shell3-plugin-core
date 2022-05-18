@@ -12,7 +12,7 @@ import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectio
 import pretifyData from '../classes/ResponseDataPretifier';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbTEwIiwiTG9naW5DbHVzdGVySUQiOjEsIlByb2ZpbGVXU0lEIjoxNDA3Mzc0ODg0ODY0NDAsIlN1YmplY3RLaW5kIjoxLCJhdWQiOiJwYXlsb2Fkcy5QcmluY2lwYWxQYXlsb2FkIiwiZXhwIjoxNjQ5MjM2NzEzLCJpYXQiOjE2NDkxNTAzMTN9.VcQoU8t0gkgxJJhY_wVh92N_CS4yVF5hs29UHloTAwM';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbSIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2Mzk5LCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY1Mjk3MjE4OCwiaWF0IjoxNjUyODg1Nzg4fQ.xvzG44-QVcbzCdj8Nk8IOYZ_1N2ggUijjOBx0Gx15gc';
 
 const initPayload = {
     "options": {
@@ -29,10 +29,10 @@ const initPayload = {
             "hex": "0000"
         },
         "locations": [
-            140737488486428
+            140737488486399
         ],
         "locationsOptions": {
-            "140737488486428": "Location 140737488486428"
+            "140737488486399": "Location 140737488486399"
         }
     }
 };
@@ -43,6 +43,7 @@ const FUNC_CUD_NAME = '/c.sys.CUD';
 const FUNC_DASHBOARD_NAME = '/q.air.Dashboard';
 const FUNC_JOURNAL_NAME = '/q.sys.Journal';
 const FUNC_DEVICE_TOKEN_NAME = '/q.air.IssueLinkDeviceToken';
+const FUNC_TRANSACTION_HISTORY = '/q.air.TransactionHistory';
 
 class MockAlphaApiGate {
     constructor(callback, init) {
@@ -313,7 +314,41 @@ class MockAlphaApiGate {
 
             Logger.log(response.getData(), '+++ resultData');
 
-            return response.getData();
+            let result = response.getData();
+
+            if (result && result["result"]) {
+                return pretifyData(elements, result["result"]);
+            }
+
+            return result;
+        }).catch((e) => {
+            console.error(e);
+            throw e;
+        });
+    }
+
+    async th(wsid, props) {
+        const { bills, events } = props;
+        const elements = [{ "fields": ["offset", "eventTime", "event"] }];
+        const args = {
+            "billIDs": _.isArray(bills) ? bills.join(",") : String(bills),
+            "eventTypes": _.isArray(events) ? events.join(",") : String(events)
+        };
+
+        let location = this._checkWSID(wsid);
+
+        return this.do("api/untill/airs-bp", location, FUNC_TRANSACTION_HISTORY, { args, elements }, "post").then((response) => {
+            if (response.isError()) {
+                throw new Error(response.getErrorMessage());
+            }
+
+            let result = response.getData();
+
+            if (result && result["result"]) {
+                return pretifyData(elements, result["result"]);
+            }
+
+            return [response.getData()];
         }).catch((e) => {
             console.error(e);
             throw e;
@@ -426,6 +461,34 @@ class MockAlphaApiGate {
             this.subscriptions[key].close();
             delete this.subscriptions[key];
         }
+    }
+
+    async exec(wsid, instructions) {
+        if (_.isArray(instructions)) {
+            let promises = [];
+            
+            instructions.forEach((inst) => {
+                if (!_.isPlainObject(inst)) {
+                    return;
+                }
+
+                const { method, props } = inst;
+
+                if (_.isNil(method) || !_.isString(method)) {
+                    throw new Error('Api.exec() exception: wrong instruction "method" specified. The not null string expected;');
+                }
+
+                if(!_.isFunction(this[method])) {
+                    throw new Error(`Api.exec() exception: the method "${method}" is not exist in api`);
+                }
+
+                promises.push(this[method](wsid, props || {}));
+            });
+
+            return Promise.all(promises);
+        }
+
+        return [];
     }
 
     // ----- private methods -----

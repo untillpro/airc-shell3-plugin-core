@@ -33,7 +33,7 @@ class RListTable extends Component {
     }
 
     buildTableData() {
-        const { data, contributions, report, reportProps } = this.props;
+        const { data, contributions, report, reportProps, reportFilter } = this.props;
 
         let reportData = null;
         let generator = null;
@@ -42,7 +42,7 @@ class RListTable extends Component {
             generator = contributions.getPointContributionValue(TYPE_REPORTS, report, C_REPORT_GENERATOR);
 
             if (generator && _.isFunction(generator)) {
-                reportData = generator(data, reportProps);
+                reportData = generator(data, reportProps, reportFilter);
             }
         }
 

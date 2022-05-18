@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { translate as t } from 'airc-shell-core';
 
 import { TYPE_LANGUAGE } from '../contributions/Types';
+import { SYS_QNAME } from '../../const/Common';
 
 export const addContributionLanguages = (manager, contribution, languages) => {
     if (languages && _.isObject(languages) && _.size(languages) > 0) {
@@ -98,3 +99,21 @@ export const getContributionProps = (fieldProps, propsList, fieldName) => {
 
     return props;
 }
+
+export const getElementsFromArayByQName = (arr, scheme, path) => {
+    let result = [];
+
+    if (_.isArray(arr)) {
+        _.forEach(arr, function (item) {
+            if (item[SYS_QNAME] === scheme) {
+
+                let element = _.get(item, path);
+                if (element) {
+                    result.push(element);
+                }
+            }
+        });
+    }
+
+    return result;
+};

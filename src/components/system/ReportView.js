@@ -83,7 +83,7 @@ class ReportView extends Component {
     }
 
     render() {
-        const { data, loading, reportProps, contributions } = this.props;
+        const { data, loading, reportProps, reportFilter, contributions } = this.props;
         const { reportTypes, isComplex } = this.state;
         const { show_total } = reportProps;
 
@@ -113,6 +113,7 @@ class ReportView extends Component {
                                 <RListTable
                                     showTitle={isComplex}
                                     reportProps={reportProps}
+                                    reportFilter={reportFilter}
                                     contributions={contributions}
                                     report={report}
                                     loading={loading}
@@ -129,7 +130,7 @@ class ReportView extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const { loading, reportType: report, reportData: data, props: reportProps } = state.reports;
+    const { loading, reportType: report, reportData: data, props: reportProps, filterBy: reportFilter } = state.reports;
     const { contributions } = state.context;
 
     return {
@@ -137,7 +138,8 @@ const mapStateToProps = (state) => {
         report,
         data,
         contributions,
-        reportProps
+        reportProps,
+        reportFilter
     };
 }
 

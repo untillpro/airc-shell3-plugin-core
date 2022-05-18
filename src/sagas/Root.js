@@ -20,7 +20,8 @@ import {
     // prepareReportData,
     getEntityColletionElements,
     getDashboardElements,
-    getDashboardDays
+    getDashboardDays,
+    pretifyClassifiers
 } from '../classes/helpers';
 
 import * as Selectors from '../selectors';
@@ -32,6 +33,8 @@ import {
     C_COLLECTION_ENTITY,
     C_REPORT_EVENT_TYPE,
     C_REPORT_REQUIRED_CLASSIFIERS,
+    C_REPORT_VALIDATOR,
+    C_REPORT_EXTENDER,
 } from '../classes/contributions/Types';
 
 import {
@@ -225,13 +228,14 @@ function* _fetchReport(action) {
     const context = yield select(Selectors.context);
     const { contributions, api } = context;
     const { report, from, to, props } = action.payload;
-    const elements = [{ "fields": ["offset", "eventTime", "event"] }];
 
     let data = [];
     let classifiers = {};
 
     let event_type = contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_EVENT_TYPE);
     let required_classifiers = contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_REQUIRED_CLASSIFIERS);
+    let dataChecker = contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_VALIDATOR);
+    let dataExtender = contributions.getPointContributionValues(TYPE_REPORTS, report, C_REPORT_EXTENDER);
 
     let doProps = {
         type: event_type,
@@ -249,15 +253,22 @@ function* _fetchReport(action) {
 
     try {
         const wsid = locations[0];
-        const result = yield call(api.log.bind(api), wsid, doProps);
+        data = yield call(api.log.bind(api), wsid, doProps);
 
-        if (result && result["result"]) {
-            data = pretifyData(elements, result["result"]);
+        if (_.size(data) > 0 && _.isFunction(dataChecker)) {
+            const instructions = dataChecker(data);
+
+            if (instructions.length > 0) {
+                const dataEx = yield call(api.exec.bind(api), wsid, instructions);
+
+                if (_.size(dataEx) > 0 && _.isFunction(dataExtender)) {
+                    data = dataExtender(data, dataEx)
+                }
+            }
         }
 
         let tasks = [];
         let tasksPath = [];
-
 
         if (_.size(required_classifiers) > 0) {
             for (let c of required_classifiers) {
@@ -272,6 +283,10 @@ function* _fetchReport(action) {
             _.set(classifiers, tasksPath[i], classifiersData[i]['resolvedData']);
         }
 
+        if (_.size(classifiers) > 0) {
+            classifiers = pretifyClassifiers(classifiers);
+        }
+
         //console.log(REPORT_DATA_FETCHING_SUCCESS, ' ', { data, classifiers });
 
         yield put({ type: REPORT_DATA_FETCHING_SUCCESS, payload: { data, classifiers } });
@@ -281,7 +296,6 @@ function* _fetchReport(action) {
     }
 }
 
-//TODO: Reimplement
 function* _fetchDashboard() {
     const locations = yield select(Selectors.locations);
     const api = yield select(Selectors.api);

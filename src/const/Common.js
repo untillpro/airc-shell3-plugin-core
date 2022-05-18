@@ -20,7 +20,7 @@ export const SYS_QNAME = 'sys.QName';
 
 export const ORDERS_QNAME = 'air.Orders';
 export const PBILL_QNAME = 'air.Pbill';
-export const BILLS_QNAME = 'air.Bill';
+export const BILLS_QNAME = 'untill.bill';
 export const CUD_QNAME = 'sys.CUD';
 
 export const API_ARGUMENTS_FIELD = 'args';
