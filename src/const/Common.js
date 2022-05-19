@@ -25,3 +25,11 @@ export const CUD_QNAME = 'sys.CUD';
 
 export const API_ARGUMENTS_FIELD = 'args';
 export const API_CUDS_FIELD = 'cuds';
+
+// location descriptor fields
+
+export const LOCATION_WORK_START_TIME_PROP = 'WorkStartTime';
+export const LOCATION_DEFAULT_CURRENCY_PROP = 'DefaultCurrency';
+export const LOCATION_NEXT_COURSE_TICKET_LAYOUT_PROP = 'NextCourseTicketLayout';
+export const LOCATION_TRANSFER_TICKET_LAYOUT_PROP = 'TransferTicketLayout';
+export const LOCATION_DISPLAY_NAME_PROP = 'DisplayName';

@@ -33,6 +33,16 @@ const initPayload = {
         ],
         "locationsOptions": {
             "140737488486399": "Location 140737488486399"
+        },
+        "locationData": {
+            "id": 140737488486399,
+            "descriptor": {
+                "WorkStartTime": "2022-04-27T07:00:00.000Z",
+                "DefaultCurrency": 5000000058,
+                "NextCourseTicketLayout": 5000001365,
+                "TransferTicketLayout": 5000001466,
+                "DisplayName": "Sem's place"
+            }
         }
     }
 };
@@ -54,7 +64,7 @@ class MockAlphaApiGate {
         if (callback && typeof callback === 'function') {
             callback();
         }
-        
+
         if (init && typeof init === 'function') {
             init(initPayload);
         }
@@ -466,7 +476,7 @@ class MockAlphaApiGate {
     async exec(wsid, instructions) {
         if (_.isArray(instructions)) {
             let promises = [];
-            
+
             instructions.forEach((inst) => {
                 if (!_.isPlainObject(inst)) {
                     return;
@@ -478,7 +488,7 @@ class MockAlphaApiGate {
                     throw new Error('Api.exec() exception: wrong instruction "method" specified. The not null string expected;');
                 }
 
-                if(!_.isFunction(this[method])) {
+                if (!_.isFunction(this[method])) {
                     throw new Error(`Api.exec() exception: the method "${method}" is not exist in api`);
                 }
 

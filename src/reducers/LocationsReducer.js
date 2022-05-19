@@ -9,13 +9,8 @@ import {
 
 const INITIAL_STATE = {
     locations: [],
-    locationsOptions: {
-        //140737488486417: "Test Location (140737488486417)",
-        // 2: "Server Development",
-        // 3: "QA",
-        // 4: "Demo",
-        // 5: "Location 5",
-    },
+    locationsOptions: {},
+    locationData: {},
 }
 
 const reducer = (state = INITIAL_STATE, action) => {
@@ -24,6 +19,8 @@ const reducer = (state = INITIAL_STATE, action) => {
 
     switch (action.type) {
         case INIT_PLUGIN:
+            //console.log("INIT_PLUGIN: ", action.payload);
+
             if (_.isPlainObject(payload.options)) {
                 newState = { ...state };
 
@@ -33,6 +30,10 @@ const reducer = (state = INITIAL_STATE, action) => {
 
                 if (_.isPlainObject(payload.options.locationsOptions)) {
                     newState.locationsOptions = payload.options.locationsOptions;
+                }
+
+                if (_.isPlainObject(payload.options.locationData)) {
+                    newState.locationData = payload.options.locationData;
                 }
 
                 return newState;

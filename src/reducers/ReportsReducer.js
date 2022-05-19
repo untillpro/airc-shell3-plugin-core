@@ -2,7 +2,6 @@
  * Copyright (c) 2020-present unTill Pro, Ltd.
  */
 import _ from 'lodash';
-import moment from 'moment';
 
 import {
     SELECT_REPORT_TYPE_MESSAGE,
@@ -13,15 +12,10 @@ import {
     REPORT_DATA_FETCHING_SUCCESS,
 } from '../actions/Types';
 
-const whfrominit = moment("2000-01-01 05:00");
-const whtoinit = moment("2000-01-01 05:00");
-
 const INITIAL_STATE = {
     reportType: null,
     fromDateTime: null,
     toDateTime: null,
-    workingHoursFrom: whfrominit, // 5 * 3600 seconds
-    workingHoursTo: whtoinit, // 17 * 3600 seconds
     filterBy: {},
     props: {},
     mostUsedPeriods: {},

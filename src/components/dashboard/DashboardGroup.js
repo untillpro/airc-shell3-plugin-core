@@ -162,11 +162,8 @@ class DashboardGroup extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    const { locationsOptions } = state.locations;
-
     return {
         options: {
-            locations: locationsOptions, 
             from: dashboardFrom(state), 
             to: dashboardTo(state)
         }

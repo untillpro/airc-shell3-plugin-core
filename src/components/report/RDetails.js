@@ -15,6 +15,10 @@ import {
     setDatetimeFilter
 } from '../../actions/';
 
+import {
+    locationWorkStartTime
+} from '../../selectors/Selectors';
+
 import { DateTimeFilter, Button } from 'airc-shell-core';
 import { getDatetimePeriods, makeValidator } from '../../classes/helpers/';
 
@@ -300,12 +304,13 @@ ReportDetails.propTypes = {
 const mapStateToProps = (state) => {
     const { contributions } = state.context;
     const { locations } = state.locations;
+    const workingStartTime = locationWorkStartTime(state);
+
+    console.log("workingStartTime: ", workingStartTime);
 
     const {
         fromDateTime,
         toDateTime,
-        workingHoursFrom,
-        workingHoursTo,
         filterBy,
         props: reportProps,
         mostUsedPeriods } = state.reports;
@@ -315,11 +320,11 @@ const mapStateToProps = (state) => {
         contributions,
         fromDateTime,
         toDateTime,
-        workingHoursFrom,
-        workingHoursTo,
+        workingHoursFrom: workingStartTime,
+        workingHoursTo: workingStartTime,
         filterBy,
         reportProps,
-        mostUsedPeriods
+        mostUsedPeriods,
     };
 }
 
