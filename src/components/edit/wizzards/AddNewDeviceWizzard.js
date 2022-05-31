@@ -162,7 +162,7 @@ class AddNewDeviceWizzard extends React.Component {
         return {
             "App": "untill/airs-bp",
             //"Projection": "air.ComputersDeviceProfileWSIDIdx",
-            "Projection": "sys.CollectionView",
+            "Projection": "air.CollectionView",
             "WS": props.location
         };
     }
