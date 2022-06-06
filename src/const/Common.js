@@ -17,6 +17,7 @@ export const STATE_FIELD_NAME = 'sys.IsActive';
 export const SYS_ID_PROP = "sys.ID";
 export const SYS_PARENT_ID = 'sys.ParentID';
 export const SYS_QNAME = 'sys.QName';
+export const SYS_ERROR = 'sys.Error';
 
 export const ORDERS_QNAME = 'air.Orders';
 export const PBILL_QNAME = 'air.Pbill';

@@ -12,7 +12,7 @@ import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectio
 import pretifyData from '../classes/ResponseDataPretifier';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InNlbSIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2Mzk5LCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY1Mjk3MjE4OCwiaWF0IjoxNjUyODg1Nzg4fQ.xvzG44-QVcbzCdj8Nk8IOYZ_1N2ggUijjOBx0Gx15gc';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InRlc3QxNyIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NDMxLCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY1NDYwMjE0MSwiaWF0IjoxNjU0NTE1NzQxfQ.5LXozFaSkpSsgrzNlTsk4RjtOkK5C67gwRjRJs_MR2s';
 
 const initPayload = {
     "options": {
@@ -29,13 +29,13 @@ const initPayload = {
             "hex": "0000"
         },
         "locations": [
-            140737488486399
+            140737488486427
         ],
         "locationsOptions": {
-            "140737488486399": "Location 140737488486399"
+            "140737488486427": "Location 140737488486427"
         },
         "locationData": {
-            "id": 140737488486399,
+            "id": 140737488486427,
             "descriptor": {
                 "WorkStartTime": "2022-04-27T07:00:00.000Z",
                 "DefaultCurrency": 5000000058,
