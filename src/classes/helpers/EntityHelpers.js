@@ -25,7 +25,8 @@ import {
     C_COLLECTION_FILTERS,
     C_COLLECTION_ENTITY,
     C_COLLECTION_REQUIRED_CLASSIFIERS,
-    C_FORMS_EMBEDDED_TYPE
+    C_FORMS_EMBEDDED_TYPE,
+    C_FORMS_HIDDEN,
 } from '../contributions/Types';
 
 import {
@@ -405,10 +406,16 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
         });
     }
 
-    const hiddenValues = contributions.getPointContributionValue(TYPE_FORMS, entity, 'hidden');
+    const hiddenValues = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_HIDDEN);
 
-    if (hiddenValues && typeof _.isObject(hiddenValues) && !_.isArray(hiddenValues)) {
-        resultData = { ...resultData, ...hiddenValues };
+    if (_.isPlainObject(hiddenValues)) {
+        _.forEach(hiddenValues, (value, key) => {
+            if (_.isFunction(value)) {
+                resultData[key] = value();
+            } else {
+                resultData[key] = value;
+            }
+        });
     }
 
     if (_.size(resultData) > 0) {
