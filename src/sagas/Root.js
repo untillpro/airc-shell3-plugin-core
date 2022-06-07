@@ -87,6 +87,8 @@ function* _fetchListData(action) {
 
     let scheme = contributions.getPointContributionValue(TYPE_COLLECTION, entity, C_COLLECTION_ENTITY) || entity;
 
+    yield put({ type: LIST_DATA_FETCH_SUCCEEDED, payload: { resolvedData: [] } });
+
     if (manual) {
         doProps = {
             ...doProps,
@@ -273,7 +275,7 @@ function* _fetchReport(action) {
         if (_.size(required_classifiers) > 0) {
             for (let c of required_classifiers) {
                 tasks.push(call(getCollection, context, { scheme: c, wsid, props: {} }, true))
-                tasksPath.push([ c ]);
+                tasksPath.push([c]);
             }
         }
 
