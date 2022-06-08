@@ -406,16 +406,18 @@ export const getOperation = (context, data, entityId, entity, parentId, parentTy
         });
     }
 
-    const hiddenValues = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_HIDDEN);
+    if (isNew) {
+        const hiddenValues = contributions.getPointContributionValue(TYPE_FORMS, entity, C_FORMS_HIDDEN);
 
-    if (_.isPlainObject(hiddenValues)) {
-        _.forEach(hiddenValues, (value, key) => {
-            if (_.isFunction(value)) {
-                resultData[key] = value();
-            } else {
-                resultData[key] = value;
-            }
-        });
+        if (_.isPlainObject(hiddenValues)) {
+            _.forEach(hiddenValues, (value, key) => {
+                if (_.isFunction(value)) {
+                    resultData[key] = value();
+                } else {
+                    resultData[key] = value;
+                }
+            });
+        }
     }
 
     if (_.size(resultData) > 0) {
