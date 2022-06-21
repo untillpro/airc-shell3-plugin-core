@@ -117,16 +117,15 @@ class LocationSelector extends Component {
         }
 
         return <span className="v">{t("Not selected", "common")}</span>;
-
     }
 
     render() {
-        const { locations } = this.props;
+        const { locationsOptions } = this.props;
         const { open } = this.state;
 
         return (
             <div className="location-selector">
-                {_.size(locations) > 1 ? (
+                {_.size(locationsOptions) > 1 ? (
                     <>
                         <div className="select-button">
                             <Button onClick={this.openModal}>{t("Change", "common")}</Button>
@@ -143,16 +142,11 @@ class LocationSelector extends Component {
                             </div>
                         </Modal>
                     </>
-
-
-
                 ) : null}
 
                 <div className="current-location">
                     {this.renderCurrentLocation()}
                 </div>
-
-
             </div>
         );
     }
@@ -161,17 +155,15 @@ class LocationSelector extends Component {
 LocationSelector.propTypes = {
     locations: PropTypes.array,
     locationsOptions: PropTypes.object,
-    locationsGroups: PropTypes.array,
     setLocation: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
-    const { locations, locationsOptions, locationsGroups } = state.locations;
+    const { locations, locationsOptions } = state.locations;
 
     return {
         locations,
-        locationsOptions,
-        locationsGroups
+        locationsOptions
     };
 }
 

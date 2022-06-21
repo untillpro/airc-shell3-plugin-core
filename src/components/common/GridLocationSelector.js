@@ -68,7 +68,7 @@ class GridLocationSelector extends PureComponent {
         return null;
     }
 
-    renderLocationsSingle() {
+    renderLocations() {
         const { locationsOptions } = this.props;
 
         return (
@@ -85,40 +85,6 @@ class GridLocationSelector extends PureComponent {
         )
     }
 
-    renderLocationsMulty() {
-        const { locationsOptions, locations } = this.props;
-
-        return (
-            <Checkbox.Group onChange={this.handleCheckboxChange} value={locations}>
-                {
-                    _.map(locationsOptions, (location, key) => {
-                        let id = parseInt(key);
-
-                        return (
-                            <div key={`location_${key}`}>
-                                <Checkbox value={id}>
-                                    {location}
-                                </Checkbox>
-                            </div>
-                        );
-                    })
-                }
-
-            </Checkbox.Group >
-        );
-    }
-
-    renderLocationsGroups() {
-        // TODO in far far future
-        return null;
-    }
-
-    renderLocations() {
-        const { allowMultyLocations } = this.props;
-
-        return allowMultyLocations ? this.renderLocationsMulty() : this.renderLocationsSingle();
-    }
-
     renderHeader() {
         return (
             <div className="grid-location-selector-header">
@@ -131,13 +97,10 @@ class GridLocationSelector extends PureComponent {
         const { showLocationSelector, locationsOptions } = this.props;
 
         if (showLocationSelector === true && _.isObject(locationsOptions) && _.size(locationsOptions) > 1) {
-            Logger.log(locationsOptions, 'Available locations: ');
-
             return (
                 <div className="grid-location-selector">
                     {this.renderHeader()}
                     {this.renderLocations()}
-                    {this.renderLocationsGroups()}
                 </div>
             );
         }
@@ -150,22 +113,18 @@ GridLocationSelector.propTypes = {
     onChange: PropTypes.func,
     currentLanguage: PropTypes.string,
     showLocationSelector: PropTypes.bool,
-    allowMultyLocations: PropTypes.bool,
     locations: PropTypes.array.isRequired,
-    locationGroups: PropTypes.array,
     locationsOptions: PropTypes.object,
 };
 
 const mapStateToProps = (state) => {
-    const { showLocationSelector, allowMultyLocations, currentLanguage } = state.options;
-    const { locations, locationGroups, locationsOptions } = state.locations;
+    const { showLocationSelector, currentLanguage } = state.options;
+    const { locations, locationsOptions } = state.locations;
 
     return {
         currentLanguage,
         showLocationSelector,
-        allowMultyLocations,
         locations,
-        locationGroups,
         locationsOptions
     };
 };

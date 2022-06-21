@@ -19,7 +19,6 @@ const INITIAL_STATE = {
     defaultLangCode: '0000',
     maxUploadImageSize: 102400,
     showLocationSelector: true,
-    allowMultyLocations: false,
     show_selector: false,
     defaultCurrency: {
         code: "Euro",

@@ -12,7 +12,7 @@ import { Logger, ResponseBuilder, CUDBuilder, ResponseErrorBuilder, getProjectio
 import pretifyData from '../classes/ResponseDataPretifier';
 //import TablePlanData from './data/table_plan.json';
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InRlc3QxNyIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NDMxLCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY1NDYwMjE0MSwiaWF0IjoxNjU0NTE1NzQxfQ.5LXozFaSkpSsgrzNlTsk4RjtOkK5C67gwRjRJs_MR2s';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBcHBRTmFtZSI6InVudGlsbC9haXJzLWJwIiwiRHVyYXRpb24iOjg2NDAwMDAwMDAwMDAwLCJMb2dpbiI6InR0NiIsIkxvZ2luQ2x1c3RlcklEIjoxLCJQcm9maWxlV1NJRCI6MTQwNzM3NDg4NDg2NDYzLCJTdWJqZWN0S2luZCI6MSwiYXVkIjoicGF5bG9hZHMuUHJpbmNpcGFsUGF5bG9hZCIsImV4cCI6MTY1NTg4NjYyNiwiaWF0IjoxNjU1ODAwMjI2fQ.7NYohyMcqjWQTQEyyL2ADc8ARDT4zREIl2Kjgs3BbVI';
 
 const initPayload = {
     "options": {
@@ -29,21 +29,32 @@ const initPayload = {
             "hex": "0000"
         },
         "locations": [
-            140737488486427
+            140737488486463
         ],
-        "locationsOptions": {
-            "140737488486427": "Location 140737488486427"
-        },
-        "locationData": {
-            "id": 140737488486427,
-            "descriptor": {
-                "WorkStartTime": "2022-04-27T07:00:00.000Z",
-                "DefaultCurrency": 5000000058,
-                "NextCourseTicketLayout": 5000001365,
-                "TransferTicketLayout": 5000001466,
-                "DisplayName": "Sem's place"
+        "locationsList": [
+            {
+                "id": 140737488486462,
+                "descriptor": {
+                    "sys.ID": 65539,
+                    "WorkStartTime": "2022-06-21T07:00:00.000Z",
+                    "DefaultCurrency": 5000000058,
+                    "NextCourseTicketLayout": 5000001365,
+                    "TransferTicketLayout": 5000001466,
+                    "DisplayName": "TT6-1 Place"
+                }
+            },
+            {
+                "id": 140737488486463,
+                "descriptor": {
+                    "sys.ID": 65539,
+                    "WorkStartTime": "2022-06-21T07:00:00.000Z",
+                    "DefaultCurrency": 5000000058,
+                    "NextCourseTicketLayout": 5000001365,
+                    "TransferTicketLayout": 5000001466,
+                    "DisplayName": "TT6-2 place"
+                }
             }
-        }
+        ]
     }
 };
 

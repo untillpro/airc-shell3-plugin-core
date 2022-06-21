@@ -15,15 +15,16 @@ export const locationsAll = (state) => Object.keys(state.locations.locationsOpti
 export const entity = (state) => state.plugin.entity;
 
 export const locationWorkStartTime = (state) => {
-    const { locationData } = state.locations;
-    let descriptor = null;
 
-    if (_.isPlainObject(locationData)) {
-        descriptor = locationData.descriptor;
-    }
+    const { locations, locationsList } = state.locations;   
+    const location = _.size(locations) > 0 ? locations[0] : null;
 
-    if (_.isPlainObject(descriptor)) {
-        return String(descriptor[LOCATION_WORK_START_TIME_PROP]).toString();
+    if (location) {
+        let descriptor = _.find(locationsList, (l) => l.id === location).descriptor;
+
+        if (_.isPlainObject(descriptor)) {
+            return String(descriptor[LOCATION_WORK_START_TIME_PROP]).toString();
+        }
     }
 
     return moment("2022-04-27T06:00:00.000Z");;
