@@ -7,10 +7,10 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate as t } from 'airc-shell-core';
-import { Logger, Radio, Checkbox } from 'airc-shell-core';
+import { Radio } from 'airc-shell-core';
 
 import {
-    setLocation
+    setLocation,
 } from '../../actions';
 
 class GridLocationSelector extends PureComponent {
